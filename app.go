@@ -47,14 +47,18 @@ func (a *App) AuthenticateRequest(r *http.Request) (*User, error) {
 	}
 
 	// Extract claims from JWT
-	claims, ok := parsedToken.Claims.(jwt.StandardClaims)
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("invalid authentication token")
+	}
+	userHandle, ok := claims["sub"].(string)
 	if !ok {
 		return nil, errors.New("invalid authentication token")
 	}
 
 	// Build a User struct from JWT claims
 	user := User{
-		Handle: claims.Subject,
+		Handle: userHandle,
 	}
 
 	return &user, nil
