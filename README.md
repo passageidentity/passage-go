@@ -13,7 +13,7 @@ import (
 	"github.com/passageidentity/passage-go"
 )
 
-func createAppHandler(w http.ResponseWriter, r *http.Request) {
+func exampleRequestHandler(w http.ResponseWriter, r *http.Request) {
 
   psg := passage.New("<Passage App Handle>")
   _, err := psg.AuthenticateRequest(r)
