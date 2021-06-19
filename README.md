@@ -4,7 +4,7 @@ This Go SDK allows for easy server-side authentication for applications using [P
 
 ## Authenticating an HTTP request
 
-To attribute an HTTP request to a specific user, you can pass an `http.Request` type to the Passage `AuthenticateRequest` function. For example:
+To authenticate an HTTP request to a specific user, you can pass an `http.Request` type to the Passage `AuthenticateRequest` function. For example:
 
 ```go
 import (
