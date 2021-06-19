@@ -17,7 +17,7 @@ import (
 
 func exampleRequestHandler(w http.ResponseWriter, r *http.Request) {
 
-  psg := passage.New("<Passage App Handle>")
+  psg := passage.New()
   _, err := psg.AuthenticateRequest(r)
   if err != nil {
     // Authentication check failed!
