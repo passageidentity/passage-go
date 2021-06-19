@@ -13,10 +13,8 @@ type App struct {
 	PublicKey *rsa.PublicKey
 }
 
-func New(appHandle string) *App {
-	return &App{
-		Handle: appHandle,
-	}
+func New() *App {
+	return &App{}
 }
 
 func (a *App) AuthenticateRequest(r *http.Request) (*User, error) {

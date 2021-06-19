@@ -21,7 +21,7 @@ func TestValidAuthenticateRequest(t *testing.T) {
 	// Set a VALID public key as a properly configured server would
 	os.Setenv("PASSAGE_PUBLIC_KEY", "LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJDZ0tDQVFFQTVrZGlybnk1WnFjZ2NxcTg3YklMamtycFI3Ly9FRXRHR3lVL0xESkwxSnU2THRyaVNJemkKdzVPY2h4RkFKb25OUWhwd3dwKzNoT05OWWpKeFY1WWpibWlsc2ZMNWxsajJzZlJxY3lTMjBlZFZ2RDJqZ3hYWQpvT1g2SzU5dWtNQllzU0ZCcWtzM0UvYmNxd2YxN0U2bEIwVFhNY3NYUEtBNUE2QlJoMUVQSGtvQjlKWHJiS3hXCnhGT3JsRkJSRnJMVncvVmNUYnM3SXZRSGU4c3kxdlZoZGlkSng5R095MXVaQVlPL2dTcVNGNFRYd2RaaXJBQ1MKMjJFQlJFSSsrbWh1WWR3aWpaL3lZU1JwRFM4V0h1aVVMYjJrYnhVNUhoVG1jcnNrSjNjeEdnNHM1ZFA0V0YvZwpoMUNnYmdUczQ0dzFPVnUxdkNpNmMxQTQxMng3Wmh3UnR3SURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K")
 
-	psg := passage.New("fakeAppHandle")
+	psg := passage.New()
 	user, err := psg.AuthenticateRequest(req)
 	if err != nil {
 		t.Error("unexpected error authenticating request:", err)
@@ -44,7 +44,7 @@ func TestInvalidAuthenticateRequest(t *testing.T) {
 	// Set a VALID public key as a properly configured server would
 	os.Setenv("PASSAGE_PUBLIC_KEY", "LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJDZ0tDQVFFQTVrZGlybnk1WnFjZ2NxcTg3YklMamtycFI3Ly9FRXRHR3lVL0xESkwxSnU2THRyaVNJemkKdzVPY2h4RkFKb25OUWhwd3dwKzNoT05OWWpKeFY1WWpibWlsc2ZMNWxsajJzZlJxY3lTMjBlZFZ2RDJqZ3hYWQpvT1g2SzU5dWtNQllzU0ZCcWtzM0UvYmNxd2YxN0U2bEIwVFhNY3NYUEtBNUE2QlJoMUVQSGtvQjlKWHJiS3hXCnhGT3JsRkJSRnJMVncvVmNUYnM3SXZRSGU4c3kxdlZoZGlkSng5R095MXVaQVlPL2dTcVNGNFRYd2RaaXJBQ1MKMjJFQlJFSSsrbWh1WWR3aWpaL3lZU1JwRFM4V0h1aVVMYjJrYnhVNUhoVG1jcnNrSjNjeEdnNHM1ZFA0V0YvZwpoMUNnYmdUczQ0dzFPVnUxdkNpNmMxQTQxMng3Wmh3UnR3SURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K")
 
-	psg := passage.New("fakeAppHandle")
+	psg := passage.New()
 	_, err = psg.AuthenticateRequest(req)
 	if err == nil {
 		t.Error("an invalid request was successfully authenticated")
