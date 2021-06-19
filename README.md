@@ -7,6 +7,8 @@ This Go SDK allows for easy server-side authentication for applications using [P
 To authenticate an HTTP request to a specific user, you can pass an `http.Request` type to the Passage `AuthenticateRequest` function. For example:
 
 ```go
+package main
+
 import (
 	"net/http"
 
