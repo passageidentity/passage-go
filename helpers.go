@@ -23,7 +23,7 @@ func getAuthTokenFromRequest(r *http.Request) (string, error) {
 	}
 
 	// Second, try to extract a token from a cookie.
-	authTokenCookie, err := r.Cookie("auth_token")
+	authTokenCookie, err := r.Cookie("psg_auth_token")
 	if err == nil {
 		authToken := authTokenCookie.Value
 		return authToken, nil
