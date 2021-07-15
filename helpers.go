@@ -7,7 +7,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -33,27 +32,21 @@ func getAuthTokenFromRequest(r *http.Request) (string, error) {
 	return "", errors.New("missing authentication token")
 }
 
-func getPublicKeyFromEnv() (*rsa.PublicKey, error) {
-	// Get base-64 public key from environment variable
-	pkB64 := os.Getenv("PASSAGE_PUBLIC_KEY")
-	if pkB64 == "" {
-		return nil, errors.New("missing 'PASSAGE_PUBLIC_KEY' environment variable")
-	}
-
+func getRSAPublicKey(pubKey string) (*rsa.PublicKey, error) {
 	// Decode base-64 public key
-	keyBytes, err := base64.RawURLEncoding.DecodeString(pkB64)
+	keyBytes, err := base64.RawURLEncoding.DecodeString(pubKey)
 	if err != nil {
-		return nil, errors.New("environment variable 'PASSAGE_PUBLIC_KEY' must be valid base-64")
+		return nil, errors.New("public_key must be valid base-64")
 	}
 
 	// Parse RSA public key from the raw public key
 	pemBlock, _ := pem.Decode(keyBytes)
 	if pemBlock == nil {
-		return nil, errors.New("environment variable 'PASSAGE_PUBLIC_KEY' malformed")
+		return nil, errors.New("public_key malformed")
 	}
 	pk, err := x509.ParsePKCS1PublicKey(pemBlock.Bytes)
 	if err != nil {
-		return nil, errors.New("environment variable 'PASSAGE_PUBLIC_KEY' malformed")
+		return nil, errors.New("public_key malformed")
 	}
 
 	return pk, nil
