@@ -4,7 +4,6 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,21 +12,20 @@ import (
 type App struct {
 	handle    string
 	publicKey *rsa.PublicKey
+	apiKey    string
 }
 
-var apiKey string
 var publicKeyCache map[string]*rsa.PublicKey = make(map[string]*rsa.PublicKey)
 
 func New(appHandle string, key ...string) (*App, error) {
+	var apiKeyArg string
 	if len(key) > 0 {
-		apiKey = key[0]
+		apiKeyArg = key[0]
 	}
 	var pubKey *rsa.PublicKey
-	if _, ok := publicKeyCache[appHandle]; ok {
-		pubKey = publicKeyCache[appHandle]
+	if cachedPublicKey, ok := publicKeyCache[appHandle]; ok {
+		pubKey = cachedPublicKey
 	} else {
-		var pubKey *rsa.PublicKey
-		//MAKE SOME REQUEST TO PASSAGE
 		resp, err := getAppInfo(appHandle)
 		if err != nil {
 			return nil, err
@@ -41,6 +39,7 @@ func New(appHandle string, key ...string) (*App, error) {
 	return &App{
 		handle:    appHandle,
 		publicKey: pubKey,
+		apiKey:    apiKeyArg,
 	}, nil
 }
 
@@ -49,28 +48,14 @@ type appInfoResp struct {
 }
 
 func getAppInfo(appHandle string) (*appInfoResp, error) {
-	client := http.DefaultClient
-	req, err := http.NewRequest("GET", "https://api.passage.id/v1/app/"+appHandle, nil)
+	resp, err := http.Get("https://api.passage.id/v1/app/" + appHandle)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
 	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
 	var retBody appInfoResp
-
-	jsonErr := json.Unmarshal(body, &retBody)
-	if jsonErr != nil {
-		return nil, err
-	}
+	json.NewDecoder(resp.Body).Decode(&retBody)
 	return &retBody, nil
 }
 func (a *App) AuthenticateRequest(r *http.Request) (*User, error) {
