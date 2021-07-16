@@ -5,7 +5,8 @@ import (
 )
 
 func TestGetUserInfo(t *testing.T) {
-	psg, err := New("UKbRUx", "xcNm7N57In.8nigt09Hrx4lf3pqNsxnbAG34h312uWCxk9S7X1zTB608LiNRexgeUXAUeAJWhFB")
+	//will fail unless API_KEY is replaced with a valid key
+	psg, err := New("UKbRUx", "API_KEY")
 	if err != nil {
 		t.Error(err)
 	}
