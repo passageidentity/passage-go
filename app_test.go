@@ -25,12 +25,12 @@ func TestValidAuthenticateRequest(t *testing.T) {
 		t.Error(err)
 	}
 	psg.publicKey = pk
-	user, err := psg.AuthenticateRequest(req)
+	userHandle, err := psg.AuthenticateRequest(req)
 	if err != nil {
 		t.Error("unexpected error authenticating request:", err)
 	}
-	if user.Handle != "CcFkGcYwKNLIpAmZJHvt" {
-		t.Error("expected user handle uLljHFDIvwSJEVeuYRvs but found", user.Handle)
+	if userHandle != "CcFkGcYwKNLIpAmZJHvt" {
+		t.Error("expected user handle uLljHFDIvwSJEVeuYRvs but found", userHandle)
 	}
 }
 
