@@ -10,7 +10,7 @@ func TestGetUserInfo(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, errReq := psg.GetUserInfo("jAOBfYtZNoxVdFGjUwQB")
+	_, errReq := psg.GetUser("jAOBfYtZNoxVdFGjUwQB")
 	if errReq != nil {
 		t.Error(errReq)
 	}

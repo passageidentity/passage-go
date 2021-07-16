@@ -2,7 +2,7 @@ package passage
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"errors"
 	"net/http"
 	"time"
 )
@@ -26,7 +26,7 @@ type User struct {
 	WebauthnDevices []string     `json:"webauthn_devices"`
 }
 
-func (a *App) GetUserInfo(userHandle string) (*User, error) {
+func (a *App) GetUser(userHandle string) (*User, error) {
 	client := http.DefaultClient
 	req, err := http.NewRequest("GET", "https://api.passage.id/v1/app/"+a.handle+"/users/"+userHandle, nil)
 	if err != nil {
@@ -39,16 +39,13 @@ func (a *App) GetUserInfo(userHandle string) (*User, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.StatusCode != http.StatusOK {
+		var respErr respErr
+		json.NewDecoder(resp.Body).Decode(&respErr)
+		return nil, errors.New(respErr.Message)
 	}
+
 	var retBody User
-
-	jsonErr := json.Unmarshal(body, &retBody)
-	if jsonErr != nil {
-		return nil, err
-	}
+	json.NewDecoder(resp.Body).Decode(&retBody)
 	return &retBody, nil
 }
