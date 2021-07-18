@@ -10,6 +10,12 @@ import (
 	"strings"
 )
 
+type httpResponseError struct {
+	Status  string `json:"status"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 // Extract authentication token from an HTTP request. Note that the following precedence is applied:
 //   1. Authorization Header: "Authorization: Bearer XXXX"
 //   2. Cookie: "psg_auth_token"
@@ -32,21 +38,22 @@ func getAuthTokenFromRequest(r *http.Request) (string, error) {
 	return "", errors.New("missing authentication token")
 }
 
-func getRSAPublicKey(pubKey string) (*rsa.PublicKey, error) {
+// decodeRSAPublicKey takes a base-64 encoded RSA public key and parses it into an rsa.PublicKey type
+func decodeRSAPublicKey(pubKey string) (*rsa.PublicKey, error) {
 	// Decode base-64 public key
 	keyBytes, err := base64.RawURLEncoding.DecodeString(pubKey)
 	if err != nil {
-		return nil, errors.New("public_key must be valid base-64")
+		return nil, errors.New("public key must be valid base-64")
 	}
 
 	// Parse RSA public key from the raw public key
 	pemBlock, _ := pem.Decode(keyBytes)
 	if pemBlock == nil {
-		return nil, errors.New("public_key malformed")
+		return nil, errors.New("public key malformed")
 	}
 	pk, err := x509.ParsePKCS1PublicKey(pemBlock.Bytes)
 	if err != nil {
-		return nil, errors.New("public_key malformed")
+		return nil, errors.New("public key malformed")
 	}
 
 	return pk, nil
