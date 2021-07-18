@@ -10,67 +10,74 @@ import (
 )
 
 type App struct {
+	apiKey    string
 	handle    string
 	publicKey *rsa.PublicKey
-	apiKey    string
-}
-type respErr struct {
-	Status  string `json:"status"`
-	Code    int    `json:"code"`
-	Message string `json:"message"`
 }
 
 var publicKeyCache map[string]*rsa.PublicKey = make(map[string]*rsa.PublicKey)
 
-func New(appHandle string, key ...string) (*App, error) {
-	var apiKeyArg string
-	if len(key) > 0 {
-		apiKeyArg = key[0]
+func New(appHandle string, params ...string) (*App, error) {
+	var apiKey string
+	if len(params) > 0 {
+		apiKey = params[0]
 	}
-	var pubKey *rsa.PublicKey
+
+	var publicKey *rsa.PublicKey
 	if cachedPublicKey, ok := publicKeyCache[appHandle]; ok {
-		pubKey = cachedPublicKey
+		publicKey = cachedPublicKey
 	} else {
-		resp, err := getAppInfo(appHandle)
+		var err error
+		publicKey, err = getAppPublicKey(appHandle)
 		if err != nil {
 			return nil, err
 		}
-		pubKey, err = getRSAPublicKey(resp.PublicKey)
-		if err != nil {
-			return nil, err
-		}
-		publicKeyCache[appHandle] = pubKey
+		publicKeyCache[appHandle] = publicKey
 	}
+
 	return &App{
+		apiKey:    apiKey,
 		handle:    appHandle,
-		publicKey: pubKey,
-		apiKey:    apiKeyArg,
+		publicKey: publicKey,
 	}, nil
 }
 
-type appInfoResp struct {
-	PublicKey string `json:"public_key"`
-}
-
-func getAppInfo(appHandle string) (*appInfoResp, error) {
+func getAppPublicKey(appHandle string) (*rsa.PublicKey, error) {
 	resp, err := http.Get("https://api.passage.id/v1/app/" + appHandle)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		var respErr respErr
-		json.NewDecoder(resp.Body).Decode(&respErr)
-		return nil, errors.New(respErr.Message)
+
+	if resp.StatusCode != http.StatusOK {
+		var body httpResponseError
+		err := json.NewDecoder(resp.Body).Decode(&body)
+		if err != nil {
+			return nil, errors.New("malformatted JSON response")
+		}
+		return nil, errors.New(body.Message)
 	}
-	var retBody appInfoResp
-	json.NewDecoder(resp.Body).Decode(&retBody)
-	return &retBody, nil
+
+	var body struct {
+		PublicKey string `json:"public_key"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&body)
+	if err != nil {
+		return nil, errors.New("malformatted JSON response")
+	}
+
+	publicKey, err := decodeRSAPublicKey(body.PublicKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return publicKey, nil
 }
+
 func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
 	// Check if the app's public key is set. If not, attempt to set it.
 	if a.publicKey == nil {
-		return "", errors.New("public key never initializd in app Struct")
+		return "", errors.New("public key never initialized in app struct")
 	}
 
 	// Extract authentication token from the request.

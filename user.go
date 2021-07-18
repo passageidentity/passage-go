@@ -14,11 +14,11 @@ type UserEvents struct {
 }
 
 type User struct {
-	StartDate       time.Time    `json:"start_date"`
 	Active          bool         `json:"active"`
-	EmailVerified   bool         `json:"email_verified"`
 	Email           string       `json:"email"`
+	EmailVerified   bool         `json:"email_verified"`
 	Handle          string       `json:"handle"`
+	StartDate       time.Time    `json:"start_date"`
 	LastLogin       time.Time    `json:"last_login"`
 	RecentEvents    []UserEvents `json:"recent_events"`
 	Password        bool         `json:"password"`
@@ -28,7 +28,7 @@ type User struct {
 
 func (a *App) GetUser(userHandle string) (*User, error) {
 	client := http.DefaultClient
-	req, err := http.NewRequest("GET", "https://api.passage.id/v1/app/"+a.handle+"/users/"+userHandle, nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.passage.id/v1/app/"+a.handle+"/users/"+userHandle, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +39,21 @@ func (a *App) GetUser(userHandle string) (*User, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
-		var respErr respErr
-		json.NewDecoder(resp.Body).Decode(&respErr)
-		return nil, errors.New(respErr.Message)
+		var body httpResponseError
+		err = json.NewDecoder(resp.Body).Decode(&body)
+		if err != nil {
+			return nil, errors.New("malformatted JSON response")
+		}
+		return nil, errors.New(body.Message)
 	}
 
-	var retBody User
-	json.NewDecoder(resp.Body).Decode(&retBody)
-	return &retBody, nil
+	var user User
+	err = json.NewDecoder(resp.Body).Decode(&user)
+	if err != nil {
+		return nil, errors.New("malformatted JSON response")
+	}
+
+	return &user, nil
 }
