@@ -28,7 +28,7 @@ func New(appHandle string, params ...string) (*App, error) {
 		publicKey = cachedPublicKey
 	} else {
 		var err error
-		publicKey, err = getAppPublicKey(appHandle)
+		publicKey, err := fetchPublicKey(appHandle)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func New(appHandle string, params ...string) (*App, error) {
 	}, nil
 }
 
-func getAppPublicKey(appHandle string) (*rsa.PublicKey, error) {
+func fetchPublicKey(appHandle string) (*rsa.PublicKey, error) {
 	resp, err := http.Get("https://api.passage.id/v1/app/" + appHandle)
 	if err != nil {
 		return nil, err
