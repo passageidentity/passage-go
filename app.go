@@ -28,7 +28,7 @@ func New(appHandle string, params ...string) (*App, error) {
 		publicKey = cachedPublicKey
 	} else {
 		var err error
-		publicKey, err := fetchPublicKey(appHandle)
+		publicKey, err = fetchPublicKey(appHandle)
 		if err != nil {
 			return nil, err
 		}
