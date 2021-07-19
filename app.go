@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -25,6 +26,8 @@ func New(appHandle string, params ...string) (*App, error) {
 
 	var publicKey *rsa.PublicKey
 	if cachedPublicKey, ok := publicKeyCache[appHandle]; ok {
+		fmt.Println("OK: ", ok)
+		fmt.Println("PUB_KEY: ", publicKey)
 		publicKey = cachedPublicKey
 	} else {
 		var err error
