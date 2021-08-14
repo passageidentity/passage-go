@@ -9,12 +9,6 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-type UserEvents struct {
-	EventType string    `json:"event_type"`
-	Status    string    `json:"status"`
-	Timestamp time.Time `json:"timestamp"`
-}
-
 type User struct {
 	ID            string    `json:"handle"`
 	Active        bool      `json:"active"`
