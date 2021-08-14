@@ -1,10 +1,12 @@
 package passage
 
 import (
-	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
+
+	"gopkg.in/resty.v1"
 )
 
 type UserEvents struct {
@@ -14,45 +16,29 @@ type UserEvents struct {
 }
 
 type User struct {
-	Active          bool         `json:"active"`
-	Email           string       `json:"email"`
-	EmailVerified   bool         `json:"email_verified"`
-	Handle          string       `json:"handle"`
-	StartDate       time.Time    `json:"start_date"`
-	LastLogin       time.Time    `json:"last_login"`
-	RecentEvents    []UserEvents `json:"recent_events"`
-	Password        bool         `json:"password"`
-	Webauthn        bool         `json:"webauthn"`
-	WebauthnDevices []string     `json:"webauthn_devices"`
+	ID            string    `json:"handle"`
+	Active        bool      `json:"active"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+	StartDate     time.Time `json:"start_date"`
+	LastLogin     time.Time `json:"last_login_date"`
 }
 
-func (a *App) GetUser(userHandle string) (*User, error) {
-	client := http.DefaultClient
-	req, err := http.NewRequest(http.MethodGet, "https://api.passage.id/v1/app/"+a.handle+"/users/"+userHandle, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("Authorization", "Bearer "+a.apiKey)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		var body httpResponseError
-		err = json.NewDecoder(resp.Body).Decode(&body)
-		if err != nil {
-			return nil, errors.New("malformatted JSON response")
-		}
-		return nil, errors.New(body.Message)
-	}
-
+func (a *App) GetUser(userID string) (*User, error) {
 	var user User
-	err = json.NewDecoder(resp.Body).Decode(&user)
+
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		SetResult(&user).
+		Get(fmt.Sprintf("https://api.passage.id/v1/app/%v/users/%v", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("malformatted JSON response")
+		return nil, errors.New("network error: could not get Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return nil, fmt.Errorf("Passage User with ID \"%v\" does not exist", userID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("failed to get Passage User")
 	}
 
 	return &user, nil

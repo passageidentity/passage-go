@@ -1,71 +1,104 @@
-# passage-go
+___To use the Passage Go SDK, you'll need your Passage App ID. You can create a new Passage App in the [console](https://console.passage.id).___
 
-This Go SDK allows for easy server-side authentication for applications using [Passage](https://passage.id).
+### Authenticating a Request
 
-## Authenticating an HTTP request
-
-To authenticate an HTTP request to a specific user, you can pass an `http.Request` type to the Passage `AuthenticateRequest` function. For example:
+Passage makes it easy to associate an HTTP request with an authenticated user. The following code can be used to validate that a request was made by an authenticated user.
 
 ```go
-package main
-
 import (
 	"net/http"
 
 	"github.com/passageidentity/passage-go"
 )
 
-func exampleRequestHandler(w http.ResponseWriter, r *http.Request) {
+func exampleHandler(w http.ResponseWriter, r *http.Request) {
 
-  psg := passage.New("<APP_HANDLE>")
-  _, err := psg.AuthenticateRequest(r)
-  if err != nil {
-    // Authentication check failed!
-    w.WriteHeader(http.StatusUnauthorized)
-    return
-  }
+	// Authenticate this request using the Passage SDK:
+	psg, _ := passage.New("<PASSAGE_APP_ID>", nil)
+	_, err := psg.AuthenticateRequest(r)
+	if err != nil {
+		// 🚨 Authentication failed!
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
-  // Proceed with request handler
+	// ✅ Authentication successful. Proceed...
 
 }
 ```
-## Retrieve User Info
-To retrieve information about a user, you should use the `getUser` method. You will need to use a Passage API key, which can be created in the Passage Console under your Application Settings. This API key grants your web server access to the Passage management APIs to get and update information about users.
-This API key must be protected and stored in an appropriate secure storage location. It should never be hard-coded in the repository.
 
-```go 
+### Authorizing a User
 
-package main
+It is important to remember that `psg.AuthenticateRequest()`  validates that a request is properly authenticated and returns the authenticated user's Passage identifier, but an additional _authorization_ check is typically required.
 
+```go
 import (
 	"net/http"
 
 	"github.com/passageidentity/passage-go"
 )
 
-func exampleRequestHandler(w http.ResponseWriter, r *http.Request) {
+func exampleHandler(w http.ResponseWriter, r *http.Request) {
 
-  psg := passage.New("<APP_HANDLE>", "<PASSAGE_API_KEY>")
-  user, err := psg.GetUser("<USER_HANDLE>") 
+	// Authenticate this request using the Passage SDK:
+	psg, _ := passage.New("<PASSAGE_APP_ID>", nil)
+	passageID, err := psg.AuthenticateRequest(r)
+	if err != nil {
+		// 🚨 Authentication failed!
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// ✋ Authentication successful, but let's check authorization:
+	allowed := myAuthorizationCheck(passageID, "role.manager")
+	if !allowed {
+		// 🚨 Authorization failed!
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	
+	// ✅ Authentication & authorization successful. Proceed...
+
+}
+```
+
+### User Management
+
+In addition to authenticating requests, the Passage SDK also provides a way to securely manage your users. These functions require authentication using a Passage API key. API keys can be managed in the [Passage Console](https://console.passage.id). 
+
+___Passage API Keys are sensitive! You should store them securely along with your other application secrets.___
+
+```go
+import (
+	"net/http"
+
+	"github.com/passageidentity/passage-go"
+)
+
+func exampleHandler(w http.ResponseWriter, r *http.Request) {
+
+  psg, _ := passage.New("<PASSAGE_APP_ID>", &passage.Config{
+    APIKey: "<PASSAGE_API_KEY>",
+  })
+  passageID, err := psg.AuthenticateRequest(r)
   if err != nil {
-      //Handle err cases
-      // - user not found
-      // - invalid PASSAGE_API_KEY
-      // ...
+		// 🚨 Authentication failed!
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+  
+  // The passageID returned above can be used to get user information:
+  passageUser, err := psg.GetUser(passageID) 
+  if err != nil {
+		// 💀 Couldn't get the Passage User for some reason...
+		w.WriteHeader(http.StatusInternalServerError)
+		return
   }
-  /* user -- STRUCT:
-
-        type User struct {
-        	Active          bool         `json:"active"`
-        	Email           string       `json:"email"`
-        	EmailVerified   bool         `json:"email_verified"`
-        	Handle          string       `json:"handle"`
-        	StartDate       time.Time    `json:"start_date"`
-        	LastLogin       time.Time    `json:"last_login"`
-        	RecentEvents    []UserEvents `json:"recent_events"`
-        	Password        bool         `json:"password"`
-        	Webauthn        bool         `json:"webauthn"`
-        	WebauthnDevices []string     `json:"webauthn_devices"`
-        }
-  */
+  
+  // The passageUser struct can now be inspected for detailed information
+  // about the user. A full list of fields can be found here:
+  //   https://github.com/passageidentity/passage-go/blob/main/user.go
+  _ = passageUser
+  
+}
 ```
