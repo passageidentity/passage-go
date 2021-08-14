@@ -2,110 +2,85 @@ package passage
 
 import (
 	"crypto/rsa"
-	"encoding/json"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
 	"errors"
+	"fmt"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
+	"gopkg.in/resty.v1"
 )
 
+type Config struct {
+	APIKey     string
+	CookieAuth bool
+}
+
 type App struct {
-	apiKey    string
-	handle    string
-	publicKey *rsa.PublicKey
+	ID        string
+	PublicKey *rsa.PublicKey
+	Config    *Config
+}
+
+func New(appID string, config *Config) (*App, error) {
+	if config == nil {
+		config = &Config{}
+	}
+
+	app := App{
+		ID:     appID,
+		Config: config,
+	}
+
+	// Lookup the public key for this App:
+	var err error
+	app.PublicKey, err = getPublicKey(appID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &app, nil
 }
 
 var publicKeyCache map[string]*rsa.PublicKey = make(map[string]*rsa.PublicKey)
 
-func New(appHandle string, params ...string) (*App, error) {
-	var apiKey string
-	if len(params) > 0 {
-		apiKey = params[0]
+func getPublicKey(appID string) (*rsa.PublicKey, error) {
+	// First, check if the App's public key is cached locally:
+	if cachedPublicKey, ok := publicKeyCache[appID]; ok {
+		return cachedPublicKey, nil
 	}
 
-	var publicKey *rsa.PublicKey
-	if cachedPublicKey, ok := publicKeyCache[appHandle]; ok {
-		publicKey = cachedPublicKey
-	} else {
-		var err error
-		publicKey, err = fetchPublicKey(appHandle)
-		if err != nil {
-			return nil, err
-		}
-		publicKeyCache[appHandle] = publicKey
-	}
-
-	return &App{
-		apiKey:    apiKey,
-		handle:    appHandle,
-		publicKey: publicKey,
-	}, nil
-}
-
-func fetchPublicKey(appHandle string) (*rsa.PublicKey, error) {
-	resp, err := http.Get("https://api.passage.id/v1/app/" + appHandle)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		var body httpResponseError
-		err := json.NewDecoder(resp.Body).Decode(&body)
-		if err != nil {
-			return nil, errors.New("malformatted JSON response")
-		}
-		return nil, errors.New(body.Message)
-	}
-
-	var body struct {
+	// If the public key isn't cached locally, we'll need to use the Passage API to lookup the public key:
+	var responseData struct {
 		PublicKey string `json:"public_key"`
 	}
-	err = json.NewDecoder(resp.Body).Decode(&body)
+	response, err := resty.New().R().
+		SetResult(&responseData).
+		Get("https://api.passage.id/v1/app/" + appID)
 	if err != nil {
-		return nil, errors.New("malformatted JSON response")
+		return nil, errors.New("network error: could not lookup Passage App's public key")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return nil, fmt.Errorf("Passage App with ID \"%v\" does not exist", appID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("failed to get lookup Passage App's public key")
 	}
 
-	publicKey, err := decodeRSAPublicKey(body.PublicKey)
+	// Parse the returned public key string to an rsa.PublicKey:
+	publicKeyBytes, err := base64.RawURLEncoding.DecodeString(responseData.PublicKey)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("could not parse Passage App's public key: expected valid base-64")
+	}
+	pemBlock, _ := pem.Decode(publicKeyBytes)
+	if pemBlock == nil {
+		return nil, errors.New("could not parse Passage App's public key: missing PEM block")
+	}
+	publicKey, err := x509.ParsePKCS1PublicKey(pemBlock.Bytes)
+	if err != nil {
+		return nil, errors.New("could not parse Passage App's public key: invalid PKCS #1 public key")
 	}
 
 	return publicKey, nil
-}
-
-func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
-	// Check if the app's public key is set. If not, attempt to set it.
-	if a.publicKey == nil {
-		return "", errors.New("public key never initialized in app struct")
-	}
-
-	// Extract authentication token from the request.
-	authToken, err := getAuthTokenFromRequest(r)
-	if err != nil {
-		return "", err
-	}
-
-	// Verify that the authentication token is valid
-	parsedToken, err := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, errors.New("invalid authentication token")
-		}
-		return a.publicKey, nil
-	})
-	if err != nil {
-		return "", errors.New("invalid authentication token")
-	}
-
-	// Extract claims from JWT
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		return "", errors.New("invalid authentication token")
-	}
-	userHandle, ok := claims["sub"].(string)
-	if !ok {
-		return "", errors.New("invalid authentication token")
-	}
-
-	return userHandle, nil
 }
