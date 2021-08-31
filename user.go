@@ -28,7 +28,7 @@ type User struct {
 
 func (a *App) GetUser(userID string) (*User, error) {
 	client := http.DefaultClient
-	req, err := http.NewRequest(http.MethodGet, "https://api.passage.id/v1/app/"+a.id+"/users/"+userID, nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.passage.id/v1/apps/"+a.id+"/users/"+userID, nil)
 	if err != nil {
 		return nil, err
 	}
