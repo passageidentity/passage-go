@@ -43,7 +43,7 @@ func New(appID string, params ...string) (*App, error) {
 }
 
 func fetchPublicKey(appHandle string) (*rsa.PublicKey, error) {
-	resp, err := http.Get("https://api.passage.id/v1/app/" + appHandle)
+	resp, err := http.Get("https://api.passage.id/v1/apps/" + appHandle)
 	if err != nil {
 		return nil, err
 	}
