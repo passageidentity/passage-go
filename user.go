@@ -10,12 +10,12 @@ import (
 )
 
 type User struct {
-	ID            string    `json:"handle"`
+	ID            string    `json:"id"`
 	Active        bool      `json:"active"`
 	Email         string    `json:"email"`
 	EmailVerified bool      `json:"email_verified"`
-	StartDate     time.Time `json:"start_date"`
-	LastLogin     time.Time `json:"last_login_date"`
+	CreatedAt     time.Time `json:"created_at"`
+	LastLogin     time.Time `json:"last_login_at"`
 }
 
 func (a *App) GetUser(userID string) (*User, error) {
