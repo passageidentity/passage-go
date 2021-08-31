@@ -53,23 +53,25 @@ func getPublicKey(appID string) (*rsa.PublicKey, error) {
 
 	// If the public key isn't cached locally, we'll need to use the Passage API to lookup the public key:
 	var responseData struct {
-		PublicKey string `json:"public_key"`
+		App struct {
+			PublicKey string `json:"rsa_public_key"`
+		} `json:"app"`
 	}
 	response, err := resty.New().R().
 		SetResult(&responseData).
-		Get("https://api.passage.id/v1/app/" + appID)
+		Get("https://api.passage.id/v1/apps/" + appID)
 	if err != nil {
 		return nil, errors.New("network error: could not lookup Passage App's public key")
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("Passage App with ID \"%v\" does not exist", appID)
+		return nil, fmt.Errorf("passage App with ID \"%v\" does not exist", appID)
 	}
 	if response.StatusCode() != http.StatusOK {
 		return nil, fmt.Errorf("failed to get lookup Passage App's public key")
 	}
 
 	// Parse the returned public key string to an rsa.PublicKey:
-	publicKeyBytes, err := base64.RawURLEncoding.DecodeString(responseData.PublicKey)
+	publicKeyBytes, err := base64.RawURLEncoding.DecodeString(responseData.App.PublicKey)
 	if err != nil {
 		return nil, errors.New("could not parse Passage App's public key: expected valid base-64")
 	}

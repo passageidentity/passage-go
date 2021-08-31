@@ -19,21 +19,25 @@ type User struct {
 }
 
 func (a *App) GetUser(userID string) (*User, error) {
-	var user User
+	type respUser struct {
+		User User `json:"user"`
+	}
+	var userBody respUser
 
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
-		SetResult(&user).
-		Get(fmt.Sprintf("https://api.passage.id/v1/app/%v/users/%v", a.ID, userID))
+		SetResult(&userBody).
+		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
 	if err != nil {
 		return nil, errors.New("network error: could not get Passage User")
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("Passage User with ID \"%v\" does not exist", userID)
+		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
 	}
 	if response.StatusCode() != http.StatusOK {
 		return nil, fmt.Errorf("failed to get Passage User")
 	}
+	user := userBody.User
 
 	return &user, nil
 }
