@@ -15,7 +15,7 @@ func TestValidAuthenticateRequest(t *testing.T) {
 	// Add a VALID authentication token to the request
 	req.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwYXNzYWdlIiwic3ViIjoiQ2NGa0djWXdLTkxJcEFtWkpIdnQifQ.EdUKRJwgK7ICRm4uIfGcL3v8zZRyrPWm1zUg5bnQ0m2ovLPGk2yLARZfpE6xhYhd22aemBx8EtNvg6hBg3qOVxKgrAsL-V78Z7S6DKJRRxbKSfJlz55SZOfklo5pz_VwVtOE34oWlq9JRbFaFHxhJuST3Z9ykJEm-1Ihr9ACX453pX9iTcLJmVMWbT4AlPAPtAL4rNsAU9b-KDQC1FUlTNE5e7HfOAaSnwz9qQZpviDAHYomJcWxFCWMri4Zj6PVQb8l57nMUqhf2BU4_q5iVJpV7DlODwApkQIPNWCGZj3oqeJv4T0ldUivtgq1YzEdK4Cw6__13f2IRuDTBHFKsQ")
 
-	psg, err := New("UKbRUx")
+	psg, err := New("KZ520QJSiFRLvbBvraaAgYuf")
 	if err != nil {
 		t.Error(err)
 	}
@@ -44,7 +44,7 @@ func TestInvalidAuthenticateRequest(t *testing.T) {
 	// Add a VALID authentication token to the request
 	req.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwYXNzYWdlIiwic3ViIjoiQ2NGa0djWXdLTkxJcEFtWkpIdnQifQ.T0gDJTB0bd-DF6EgEO-PjKk2tbEm9ZN3qVjDeFLB1aGWnm9TYlkvxmAHtYiYmhLkRTvaO_eQIFHToQgIuRwQJlMuZyuzsISmuJCtY9dds-9q3WSoWiaiaupO6ljOSI-k31pAAx_SIaDgdl2IgH3pKLUtDZ29eZxT1HZpwFI_NJ0i_2rnrfWyDXaovgOlxTPlXW4b-GBxsPNzxLTF6-wHSMkP0hjzaLgxyWpuapG5SFIGVKBU2PtdFhChrAv-7Lk_5WxBy-SAsccrJUcYTXgVJcCIC3_rSeKlhnkbYcfQwJO9PkEq2fSCO9pt_v2LUgtC1TeMp2JcMC-6qLe2QQ44uw")
 
-	psg, err := New("UKbRUx")
+	psg, err := New("KZ520QJSiFRLvbBvraaAgYuf")
 	if err != nil {
 		t.Error(err)
 	}

@@ -11,33 +11,33 @@ import (
 
 type App struct {
 	apiKey    string
-	handle    string
+	id    string
 	publicKey *rsa.PublicKey
 }
 
 var publicKeyCache map[string]*rsa.PublicKey = make(map[string]*rsa.PublicKey)
 
-func New(appHandle string, params ...string) (*App, error) {
+func New(appID string, params ...string) (*App, error) {
 	var apiKey string
 	if len(params) > 0 {
 		apiKey = params[0]
 	}
 
 	var publicKey *rsa.PublicKey
-	if cachedPublicKey, ok := publicKeyCache[appHandle]; ok {
+	if cachedPublicKey, ok := publicKeyCache[appID]; ok {
 		publicKey = cachedPublicKey
 	} else {
 		var err error
-		publicKey, err = fetchPublicKey(appHandle)
+		publicKey, err = fetchPublicKey(appID)
 		if err != nil {
 			return nil, err
 		}
-		publicKeyCache[appHandle] = publicKey
+		publicKeyCache[appID] = publicKey
 	}
 
 	return &App{
 		apiKey:    apiKey,
-		handle:    appHandle,
+		id:        appID,
 		publicKey: publicKey,
 	}, nil
 }
@@ -59,14 +59,16 @@ func fetchPublicKey(appHandle string) (*rsa.PublicKey, error) {
 	}
 
 	var body struct {
-		PublicKey string `json:"public_key"`
+		App struct {
+			PublicKey string `json:"rsa_public_key"`
+		} `json:"app"`
 	}
 	err = json.NewDecoder(resp.Body).Decode(&body)
 	if err != nil {
 		return nil, errors.New("malformatted JSON response")
 	}
 
-	publicKey, err := decodeRSAPublicKey(body.PublicKey)
+	publicKey, err := decodeRSAPublicKey(body.App.PublicKey)
 	if err != nil {
 		return nil, err
 	}

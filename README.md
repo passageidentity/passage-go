@@ -17,7 +17,7 @@ import (
 
 func exampleRequestHandler(w http.ResponseWriter, r *http.Request) {
 
-  psg := passage.New("<APP_HANDLE>")
+  psg := passage.New("<APP_ID>")
   _, err := psg.AuthenticateRequest(r)
   if err != nil {
     // Authentication check failed!
@@ -45,27 +45,12 @@ import (
 
 func exampleRequestHandler(w http.ResponseWriter, r *http.Request) {
 
-  psg := passage.New("<APP_HANDLE>", "<PASSAGE_API_KEY>")
-  user, err := psg.GetUser("<USER_HANDLE>") 
+  psg := passage.New("<APP_ID>", "<PASSAGE_API_KEY>")
+  user, err := psg.GetUser("<USER_ID>") 
   if err != nil {
       //Handle err cases
       // - user not found
       // - invalid PASSAGE_API_KEY
       // ...
   }
-  /* user -- STRUCT:
-
-        type User struct {
-        	Active          bool         `json:"active"`
-        	Email           string       `json:"email"`
-        	EmailVerified   bool         `json:"email_verified"`
-        	Handle          string       `json:"handle"`
-        	StartDate       time.Time    `json:"start_date"`
-        	LastLogin       time.Time    `json:"last_login"`
-        	RecentEvents    []UserEvents `json:"recent_events"`
-        	Password        bool         `json:"password"`
-        	Webauthn        bool         `json:"webauthn"`
-        	WebauthnDevices []string     `json:"webauthn_devices"`
-        }
-  */
 ```

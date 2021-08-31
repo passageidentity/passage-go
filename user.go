@@ -8,27 +8,27 @@ import (
 )
 
 type UserEvents struct {
-	EventType string    `json:"event_type"`
-	Status    string    `json:"status"`
-	Timestamp time.Time `json:"timestamp"`
+	EventType string    `json:"type"`
+	Id        string    `json:"id"`
+	Timestamp time.Time `json:"created_at"`
 }
 
 type User struct {
 	Active          bool         `json:"active"`
 	Email           string       `json:"email"`
 	EmailVerified   bool         `json:"email_verified"`
-	Handle          string       `json:"handle"`
-	StartDate       time.Time    `json:"start_date"`
-	LastLogin       time.Time    `json:"last_login"`
+	Id              string       `json:"id"`
+	CreatedAt       time.Time    `json:"created_at"`
+	LastLoginAt     time.Time    `json:"last_login_at"`
+	LoginCount      int          `json:"login_count"`
 	RecentEvents    []UserEvents `json:"recent_events"`
-	Password        bool         `json:"password"`
 	Webauthn        bool         `json:"webauthn"`
 	WebauthnDevices []string     `json:"webauthn_devices"`
 }
 
-func (a *App) GetUser(userHandle string) (*User, error) {
+func (a *App) GetUser(userID string) (*User, error) {
 	client := http.DefaultClient
-	req, err := http.NewRequest(http.MethodGet, "https://api.passage.id/v1/app/"+a.handle+"/users/"+userHandle, nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.passage.id/v1/app/"+a.id+"/users/"+userID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -49,11 +49,16 @@ func (a *App) GetUser(userHandle string) (*User, error) {
 		return nil, errors.New(body.Message)
 	}
 
-	var user User
-	err = json.NewDecoder(resp.Body).Decode(&user)
+	type userBody struct {
+		User User `json:"user"`
+	}
+	var respUser userBody
+	err = json.NewDecoder(resp.Body).Decode(&respUser)
 	if err != nil {
 		return nil, errors.New("malformatted JSON response")
 	}
+
+	user := respUser.User
 
 	return &user, nil
 }
