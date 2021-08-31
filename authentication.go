@@ -9,10 +9,10 @@ import (
 )
 
 func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
-	if a.Config.CookieAuth {
-		return a.AuthenticateRequestWithCookie(r)
+	if a.Config.HeaderAuth {
+		return a.AuthenticateRequestWithHeader(r)
 	}
-	return a.AuthenticateRequestWithHeader(r)
+	return a.AuthenticateRequestWithCookie(r)
 }
 
 func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {

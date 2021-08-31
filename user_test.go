@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetUserInfo(t *testing.T) {
-	psg, err := passage.New("UKbRUx", &passage.Config{
+	psg, err := passage.New("KZ520QJSiFRLvbBvraaAgYuf", &passage.Config{
 		APIKey: os.Getenv("API_KEY"), // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)

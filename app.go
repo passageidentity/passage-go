@@ -14,7 +14,7 @@ import (
 
 type Config struct {
 	APIKey     string
-	CookieAuth bool
+	HeaderAuth bool
 }
 
 type App struct {

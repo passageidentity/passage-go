@@ -14,7 +14,7 @@ func TestAuthenticationWithCookie(t *testing.T) {
 	require.Nil(t, err)
 
 	psg, err := passage.New("passage", &passage.Config{
-		CookieAuth: true,
+		HeaderAuth: false,
 	})
 	require.Nil(t, err)
 
