@@ -41,3 +41,51 @@ func (a *App) GetUser(userID string) (*User, error) {
 
 	return &user, nil
 }
+
+func (a *App) ActivateUser(userID string) (*User, error) {
+	type respUser struct {
+		User User `json:"user"`
+	}
+	var userBody respUser
+
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		SetResult(&userBody).
+		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/activate", a.ID, userID))
+	if err != nil {
+		return nil, errors.New("network error: could not get activate Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("failed to activate Passage User")
+	}
+	user := userBody.User
+
+	return &user, nil
+}
+
+func (a *App) DeactivateUser(userID string) (*User, error) {
+	type respUser struct {
+		User User `json:"user"`
+	}
+	var userBody respUser
+
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		SetResult(&userBody).
+		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/deactivate", a.ID, userID))
+	if err != nil {
+		return nil, errors.New("network error: could not get deactivate Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("failed to deactivate Passage User")
+	}
+	user := userBody.User
+
+	return &user, nil
+}
