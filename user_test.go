@@ -41,3 +41,14 @@ func TestDeactivateUser(t *testing.T) {
 	assert.Equal(t, "IYQyOzlddrphojERwnMy", user.ID)
 	assert.Equal(t, false, user.Active)
 }
+
+func TestUpdateUserEmail(t *testing.T) {
+	psg, err := passage.New("KZ520QJSiFRLvbBvraaAgYuf", &passage.Config{
+		APIKey: os.Getenv("API_KEY"), // An API_KEY environment variable is required for testing.
+	})
+	require.Nil(t, err)
+
+	user, err := psg.UpdateUserEmail("IYQyOzlddrphojERwnMy", "abc@123.com")
+	require.Nil(t, err)
+	assert.Equal(t, "abc@123.com", user.Email)
+}
