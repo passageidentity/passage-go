@@ -13,11 +13,14 @@ type User struct {
 	ID            string    `json:"id"`
 	Active        bool      `json:"active"`
 	Email         string    `json:"email"`
+	Phone         string    `json:"phone"`
 	EmailVerified bool      `json:"email_verified"`
 	CreatedAt     time.Time `json:"created_at"`
 	LastLogin     time.Time `json:"last_login_at"`
 }
 
+// GetUser gets a user using their userID
+// returns user on success, error on failure
 func (a *App) GetUser(userID string) (*User, error) {
 	type respUser struct {
 		User User `json:"user"`
@@ -42,6 +45,8 @@ func (a *App) GetUser(userID string) (*User, error) {
 	return &user, nil
 }
 
+// ActivateUser activates a user using their userID
+// returns user on success, error on failure
 func (a *App) ActivateUser(userID string) (*User, error) {
 	type respUser struct {
 		User User `json:"user"`
@@ -66,6 +71,8 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 	return &user, nil
 }
 
+// DeactivateUser deactivates a user using their userID
+// returns user on success, error on failure
 func (a *App) DeactivateUser(userID string) (*User, error) {
 	type respUser struct {
 		User User `json:"user"`
@@ -90,7 +97,15 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 	return &user, nil
 }
 
-func (a *App) UpdateUserEmail(userID string, email string) (*User, error) {
+type UpdateBody struct {
+	Email string `json:"email,omitempty"`
+	Phone string `json:"phone,omitempty"`
+}
+
+// UpdateUser receives an UpdateBody struct, updating the corresponding user's attribute(s)
+// returns user on success, error on failure
+func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
+
 	type respUser struct {
 		User User `json:"user"`
 	}
@@ -99,7 +114,7 @@ func (a *App) UpdateUserEmail(userID string, email string) (*User, error) {
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
-		SetBody(fmt.Sprintf(`{"email": %v}`, email)).
+		SetBody(updateBody).
 		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
 	if err != nil {
 		return nil, errors.New("network error: could not get patch Passage User's email")
