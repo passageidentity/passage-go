@@ -117,13 +117,13 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 		SetBody(updateBody).
 		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("network error: could not get patch Passage User's email")
+		return nil, errors.New("network error: could not update Passage User attributes")
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to patch Passage User's email")
+		return nil, fmt.Errorf("failed to patch Passage User's attributes")
 	}
 	user := userBody.User
 
