@@ -32,10 +32,7 @@ func generateRandomEmail(prefixLength int) string {
 }
 
 func TestMain(t *testing.T) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		t.Fatal("failed to load environment variables required for testing")
-	}
+	godotenv.Load(".env")
 
 	passageAppID = os.Getenv("PASSAGE_APP_ID")
 	passageApiKey = os.Getenv("PASSAGE_API_KEY")
