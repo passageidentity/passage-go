@@ -130,6 +130,8 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 	return &user, nil
 }
 
+// DeleteUser receives a userID (string), and deletes the corresponding user
+// returns true on success, false and error on failure (bool, err)
 func (a *App) DeleteUser(userID string) (bool, error) {
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
@@ -152,6 +154,8 @@ type CreateUserBody struct {
 	Phone string `json:"phone,omitempty"`
 }
 
+// CreateUser receives a CreateUserBody struct, creating a user with provided values
+// returns user on success, error on failure
 func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 
 	type respUser struct {
