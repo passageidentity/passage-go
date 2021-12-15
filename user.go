@@ -172,7 +172,7 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 		return nil, errors.New("network error: could not create Passage User")
 	}
 	if response.StatusCode() != http.StatusCreated {
-		return nil, fmt.Errorf("failed to create Passage User")
+		return nil, fmt.Errorf("failed to create Passage User. Http Status: %v. Response: %v", response.StatusCode(), response.String())
 	}
 	user := userBody.User
 
