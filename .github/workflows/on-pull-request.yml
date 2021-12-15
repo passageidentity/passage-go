@@ -1,0 +1,23 @@
+name: Run Tests
+
+on: [pull_request]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PASSAGE_APP_ID: ${{ secrets.PASSAGE_APP_ID }}
+  PASSAGE_API_KEY: ${{ secrets.PASSAGE_API_KEY }}
+  PASSAGE_USER_ID: ${{ secrets.PASSAGE_USER_ID }}
+
+jobs:
+  build:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: go test ./...

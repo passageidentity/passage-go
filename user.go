@@ -129,3 +129,52 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 
 	return &user, nil
 }
+
+// DeleteUser receives a userID (string), and deletes the corresponding user
+// returns true on success, false and error on failure (bool, err)
+func (a *App) DeleteUser(userID string) (bool, error) {
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
+	if err != nil {
+		return false, errors.New("network error: could not delete Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return false, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return false, fmt.Errorf("failed to delete Passage User")
+	}
+
+	return true, nil
+}
+
+type CreateUserBody struct {
+	Email string `json:"email,omitempty"`
+	Phone string `json:"phone,omitempty"`
+}
+
+// CreateUser receives a CreateUserBody struct, creating a user with provided values
+// returns user on success, error on failure
+func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
+
+	type respUser struct {
+		User User `json:"user"`
+	}
+	var userBody respUser
+
+	response, err := resty.New().R().
+		SetResult(&userBody).
+		SetBody(createUserBody).
+		SetAuthToken(a.Config.APIKey).
+		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/", a.ID))
+	if err != nil {
+		return nil, errors.New("network error: could not create Passage User")
+	}
+	if response.StatusCode() != http.StatusCreated {
+		return nil, fmt.Errorf("failed to create Passage User. Http Status: %v. Response: %v", response.StatusCode(), response.String())
+	}
+	user := userBody.User
+
+	return &user, nil
+}

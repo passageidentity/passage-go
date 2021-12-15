@@ -1,6 +1,8 @@
 package passage_test
 
 import (
+	"crypto/rand"
+	"fmt"
 	"os"
 	"testing"
 
@@ -15,13 +17,22 @@ var (
 	passageAppID  string
 	passageApiKey string
 	passageUserID string
+	randomEmail = generateRandomEmail(14)
+	createdUser passage.User
 )
 
+func generateRandomEmail(prefixLength int) string {
+	n := prefixLength
+    randomChars := make([]byte, n)
+    if _, err := rand.Read(randomChars); err != nil {
+        panic(err)
+    }
+    email := fmt.Sprintf("%X@email.com", randomChars)
+	return email
+}
+
 func TestMain(t *testing.T) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		t.Fatal("failed to load environment variables required for testing")
-	}
+	godotenv.Load(".env")
 
 	passageAppID = os.Getenv("PASSAGE_APP_ID")
 	passageApiKey = os.Getenv("PASSAGE_API_KEY")
@@ -76,4 +87,32 @@ func TestUpdateUser(t *testing.T) {
 	require.Nil(t, err)
 	assert.Equal(t, "updatedEmail@123.com", user.Email)
 	assert.Equal(t, "+15005550006", user.Phone)
+}
+
+func TestCreateUser(t *testing.T) {
+	psg, err := passage.New(passageAppID, &passage.Config{
+		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	})
+	require.Nil(t, err)
+
+	createUserBody := passage.CreateUserBody{
+		Email: randomEmail,
+	}
+
+	user, err := psg.CreateUser(createUserBody)
+	require.Nil(t, err)
+	assert.Equal(t, randomEmail, user.Email)
+
+	createdUser = *user
+}
+
+func TestDeleteUser(t *testing.T) {
+	psg, err := passage.New(passageAppID, &passage.Config{
+		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	})
+	require.Nil(t, err)
+
+	result, err := psg.DeleteUser(createdUser.ID)
+	require.Nil(t, err)
+	assert.Equal(t, result, true)
 }
