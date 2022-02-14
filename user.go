@@ -9,14 +9,22 @@ import (
 	"gopkg.in/resty.v1"
 )
 
+type UserStatus string
+
+const (
+	StatusActive   UserStatus = "active"
+	StatusInactive UserStatus = "inactive"
+	StatusPending  UserStatus = "pending"
+)
+
 type User struct {
-	ID            string    `json:"id"`
-	Active        bool      `json:"active"`
-	Email         string    `json:"email"`
-	Phone         string    `json:"phone"`
-	EmailVerified bool      `json:"email_verified"`
-	CreatedAt     time.Time `json:"created_at"`
-	LastLogin     time.Time `json:"last_login_at"`
+	ID            string     `json:"id"`
+	Status        UserStatus `json:"status"`
+	Email         string     `json:"email"`
+	Phone         string     `json:"phone"`
+	EmailVerified bool       `json:"email_verified"`
+	CreatedAt     time.Time  `json:"created_at"`
+	LastLogin     time.Time  `json:"last_login_at"`
 }
 
 // GetUser gets a user using their userID
