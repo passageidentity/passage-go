@@ -17,17 +17,17 @@ var (
 	passageAppID  string
 	passageApiKey string
 	passageUserID string
-	randomEmail = generateRandomEmail(14)
-	createdUser passage.User
+	randomEmail   = generateRandomEmail(14)
+	createdUser   passage.User
 )
 
 func generateRandomEmail(prefixLength int) string {
 	n := prefixLength
-    randomChars := make([]byte, n)
-    if _, err := rand.Read(randomChars); err != nil {
-        panic(err)
-    }
-    email := fmt.Sprintf("%X@email.com", randomChars)
+	randomChars := make([]byte, n)
+	if _, err := rand.Read(randomChars); err != nil {
+		panic(err)
+	}
+	email := fmt.Sprintf("%X@email.com", randomChars)
 	return email
 }
 
@@ -58,7 +58,7 @@ func TestActivateUser(t *testing.T) {
 	user, err := psg.ActivateUser(passageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, passageUserID, user.ID)
-	assert.Equal(t, true, user.Active)
+	assert.Equal(t, passage.StatusActive, user.Status)
 }
 func TestDeactivateUser(t *testing.T) {
 	psg, err := passage.New(passageAppID, &passage.Config{
@@ -69,7 +69,7 @@ func TestDeactivateUser(t *testing.T) {
 	user, err := psg.DeactivateUser(passageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, passageUserID, user.ID)
-	assert.Equal(t, false, user.Active)
+	assert.Equal(t, passage.StatusInactive, user.Status)
 }
 
 func TestUpdateUser(t *testing.T) {
