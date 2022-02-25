@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateMagiLinke(t *testing.T) {
+func TestCreateMagiLink(t *testing.T) {
 	psg, err := passage.New(passageAppID, &passage.Config{
 		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
 	})
