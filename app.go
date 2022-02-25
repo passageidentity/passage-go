@@ -86,3 +86,56 @@ func getPublicKey(appID string) (*rsa.PublicKey, error) {
 
 	return publicKey, nil
 }
+
+type ChannelType string
+
+const (
+	EmailChannel ChannelType = "email"
+	PhoneChannel ChannelType = "phone"
+)
+
+type CreateMagicLinkBody struct {
+	UserID        string      `json:"user_id"`
+	Email         string      `json:"email"`
+	Phone         string      `json:"phone"`
+	Channel       ChannelType `json:"channel"`
+	Send          bool        `json:"send"`
+	MagicLinkPath string      `json:"magic_link_path"`
+	RedirectURL   string      `json:"redirect_url"`
+}
+
+type MagicLink struct {
+	ID          string `json:"id"`
+	Secret      string `json:"secret"`
+	Activated   bool   `json:"activated"`
+	UserID      string `json:"user_id"`
+	AppID       string `json:"app_id"`
+	Identifier  string `json:"identifier"`
+	Type        string `json:"type"`
+	RedirectURL string `json:"redirect_url"`
+	URL         string `json:"url"`
+}
+
+// CreateMagicLink receives a CreateMagicLinkBody struct, creating a magic link with provided values
+// returns MagicLink on success, error on failure
+func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
+
+	type respMagicLink struct {
+		MagicLink MagicLink `json:"magic_link"`
+	}
+	var magicLinkResp respMagicLink
+
+	response, err := resty.New().R().
+		SetResult(&magicLinkResp).
+		SetBody(&createMagicLinkBody).
+		SetAuthToken(a.Config.APIKey).
+		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/magic-link/", a.ID))
+	if err != nil {
+		return nil, errors.New("network error: could not create Passage User")
+	}
+	if response.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("failed to create Passage User. Http Status: %v. Response: %v", response.StatusCode(), response.String())
+	}
+
+	return &magicLinkResp.MagicLink, nil
+}
