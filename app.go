@@ -131,10 +131,10 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 		SetAuthToken(a.Config.APIKey).
 		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/magic-link/", a.ID))
 	if err != nil {
-		return nil, errors.New("network error: could not create Passage User")
+		return nil, errors.New("network error: could not create Passage Magic Link")
 	}
-	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to create Passage User. Http Status: %v. Response: %v", response.StatusCode(), response.String())
+	if response.StatusCode() != http.StatusCreated {
+		return nil, fmt.Errorf("failed to create Passage Magic Link. Http Status: %v. Response: %v", response.StatusCode(), response.String())
 	}
 
 	return &magicLinkResp.MagicLink, nil

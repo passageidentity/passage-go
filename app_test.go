@@ -9,8 +9,8 @@ import (
 )
 
 func TestCreateMagicLink(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)
 
