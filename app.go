@@ -129,7 +129,7 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 		SetResult(&magicLinkResp).
 		SetBody(&createMagicLinkBody).
 		SetAuthToken(a.Config.APIKey).
-		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/magic-link/", a.ID))
+		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/magic-links/", a.ID))
 	if err != nil {
 		return nil, errors.New("network error: could not create Passage Magic Link")
 	}
