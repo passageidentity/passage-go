@@ -1,80 +1,76 @@
 package passage_test
 
 import (
-	"crypto/rand"
-	"fmt"
-	"os"
 	"testing"
 
-	"github.com/joho/godotenv"
 	"github.com/passageidentity/passage-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 // these vars are required as environment variables for testing
-var (
-	passageAppID  string
-	passageApiKey string
-	passageUserID string
-	randomEmail   = generateRandomEmail(14)
-	createdUser   passage.User
-)
+// var (
+// 	passageAppID  string
+// 	passageApiKey string
+// 	passageUserID string
+// 	randomEmail   = generateRandomEmail(14)
+// 	createdUser   passage.User
+// )
 
-func generateRandomEmail(prefixLength int) string {
-	n := prefixLength
-	randomChars := make([]byte, n)
-	if _, err := rand.Read(randomChars); err != nil {
-		panic(err)
-	}
-	email := fmt.Sprintf("%X@email.com", randomChars)
-	return email
-}
+// func generateRandomEmail(prefixLength int) string {
+// 	n := prefixLength
+// 	randomChars := make([]byte, n)
+// 	if _, err := rand.Read(randomChars); err != nil {
+// 		panic(err)
+// 	}
+// 	email := fmt.Sprintf("%X@email.com", randomChars)
+// 	return email
+// }
 
-func TestMain(t *testing.T) {
-	godotenv.Load(".env")
+// func TestMain(t *testing.T) {
+// 	godotenv.Load(".env")
 
-	passageAppID = os.Getenv("PASSAGE_APP_ID")
-	passageApiKey = os.Getenv("PASSAGE_API_KEY")
-	passageUserID = os.Getenv("PASSAGE_USER_ID")
-}
+// 	passageAppID = os.Getenv("PASSAGE_APP_ID")
+// 	passageApiKey = os.Getenv("PASSAGE_API_KEY")
+// 	passageUserID = os.Getenv("PASSAGE_USER_ID")
+// }
 
 func TestGetUserInfo(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey,
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
 	})
 	require.Nil(t, err)
 
-	user, err := psg.GetUser(passageUserID)
+	user, err := psg.GetUser(PassageUserID)
 	require.Nil(t, err)
-	assert.Equal(t, passageUserID, user.ID)
+	assert.Equal(t, PassageUserID, user.ID)
 }
 func TestActivateUser(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)
 
-	user, err := psg.ActivateUser(passageUserID)
+	user, err := psg.ActivateUser(PassageUserID)
 	require.Nil(t, err)
-	assert.Equal(t, passageUserID, user.ID)
+	assert.Equal(t, PassageUserID, user.ID)
 	assert.Equal(t, passage.StatusActive, user.Status)
 }
 func TestDeactivateUser(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)
 
-	user, err := psg.DeactivateUser(passageUserID)
+	user, err := psg.DeactivateUser(PassageUserID)
 	require.Nil(t, err)
-	assert.Equal(t, passageUserID, user.ID)
+	assert.Equal(t, PassageUserID, user.ID)
 	assert.Equal(t, passage.StatusInactive, user.Status)
 }
 
 func TestUpdateUser(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)
 
@@ -83,36 +79,36 @@ func TestUpdateUser(t *testing.T) {
 		Phone: "+15005550006",
 	}
 
-	user, err := psg.UpdateUser(passageUserID, updateBody)
+	user, err := psg.UpdateUser(PassageUserID, updateBody)
 	require.Nil(t, err)
 	assert.Equal(t, "updatedEmail@123.com", user.Email)
 	assert.Equal(t, "+15005550006", user.Phone)
 }
 
 func TestCreateUser(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)
 
 	createUserBody := passage.CreateUserBody{
-		Email: randomEmail,
+		Email: RandomEmail,
 	}
 
 	user, err := psg.CreateUser(createUserBody)
 	require.Nil(t, err)
-	assert.Equal(t, randomEmail, user.Email)
+	assert.Equal(t, RandomEmail, user.Email)
 
-	createdUser = *user
+	CreatedUser = *user
 }
 
 func TestDeleteUser(t *testing.T) {
-	psg, err := passage.New(passageAppID, &passage.Config{
-		APIKey: passageApiKey, // An API_KEY environment variable is required for testing.
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 	})
 	require.Nil(t, err)
 
-	result, err := psg.DeleteUser(createdUser.ID)
+	result, err := psg.DeleteUser(CreatedUser.ID)
 	require.Nil(t, err)
 	assert.Equal(t, result, true)
 }
