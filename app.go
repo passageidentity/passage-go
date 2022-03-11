@@ -102,6 +102,7 @@ type CreateMagicLinkBody struct {
 	Send          bool        `json:"send"`
 	MagicLinkPath string      `json:"magic_link_path"`
 	RedirectURL   string      `json:"redirect_url"`
+	TTL           int         `json:"ttl"`
 }
 
 type MagicLink struct {
@@ -113,6 +114,7 @@ type MagicLink struct {
 	Identifier  string `json:"identifier"`
 	Type        string `json:"type"`
 	RedirectURL string `json:"redirect_url"`
+	TTL         int    `json:"ttl"`
 	URL         string `json:"url"`
 }
 

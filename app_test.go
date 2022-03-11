@@ -17,9 +17,11 @@ func TestCreateMagicLink(t *testing.T) {
 	createMagicLinkBody := passage.CreateMagicLinkBody{
 		Email:   "chris@passage.id",
 		Channel: passage.EmailChannel,
+		TTL:     12,
 	}
 
 	magicLink, err := psg.CreateMagicLink(createMagicLinkBody)
 	require.Nil(t, err)
 	assert.Equal(t, createMagicLinkBody.Email, magicLink.Identifier)
+	assert.Equal(t, createMagicLinkBody.TTL, magicLink.TTL)
 }
