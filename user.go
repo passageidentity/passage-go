@@ -196,9 +196,9 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	return &user, nil
 }
 
-// ListUserDevices gets a user using their userID
+// ListUserDevices lists a user's devices
 // returns a list of devices on success, error on failure
-func (a *App) ListUserDevices(userID string) (*[]Device, error) {
+func (a *App) ListUserDevices(userID string) ([]Device, error) {
 	type respDevices struct {
 		Devices []Device `json:"devices"`
 	}
@@ -219,5 +219,24 @@ func (a *App) ListUserDevices(userID string) (*[]Device, error) {
 	}
 	devices := devicesBody.Devices
 
-	return &devices, nil
+	return devices, nil
+}
+
+// RevokeUserDevice gets a user using their userID
+// returns a true success, error on failure
+func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/devices/%v", a.ID, userID, deviceID))
+	if err != nil {
+		return false, errors.New("network error: could not get Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return false, fmt.Errorf("passage User with ID \"%v\" does not exist or Devices with ID \"%v\" does not exist", userID, deviceID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return false, fmt.Errorf("failed to delete a device for a Passage User")
+	}
+
+	return true, nil
 }
