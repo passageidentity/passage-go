@@ -27,6 +27,15 @@ type User struct {
 	LastLogin     time.Time  `json:"last_login_at"`
 }
 
+type Device struct {
+	ID         string    `json:"id"`
+	CredID     string    `json:"cred_id"`
+	Name       string    `json:"friendly_name"`
+	UsageCount uint      `json:"usage_count"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
 // GetUser gets a user using their userID
 // returns user on success, error on failure
 func (a *App) GetUser(userID string) (*User, error) {
@@ -185,4 +194,30 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	user := userBody.User
 
 	return &user, nil
+}
+
+// ListUserDevices gets a user using their userID
+// returns a list of devices on success, error on failure
+func (a *App) ListUserDevices(userID string) (*[]Device, error) {
+	type respDevices struct {
+		Devices []Device `json:"devices"`
+	}
+	var devicesBody respDevices
+
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		SetResult(&devicesBody).
+		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/devices", a.ID, userID))
+	if err != nil {
+		return nil, errors.New("network error: could not get Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("failed to list devices for a Passage User")
+	}
+	devices := devicesBody.Devices
+
+	return &devices, nil
 }

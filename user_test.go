@@ -112,3 +112,14 @@ func TestDeleteUser(t *testing.T) {
 	require.Nil(t, err)
 	assert.Equal(t, result, true)
 }
+
+func TestListUserDevices(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
+	})
+	require.Nil(t, err)
+
+	devices, err := psg.ListUserDevices(PassageUserID)
+	require.Nil(t, err)
+	assert.Equal(t, 1, len(*devices))
+}
