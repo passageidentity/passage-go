@@ -112,3 +112,16 @@ func TestDeleteUser(t *testing.T) {
 	require.Nil(t, err)
 	assert.Equal(t, result, true)
 }
+
+func TestListUserDevices(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
+	})
+	require.Nil(t, err)
+
+	devices, err := psg.ListUserDevices(PassageUserID)
+	require.Nil(t, err)
+	assert.Equal(t, 0, len(devices))
+}
+
+// NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
