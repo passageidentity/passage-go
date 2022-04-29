@@ -118,6 +118,27 @@ func TestCreateUser(t *testing.T) {
 	CreatedUser = *user
 }
 
+func TestCreateUserWithMetadata(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+	})
+	require.Nil(t, err)
+
+	createUserBody := passage.CreateUserBody{
+		Email: RandomEmail,
+		UserMetadata: map[string]interface{}{
+			"example1": "test",
+		},
+	}
+
+	user, err := psg.CreateUser(createUserBody)
+	require.Nil(t, err)
+	assert.Equal(t, RandomEmail, user.Email)
+	assert.Equal(t, "test", user.UserMetadata["example1"])
+
+	CreatedUser = *user
+}
+
 func TestDeleteUser(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
