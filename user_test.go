@@ -1,6 +1,7 @@
 package passage_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/passageidentity/passage-go"
@@ -125,7 +126,7 @@ func TestCreateUserWithMetadata(t *testing.T) {
 	require.Nil(t, err)
 
 	createUserBody := passage.CreateUserBody{
-		Email: RandomEmail,
+		Email: fmt.Sprintf("1%v", RandomEmail),
 		UserMetadata: map[string]interface{}{
 			"example1": "test",
 		},
@@ -133,8 +134,8 @@ func TestCreateUserWithMetadata(t *testing.T) {
 
 	user, err := psg.CreateUser(createUserBody)
 	require.Nil(t, err)
-	assert.Equal(t, RandomEmail, user.Email)
-	assert.Equal(t, "test", user.UserMetadata["example1"])
+	assert.Equal(t, "1"+RandomEmail, user.Email)
+	assert.Equal(t, "test", user.UserMetadata["example1"].(string))
 
 	CreatedUser = *user
 }
