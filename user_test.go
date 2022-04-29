@@ -77,12 +77,28 @@ func TestUpdateUser(t *testing.T) {
 	updateBody := passage.UpdateBody{
 		Email: "updatedEmail@123.com",
 		Phone: "+15005550006",
+		UserMetadata: map[string]interface{}{
+			"example1": "123",
+		},
 	}
-
 	user, err := psg.UpdateUser(PassageUserID, updateBody)
 	require.Nil(t, err)
 	assert.Equal(t, "updatedEmail@123.com", user.Email)
 	assert.Equal(t, "+15005550006", user.Phone)
+	assert.Equal(t, "123", user.UserMetadata["example1"])
+
+	secondUpdateBody := passage.UpdateBody{
+		Email: "updatedEmail@123.com",
+		Phone: "+15005550006",
+		UserMetadata: map[string]interface{}{
+			"example1": "456",
+		},
+	}
+	user, err = psg.UpdateUser(PassageUserID, secondUpdateBody)
+	require.Nil(t, err)
+	assert.Equal(t, "updatedEmail@123.com", user.Email)
+	assert.Equal(t, "+15005550006", user.Phone)
+	assert.Equal(t, "456", user.UserMetadata["example1"])
 }
 
 func TestCreateUser(t *testing.T) {

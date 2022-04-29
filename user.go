@@ -18,13 +18,14 @@ const (
 )
 
 type User struct {
-	ID            string     `json:"id"`
-	Status        UserStatus `json:"status"`
-	Email         string     `json:"email"`
-	Phone         string     `json:"phone"`
-	EmailVerified bool       `json:"email_verified"`
-	CreatedAt     time.Time  `json:"created_at"`
-	LastLogin     time.Time  `json:"last_login_at"`
+	ID            string                 `json:"id"`
+	Status        UserStatus             `json:"status"`
+	Email         string                 `json:"email"`
+	Phone         string                 `json:"phone"`
+	EmailVerified bool                   `json:"email_verified"`
+	CreatedAt     time.Time              `json:"created_at"`
+	LastLogin     time.Time              `json:"last_login_at"`
+	UserMetadata  map[string]interface{} `json:"user_metadata"`
 }
 
 type Device struct {
@@ -115,8 +116,9 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 }
 
 type UpdateBody struct {
-	Email string `json:"email,omitempty"`
-	Phone string `json:"phone,omitempty"`
+	Email        string                 `json:"email,omitempty"`
+	Phone        string                 `json:"phone,omitempty"`
+	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
 
 // UpdateUser receives an UpdateBody struct, updating the corresponding user's attribute(s)
@@ -167,8 +169,9 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 }
 
 type CreateUserBody struct {
-	Email string `json:"email,omitempty"`
-	Phone string `json:"phone,omitempty"`
+	Email        string                 `json:"email,omitempty"`
+	Phone        string                 `json:"phone,omitempty"`
+	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
 
 // CreateUser receives a CreateUserBody struct, creating a user with provided values
