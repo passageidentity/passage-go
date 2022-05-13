@@ -1,14 +1,11 @@
 package passage
 
 import (
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/base64"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"net/http"
 
+	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
 	"gopkg.in/resty.v1"
 )
 
@@ -18,9 +15,9 @@ type Config struct {
 }
 
 type App struct {
-	ID        string
-	PublicKey *rsa.PublicKey
-	Config    *Config
+	ID     string
+	JWKS   jwkLibrary.Set
+	Config *Config
 }
 
 func New(appID string, config *Config) (*App, error) {
@@ -33,9 +30,8 @@ func New(appID string, config *Config) (*App, error) {
 		Config: config,
 	}
 
-	// Lookup the public key for this App:
 	var err error
-	app.PublicKey, err = getPublicKey(appID)
+	app.JWKS, err = app.fetchJWKS()
 	if err != nil {
 		return nil, err
 	}
@@ -43,49 +39,7 @@ func New(appID string, config *Config) (*App, error) {
 	return &app, nil
 }
 
-var publicKeyCache map[string]*rsa.PublicKey = make(map[string]*rsa.PublicKey)
-
-func getPublicKey(appID string) (*rsa.PublicKey, error) {
-	// First, check if the App's public key is cached locally:
-	if cachedPublicKey, ok := publicKeyCache[appID]; ok {
-		return cachedPublicKey, nil
-	}
-
-	// If the public key isn't cached locally, we'll need to use the Passage API to lookup the public key:
-	var responseData struct {
-		App struct {
-			PublicKey string `json:"rsa_public_key"`
-		} `json:"app"`
-	}
-	response, err := resty.New().R().
-		SetResult(&responseData).
-		Get("https://api.passage.id/v1/apps/" + appID)
-	if err != nil {
-		return nil, errors.New("network error: could not lookup Passage App's public key")
-	}
-	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("passage App with ID \"%v\" does not exist", appID)
-	}
-	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to get lookup Passage App's public key")
-	}
-
-	// Parse the returned public key string to an rsa.PublicKey:
-	publicKeyBytes, err := base64.RawURLEncoding.DecodeString(responseData.App.PublicKey)
-	if err != nil {
-		return nil, errors.New("could not parse Passage App's public key: expected valid base-64")
-	}
-	pemBlock, _ := pem.Decode(publicKeyBytes)
-	if pemBlock == nil {
-		return nil, errors.New("could not parse Passage App's public key: missing PEM block")
-	}
-	publicKey, err := x509.ParsePKCS1PublicKey(pemBlock.Bytes)
-	if err != nil {
-		return nil, errors.New("could not parse Passage App's public key: invalid PKCS #1 public key")
-	}
-
-	return publicKey, nil
-}
+var jwkCache map[string]jwkLibrary.Set = make(map[string]jwkLibrary.Set)
 
 type ChannelType string
 

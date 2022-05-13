@@ -13,6 +13,27 @@ func TestAuthenticationWithCookie(t *testing.T) {
 	req, err := http.NewRequest("GET", "https://example.com", nil)
 	require.Nil(t, err)
 
+	psg, err := passage.New("TrWSUbDDTPCKTQDtLA9MO8Ee", &passage.Config{
+		HeaderAuth: false,
+	})
+	require.Nil(t, err)
+
+	t.Run("valid auth token", func(t *testing.T) {
+		req.AddCookie(&http.Cookie{
+			Name:  "psg_auth_token",
+			Value: "eyJhbGciOiJSUzI1NiIsImtpZCI6IjlGVGdhaWpXV2hBUFhyTmJNQmMxc1lxWCIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJleHAiOjE2ODg0OTA5NzcsImlhdCI6MTY1MjIwMjk3NywiaXNzIjoiVHJXU1ViRERUUENLVFFEdExBOU1POEVlIiwibmJmIjoxNjUyMjAyOTc3LCJzdWIiOiJiRVhJWktZeUFwZ3o1b1dZYzVXTTl2ZkYifQ.RFDUgv4ewmeEnapatQONuNJuofuTKDC7r7gZuvPGWpoX_EJWCgjVuysVt4L8ghUO_ZUuaujEn7loSZAtVVG7NKmivN2hSfCtCoK6JW-y8fn3izlaERl5fldkNdN8rxISlgqtANuPV0xfxtbIoqagV9wCAt2DY53HXDYM13ZRHIDrXgRO3-kiPhp_mO_tUnvHBRZ59DDFd-nqk99ssepT0-uEl-KVcHIQKbt5SfGgM9sR-b30mp6g-PkDDgdpMmS-ZLCNAZTkDclHTlCEdxCTdHS46z6yz6QAVgzhU0Z48q6olBzBEMGn-OC0fbwkYjG-j6xyWhpri0BamAG5I-i5Nw",
+		})
+
+		userID, err := psg.AuthenticateRequest(req)
+		require.Nil(t, err)
+		assert.NotNil(t, userID)
+	})
+}
+
+func TestAuthenticationWithCookiePassage(t *testing.T) {
+	req, err := http.NewRequest("GET", "https://example.com", nil)
+	require.Nil(t, err)
+
 	psg, err := passage.New("passage", &passage.Config{
 		HeaderAuth: false,
 	})
