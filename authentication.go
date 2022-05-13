@@ -1,11 +1,14 @@
 package passage
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/golang-jwt/jwt"
+	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
 )
 
 // AuthenticateRequest determines whether or not to authenticate via header or cookie authentication
@@ -33,6 +36,42 @@ func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {
 	return userID, nil
 }
 
+// getPublicKey returns the associated public key for a JWT
+func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
+	keyID, ok := token.Header["kid"].(string)
+	if !ok {
+		return nil, errors.New("expecting JWT header to have string kid")
+	}
+
+	key, ok := jwkCache[a.ID].LookupKeyID(keyID)
+	// if key doesn't exist, re-fetch one more time to see if this jwk was just added
+	if !ok {
+		a.fetchJWKS()
+		key, ok := jwkCache[a.ID].LookupKeyID(keyID)
+		if !ok {
+			return nil, fmt.Errorf("unable to find key %q", keyID)
+		}
+
+		var pubKey interface{}
+		err := key.Raw(&pubKey)
+		return pubKey, err
+	}
+
+	var pubKey interface{}
+	err := key.Raw(&pubKey)
+	return pubKey, err
+}
+
+// fetchJWKS returns the JWKS for the current app
+func (a *App) fetchJWKS() (jwkLibrary.Set, error) {
+	jwks, err := jwkLibrary.Fetch(context.Background(), fmt.Sprintf("https://auth.passage.id/v1/apps/%v/.well-known/jwks.json", a.ID))
+	if err != nil {
+		return nil, errors.New("failed to fetch jwks")
+	}
+	jwkCache[a.ID] = jwks
+	return jwks, nil
+}
+
 // AuthenticateRequestWithCookie fetches a cookie from the request and uses it to authenticate
 // returns the userID (string) on success, error on failure
 func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
@@ -52,13 +91,7 @@ func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
 // ValidateAuthToken determines whether a JWT is valid or not
 // returns userID (string) on success, error on failure
 func (a *App) ValidateAuthToken(authToken string) (string, bool) {
-	// Verify that the authentication token is valid:
-	parsedToken, err := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, errors.New("invalid signing algorithm")
-		}
-		return a.PublicKey, nil
-	})
+	parsedToken, err := jwt.Parse(authToken, a.getPublicKey)
 	if err != nil {
 		return "", false
 	}
