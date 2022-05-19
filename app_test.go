@@ -25,3 +25,15 @@ func TestCreateMagicLink(t *testing.T) {
 	assert.Equal(t, createMagicLinkBody.Email, magicLink.Identifier)
 	assert.Equal(t, createMagicLinkBody.TTL, magicLink.TTL)
 }
+
+func TestGetApp(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+	})
+	require.Nil(t, err)
+
+	appInfo, err := psg.GetApp()
+	assert.Nil(t, err)
+	assert.Equal(t, PassageAppID, appInfo.ID)
+
+}
