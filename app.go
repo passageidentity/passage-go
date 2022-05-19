@@ -79,7 +79,6 @@ type AppInfo struct {
 	RedirectURL                string              `json:"redirect_url"`
 	LoginURL                   string              `json:"login_url"`
 	PublicKey                  string              `json:"rsa_public_key"`
-	Ephemeral                  bool                `json:"ephemeral"`
 	AllowedIdentifier          string              `json:"allowed_identifier"`
 	RequiredIdentifier         string              `json:"required_identifier"`
 	RequireEmailVerification   bool                `json:"require_email_verification"`
