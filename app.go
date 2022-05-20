@@ -79,7 +79,7 @@ type AppInfo struct {
 	LoginURL                   string              `json:"login_url"`                  // Where users should attempt to log in
 	PublicKey                  string              `json:"rsa_public_key"`             // The PublicKey associated with the app.
 	AllowedIdentifier          string              `json:"allowed_identifier"`         // Which identifier(s) are allowed for this app (email, phone, both)
-	RequiredIdentifier         string              `json:"required_identifier"`        // Which identifier(s) are require for this app (email, phone, either, both)
+	RequiredIdentifier         string              `json:"required_identifier"`        // Which identifier(s) are required for this app (email, phone, either, both)
 	RequireEmailVerification   bool                `json:"require_email_verification"` // If this app require email verification
 	SessionTimeoutLength       int                 `json:"session_timeout_length"`     // How long a JWT will last for the app when a user logs in
 	UserMetadataSchemaResponse []UserMetadataField `json:"user_metadata_schema"`       // The schema for user_metadata that will be stored about users
@@ -91,7 +91,7 @@ type UserMetadataField struct {
 	FieldType    UserMetadataFieldType `json:"type"`          // The type of data stored in this field
 	FriendlyName string                `json:"friendly_name"` // The human readable name for this field
 	Registration bool                  `json:"registration"`  // Whether or not this field will be accepted on user registration
-	Profile      bool                  `json:"profile"`       // Whether or not this field can be update via the passage-profile
+	Profile      bool                  `json:"profile"`       // Whether or not this field can be updated via the passage-profile
 }
 
 type UserMetadataFieldType string
