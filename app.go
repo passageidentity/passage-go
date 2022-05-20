@@ -71,42 +71,27 @@ type MagicLink struct {
 	TTL         int    `json:"ttl"`
 	URL         string `json:"url"`
 }
-
 type AppInfo struct {
-	Name                       string              `json:"name"`
-	ID                         string              `json:"id"`
-	AuthOrigin                 string              `json:"auth_origin"`
-	RedirectURL                string              `json:"redirect_url"`
-	LoginURL                   string              `json:"login_url"`
-	PublicKey                  string              `json:"rsa_public_key"`
-	AllowedIdentifier          string              `json:"allowed_identifier"`
-	RequiredIdentifier         string              `json:"required_identifier"`
-	RequireEmailVerification   bool                `json:"require_email_verification"`
-	SessionTimeoutLength       int                 `json:"session_timeout_length"`
-	Role                       string              `json:"role,omitempty"`
-	UserMetadataSchemaResponse []UserMetadataField `json:"user_metadata_schema"`
-	Layouts                    Layouts             `json:"layouts"`
+	Name                       string              `json:"name"`                       // The name of the App
+	ID                         string              `json:"id"`                         // The appID of the App
+	AuthOrigin                 string              `json:"auth_origin"`                // The url being used for the App's authentication
+	RedirectURL                string              `json:"redirect_url"`               // Where users should be redirected on successful authentication
+	LoginURL                   string              `json:"login_url"`                  // Where users should attempt to log in
+	PublicKey                  string              `json:"rsa_public_key"`             // The PublicKey associated with the app.
+	AllowedIdentifier          string              `json:"allowed_identifier"`         // Which identifier(s) are allowed for this app (email, phone, both)
+	RequiredIdentifier         string              `json:"required_identifier"`        // Which identifier(s) are require for this app (email, phone, either, both)
+	RequireEmailVerification   bool                `json:"require_email_verification"` // If this app require email verification
+	SessionTimeoutLength       int                 `json:"session_timeout_length"`     // How long a JWT will last for the app when a user logs in
+	UserMetadataSchemaResponse []UserMetadataField `json:"user_metadata_schema"`       // The schema for user_metadata that will be stored about users
+	Layouts                    Layouts             `json:"layouts"`                    // The layouts of user_metadata on the register/profile element
 }
 type UserMetadataField struct {
-	Handle       string                `json:"id"`
-	FieldName    string                `json:"field_name"`
-	FieldType    UserMetadataFieldType `json:"type"`
-	FriendlyName string                `json:"friendly_name"`
-	Registration bool                  `json:"registration"`
-	Profile      bool                  `json:"profile"`
-}
-
-type CreateUserMetadataField struct {
-	FriendlyName string                `json:"friendly_name,omitempty"`
-	FieldType    UserMetadataFieldType `json:"type,omitempty"`
-	Registration bool                  `json:"registration,omitempty"`
-	Profile      bool                  `json:"profile,omitempty"`
-}
-
-type UpdateUserMetadataField struct {
-	FriendlyName string `json:"friendly_name,omitempty"`
-	Registration *bool  `json:"registration,omitempty"`
-	Profile      *bool  `json:"profile,omitempty"`
+	Handle       string                `json:"id"`            // Unique id for the user metadata field
+	FieldName    string                `json:"field_name"`    // The name that will be used in user requests to create/update user_metadata
+	FieldType    UserMetadataFieldType `json:"type"`          // The type of data stored in this field
+	FriendlyName string                `json:"friendly_name"` // The human readable name for this field
+	Registration bool                  `json:"registration"`  // Whether or not this field will be accepted on user registration
+	Profile      bool                  `json:"profile"`       // Whether or not this field can be update via the passage-profile
 }
 
 type UserMetadataFieldType string
@@ -121,8 +106,8 @@ const (
 )
 
 type Layouts struct {
-	Registration []LayoutConfig `json:"registration"`
-	Profile      []LayoutConfig `json:"profile"`
+	Registration []LayoutConfig `json:"registration"` // The UI layout for user_metadata in the passage-register/passage-auth element
+	Profile      []LayoutConfig `json:"profile"`      // The UI layout for user_metadata in the passage-profile element
 }
 
 type LayoutConfig struct {
