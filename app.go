@@ -128,7 +128,6 @@ func (a *App) GetApp() (*AppInfo, error) {
 
 	response, err := resty.New().R().
 		SetResult(&appResp).
-		SetAuthToken(a.Config.APIKey).
 		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v", a.ID))
 	if err != nil {
 		return nil, errors.New("network error: could not get Passage App Info")
