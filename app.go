@@ -135,7 +135,6 @@ func (a *App) GetApp() (*AppInfo, error) {
 	if response.StatusCode() != http.StatusOK {
 		return nil, fmt.Errorf("failed to get Passage App Info. Http Status: %v. Response: %v", response.StatusCode(), response.String())
 	}
-	fmt.Println(appResp)
 
 	return &appResp.App, nil
 }

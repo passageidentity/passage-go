@@ -9,33 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// these vars are required as environment variables for testing
-// var (
-// 	passageAppID  string
-// 	passageApiKey string
-// 	passageUserID string
-// 	randomEmail   = generateRandomEmail(14)
-// 	createdUser   passage.User
-// )
-
-// func generateRandomEmail(prefixLength int) string {
-// 	n := prefixLength
-// 	randomChars := make([]byte, n)
-// 	if _, err := rand.Read(randomChars); err != nil {
-// 		panic(err)
-// 	}
-// 	email := fmt.Sprintf("%X@email.com", randomChars)
-// 	return email
-// }
-
-// func TestMain(t *testing.T) {
-// 	godotenv.Load(".env")
-
-// 	passageAppID = os.Getenv("PASSAGE_APP_ID")
-// 	passageApiKey = os.Getenv("PASSAGE_API_KEY")
-// 	passageUserID = os.Getenv("PASSAGE_USER_ID")
-// }
-
 func TestGetUserInfo(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey,
