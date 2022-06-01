@@ -78,3 +78,13 @@ func TestAuthenticationWithHeader(t *testing.T) {
 		assert.Empty(t, userID)
 	})
 }
+
+func TestAuthenticateToken(t *testing.T) {
+	psg, err := passage.New(PassageAppID, nil)
+
+	require.Nil(t, err)
+	t.Run("valid auth token", func(t *testing.T) {
+		_, success := psg.ValidateAuthToken(PassageAuthToken)
+		assert.True(t, success)
+	})
+}

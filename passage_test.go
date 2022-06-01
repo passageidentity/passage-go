@@ -11,11 +11,12 @@ import (
 )
 
 var (
-	PassageAppID  string
-	PassageApiKey string
-	PassageUserID string
-	RandomEmail   = generateRandomEmail(14)
-	CreatedUser   passage.User
+	PassageAppID     string
+	PassageApiKey    string
+	PassageUserID    string
+	PassageAuthToken string
+	RandomEmail      = generateRandomEmail(14)
+	CreatedUser      passage.User
 )
 
 func generateRandomEmail(prefixLength int) string {
@@ -34,6 +35,7 @@ func TestMain(m *testing.M) {
 	PassageAppID = os.Getenv("PASSAGE_APP_ID")
 	PassageApiKey = os.Getenv("PASSAGE_API_KEY")
 	PassageUserID = os.Getenv("PASSAGE_USER_ID")
+	PassageAuthToken = os.Getenv("PASSAGE_AUTH_TOKEN")
 
 	exitVal := m.Run()
 	os.Exit(exitVal)
