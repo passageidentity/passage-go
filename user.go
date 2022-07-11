@@ -29,12 +29,13 @@ type User struct {
 }
 
 type Device struct {
-	ID         string    `json:"id"`
-	CredID     string    `json:"cred_id"`
-	Name       string    `json:"friendly_name"`
-	UsageCount uint      `json:"usage_count"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID          string    `json:"id"`
+	CredID      string    `json:"cred_id"`
+	Name        string    `json:"friendly_name"`
+	UsageCount  uint      `json:"usage_count"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	CreatedAt   time.Time `json:"created_at"`
+	LastLoginAt time.Time `json:"last_login_at"`
 }
 
 // GetUser gets a user using their userID
