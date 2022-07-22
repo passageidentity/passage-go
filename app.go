@@ -72,18 +72,17 @@ type MagicLink struct {
 	URL         string `json:"url"`
 }
 type AppInfo struct {
-	Name                       string              `json:"name"`                       // The name of the App
-	ID                         string              `json:"id"`                         // The appID of the App
-	AuthOrigin                 string              `json:"auth_origin"`                // The url being used for the App's authentication
-	RedirectURL                string              `json:"redirect_url"`               // Where users should be redirected on successful authentication
-	LoginURL                   string              `json:"login_url"`                  // Where users should attempt to log in
-	PublicKey                  string              `json:"rsa_public_key"`             // The PublicKey associated with the app.
-	AllowedIdentifier          string              `json:"allowed_identifier"`         // Which identifier(s) are allowed for this app (email, phone, both)
-	RequiredIdentifier         string              `json:"required_identifier"`        // Which identifier(s) are required for this app (email, phone, either, both)
-	RequireEmailVerification   bool                `json:"require_email_verification"` // If this app require email verification
-	SessionTimeoutLength       int                 `json:"session_timeout_length"`     // How long a JWT will last for the app when a user logs in
-	UserMetadataSchemaResponse []UserMetadataField `json:"user_metadata_schema"`       // The schema for user_metadata that will be stored about users
-	Layouts                    Layouts             `json:"layouts"`                    // The layouts of user_metadata on the register/profile element
+	Name                          string              `json:"name"`                            // The name of the App
+	ID                            string              `json:"id"`                              // The appID of the App
+	AuthOrigin                    string              `json:"auth_origin"`                     // The url being used for the App's authentication
+	RedirectURL                   string              `json:"redirect_url"`                    // Where users should be redirected on successful authentication
+	LoginURL                      string              `json:"login_url"`                       // Where users should attempt to log in
+	PublicKey                     string              `json:"rsa_public_key"`                  // The PublicKey associated with the app.
+	AllowedIdentifier             string              `json:"allowed_identifier"`              // Which identifier(s) are allowed for this app (email, phone, both)
+	RequireIdentifierVerification bool                `json:"require_identifier_verification"` // Whether this app requires identifier verification
+	SessionTimeoutLength          int                 `json:"session_timeout_length"`          // How long a JWT will last for the app when a user logs in
+	UserMetadataSchemaResponse    []UserMetadataField `json:"user_metadata_schema"`            // The schema for user_metadata that will be stored about users
+	Layouts                       Layouts             `json:"layouts"`                         // The layouts of user_metadata on the register/profile element
 }
 type UserMetadataField struct {
 	Handle       string                `json:"id"`            // Unique id for the user metadata field
