@@ -23,6 +23,7 @@ type User struct {
 	Email         string                 `json:"email"`
 	Phone         string                 `json:"phone"`
 	EmailVerified bool                   `json:"email_verified"`
+	PhoneVerified bool                   `json:"phone_verified"`
 	CreatedAt     time.Time              `json:"created_at"`
 	LastLogin     time.Time              `json:"last_login_at"`
 	UserMetadata  map[string]interface{} `json:"user_metadata"`
