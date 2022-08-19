@@ -49,7 +49,7 @@ func TestUpdateUser(t *testing.T) {
 	require.Nil(t, err)
 
 	updateBody := passage.UpdateBody{
-		Email: "updatedEmail@123.com",
+		Email: "updatedemail-gosdk@passage.id",
 		Phone: "+15005550006",
 		UserMetadata: map[string]interface{}{
 			"example1": "123",
@@ -57,12 +57,12 @@ func TestUpdateUser(t *testing.T) {
 	}
 	user, err := psg.UpdateUser(PassageUserID, updateBody)
 	require.Nil(t, err)
-	assert.Equal(t, "updatedEmail@123.com", user.Email)
+	assert.Equal(t, "updatedemail-gosdk@passage.id", user.Email)
 	assert.Equal(t, "+15005550006", user.Phone)
 	assert.Equal(t, "123", user.UserMetadata["example1"])
 
 	secondUpdateBody := passage.UpdateBody{
-		Email: "updatedEmail@123.com",
+		Email: "updatedemail-gosdk@passage.id",
 		Phone: "+15005550006",
 		UserMetadata: map[string]interface{}{
 			"example1": "456",
@@ -70,7 +70,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 	user, err = psg.UpdateUser(PassageUserID, secondUpdateBody)
 	require.Nil(t, err)
-	assert.Equal(t, "updatedEmail@123.com", user.Email)
+	assert.Equal(t, "updatedemail-gosdk@passage.id", user.Email)
 	assert.Equal(t, "+15005550006", user.Phone)
 	assert.Equal(t, "456", user.UserMetadata["example1"])
 }
