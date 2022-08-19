@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -26,7 +27,7 @@ func generateRandomEmail(prefixLength int) string {
 		panic(err)
 	}
 	email := fmt.Sprintf("%X@email.com", randomChars)
-	return email
+	return strings.ToLower(email)
 }
 
 func TestMain(m *testing.M) {
