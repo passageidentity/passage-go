@@ -1,10 +1,10 @@
 package passage_test
 
 import (
-	"bytes"
 	"crypto/rand"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -26,8 +26,8 @@ func generateRandomEmail(prefixLength int) string {
 	if _, err := rand.Read(randomChars); err != nil {
 		panic(err)
 	}
-	email := fmt.Sprintf("%X@email.com", bytes.ToLower(randomChars))
-	return email
+	email := fmt.Sprintf("%X@email.com", randomChars)
+	return strings.ToLower(email)
 }
 
 func TestMain(m *testing.M) {
