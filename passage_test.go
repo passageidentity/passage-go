@@ -1,6 +1,7 @@
 package passage_test
 
 import (
+	"bytes"
 	"crypto/rand"
 	"fmt"
 	"os"
@@ -25,7 +26,7 @@ func generateRandomEmail(prefixLength int) string {
 	if _, err := rand.Read(randomChars); err != nil {
 		panic(err)
 	}
-	email := fmt.Sprintf("%X@email.com", randomChars)
+	email := fmt.Sprintf("%X@email.com", bytes.ToLower(randomChars))
 	return email
 }
 
