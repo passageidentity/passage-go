@@ -245,3 +245,22 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 
 	return true, nil
 }
+
+// Signout revokes a users refresh tokens
+// returns a true success, error on failure
+func (a *App) SignOut(userID string) (bool, error) {
+	response, err := resty.New().R().
+		SetAuthToken(a.Config.APIKey).
+		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
+	if err != nil {
+		return false, errors.New("network error: could not get Passage User")
+	}
+	if response.StatusCode() == http.StatusNotFound {
+		return false, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+	}
+	if response.StatusCode() != http.StatusOK {
+		return false, fmt.Errorf("failed to revoke all refresh tokens for a Passage User")
+	}
+
+	return true, nil
+}
