@@ -251,7 +251,7 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 func (a *App) SignOut(userID string) (bool, error) {
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
-		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
+		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/tokens/", a.ID, userID))
 	if err != nil {
 		return false, errors.New("network error: could not get Passage User")
 	}
