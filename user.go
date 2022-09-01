@@ -247,7 +247,7 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 }
 
 // Signout revokes a users refresh tokens
-// returns a true success, error on failure
+// returns true on success, error on failure
 func (a *App) SignOut(userID string) (bool, error) {
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
