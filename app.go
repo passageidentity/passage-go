@@ -83,7 +83,7 @@ type AppInfo struct {
 	SessionTimeoutLength          int                 `json:"session_timeout_length"`          // How long a JWT will last for the app when a user logs in
 	RefreshEnabled                bool                `json:"refresh_enabled"`                 // Whether this app has refresh tokens enabled
 	RefreshAbsoluteLifetime       int                 `json:"refresh_absolute_lifetime"`       // The absolute lifetime of a refresh token in seconds
-	RefreshInactivityLifetime     int                 `json:"refresh_inactivity_lifetime"`     // The inactivity lifetime of a refresh token in second
+	RefreshInactivityLifetime     int                 `json:"refresh_inactivity_lifetime"`     // The inactivity lifetime of a refresh token in seconds
 	UserMetadataSchemaResponse    []UserMetadataField `json:"user_metadata_schema"`            // The schema for user_metadata that will be stored about users
 	Layouts                       Layouts             `json:"layouts"`                         // The layouts of user_metadata on the register/profile element
 }
