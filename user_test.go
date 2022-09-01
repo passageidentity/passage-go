@@ -143,7 +143,7 @@ func TestSignOutUser(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	result, err := psg.SignOut(CreatedUser.ID)
+	result, err := psg.SignOut(PassageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, result, true)
 }
