@@ -136,3 +136,14 @@ func TestListUserDevices(t *testing.T) {
 }
 
 // NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
+
+func TestSignOutUser(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+	})
+	require.Nil(t, err)
+
+	result, err := psg.SignOut(PassageUserID)
+	require.Nil(t, err)
+	assert.Equal(t, result, true)
+}
