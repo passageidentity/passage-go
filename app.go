@@ -57,6 +57,7 @@ type CreateMagicLinkBody struct {
 	MagicLinkPath string      `json:"magic_link_path"`
 	RedirectURL   string      `json:"redirect_url"`
 	TTL           int         `json:"ttl"`
+	Language      string      `json:"language"`
 }
 
 type MagicLink struct {
@@ -70,7 +71,6 @@ type MagicLink struct {
 	RedirectURL string `json:"redirect_url"`
 	TTL         int    `json:"ttl"`
 	URL         string `json:"url"`
-	Language    string `json:"language"`
 }
 type AppInfo struct {
 	Name                          string              `json:"name"`                            // The name of the App
