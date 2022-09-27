@@ -11,9 +11,10 @@ import (
 type UserStatus string
 
 const (
-	StatusActive   UserStatus = "active"
-	StatusInactive UserStatus = "inactive"
-	StatusPending  UserStatus = "pending"
+	UserIDDoesNotExist string     = "passage User with ID \"%v\" does not exist"
+	StatusActive       UserStatus = "active"
+	StatusInactive     UserStatus = "inactive"
+	StatusPending      UserStatus = "pending"
 )
 
 type User struct {
@@ -57,7 +58,7 @@ func (a *App) GetUser(userID string) (*User, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
@@ -95,7 +96,7 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
@@ -133,7 +134,7 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
@@ -179,7 +180,7 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
@@ -213,7 +214,7 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return false, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
@@ -288,7 +289,7 @@ func (a *App) ListUserDevices(userID string) ([]Device, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
@@ -355,7 +356,7 @@ func (a *App) SignOut(userID string) (bool, error) {
 	}
 	if response.StatusCode() == http.StatusNotFound {
 		return false, Error{
-			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist", userID),
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
 			StatusCode: response.StatusCode(),
 			StatusText: http.StatusText(response.StatusCode()),
 			ErrorText:  errorResponse.ErrorText,
