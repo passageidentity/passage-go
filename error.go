@@ -13,8 +13,7 @@ type Error struct {
 }
 
 type HTTPError struct {
-	StatusText string `json:"status,omitempty"`
-	ErrorText  string `json:"error,omitempty"`
+	ErrorText string `json:"error,omitempty"`
 }
 
 func (e Error) Error() string {
