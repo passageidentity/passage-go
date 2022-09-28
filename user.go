@@ -1,7 +1,6 @@
 package passage
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -12,9 +11,10 @@ import (
 type UserStatus string
 
 const (
-	StatusActive   UserStatus = "active"
-	StatusInactive UserStatus = "inactive"
-	StatusPending  UserStatus = "pending"
+	UserIDDoesNotExist string     = "passage User with ID \"%v\" does not exist"
+	StatusActive       UserStatus = "active"
+	StatusInactive     UserStatus = "inactive"
+	StatusPending      UserStatus = "pending"
 )
 
 type User struct {
@@ -46,19 +46,31 @@ func (a *App) GetUser(userID string) (*User, error) {
 		User User `json:"user"`
 	}
 	var userBody respUser
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
+		SetError(&errorResponse).
 		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("network error: could not get Passage User")
+		return nil, Error{Message: "network error: failed to get Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return nil, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to get Passage User")
+		return nil, Error{
+			Message:    "failed to get Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	user := userBody.User
 
@@ -72,19 +84,31 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 		User User `json:"user"`
 	}
 	var userBody respUser
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
+		SetError(&errorResponse).
 		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/activate", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("network error: could not get activate Passage User")
+		return nil, Error{Message: "network error: failed to get activate Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return nil, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to activate Passage User")
+		return nil, Error{
+			Message:    "failed to activate Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	user := userBody.User
 
@@ -98,19 +122,31 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 		User User `json:"user"`
 	}
 	var userBody respUser
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
+		SetBody(&errorResponse).
 		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/deactivate", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("network error: could not get deactivate Passage User")
+		return nil, Error{Message: "network error: failed to deactivate Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return nil, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to deactivate Passage User")
+		return nil, Error{
+			Message:    "failed to deactivate Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	user := userBody.User
 
@@ -131,20 +167,32 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 		User User `json:"user"`
 	}
 	var userBody respUser
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
 		SetBody(updateBody).
+		SetError(&errorResponse).
 		Patch(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("network error: could not update Passage User attributes")
+		return nil, Error{Message: "network error: failed to update Passage User attributes"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return nil, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to patch Passage User's attributes")
+		return nil, Error{
+			Message:    "failed to update Passage User's attributes",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	user := userBody.User
 
@@ -154,17 +202,31 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 // DeleteUser receives a userID (string), and deletes the corresponding user
 // returns true on success, false and error on failure (bool, err)
 func (a *App) DeleteUser(userID string) (bool, error) {
+
+	var errorResponse HTTPError
+
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
+		SetError(&errorResponse).
 		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
 	if err != nil {
-		return false, errors.New("network error: could not delete Passage User")
+		return false, Error{Message: "network error: could not delete Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return false, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return false, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return false, fmt.Errorf("failed to delete Passage User")
+		return false, Error{
+			Message:    "failed to delete Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 
 	return true, nil
@@ -184,17 +246,24 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 		User User `json:"user"`
 	}
 	var userBody respUser
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetResult(&userBody).
-		SetBody(createUserBody).
+		SetBody(&createUserBody).
+		SetError(&errorResponse).
 		SetAuthToken(a.Config.APIKey).
 		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/", a.ID))
 	if err != nil {
-		return nil, errors.New("network error: could not create Passage User")
+		return nil, Error{Message: "network error: failed create Passage User"}
 	}
 	if response.StatusCode() != http.StatusCreated {
-		return nil, fmt.Errorf("failed to create Passage User. Http Status: %v. Response: %v", response.StatusCode(), response.String())
+		return nil, Error{
+			Message:    "failed to create Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	user := userBody.User
 
@@ -208,19 +277,31 @@ func (a *App) ListUserDevices(userID string) ([]Device, error) {
 		Devices []Device `json:"devices"`
 	}
 	var devicesBody respDevices
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&devicesBody).
+		SetError(&errorResponse).
 		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/devices", a.ID, userID))
 	if err != nil {
-		return nil, errors.New("network error: could not get Passage User")
+		return nil, Error{Message: "network error: failed to list devices for a Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return nil, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to list devices for a Passage User")
+		return nil, Error{
+			Message:    "failed to list devices for a Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	devices := devicesBody.Devices
 
@@ -230,17 +311,31 @@ func (a *App) ListUserDevices(userID string) ([]Device, error) {
 // RevokeUserDevice gets a user using their userID
 // returns a true success, error on failure
 func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
+
+	var errorResponse HTTPError
+
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
+		SetError(&errorResponse).
 		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/devices/%v", a.ID, userID, deviceID))
 	if err != nil {
-		return false, errors.New("network error: could not get Passage User")
+		return false, Error{Message: "network error: failed to delete a device for a Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return false, fmt.Errorf("passage User with ID \"%v\" does not exist or Devices with ID \"%v\" does not exist", userID, deviceID)
+		return false, Error{
+			Message:    fmt.Sprintf("passage User with ID \"%v\" does not exist or Devices with ID \"%v\" does not exist", userID, deviceID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return false, fmt.Errorf("failed to delete a device for a Passage User")
+		return false, Error{
+			Message:    "failed to delete a device for a Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 
 	return true, nil
@@ -249,17 +344,31 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 // Signout revokes a users refresh tokens
 // returns true on success, error on failure
 func (a *App) SignOut(userID string) (bool, error) {
+
+	var errorResponse HTTPError
+
 	response, err := resty.New().R().
 		SetAuthToken(a.Config.APIKey).
+		SetError(&errorResponse).
 		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/tokens/", a.ID, userID))
 	if err != nil {
-		return false, errors.New("network error: could not get Passage User")
+		return false, Error{Message: "network error: failed to revoke all refresh tokens for a Passage User"}
 	}
 	if response.StatusCode() == http.StatusNotFound {
-		return false, fmt.Errorf("passage User with ID \"%v\" does not exist", userID)
+		return false, Error{
+			Message:    fmt.Sprintf(UserIDDoesNotExist, userID),
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return false, fmt.Errorf("failed to revoke all refresh tokens for a Passage User")
+		return false, Error{
+			Message:    "failed to revoke all refresh tokens for a Passage User",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 
 	return true, nil

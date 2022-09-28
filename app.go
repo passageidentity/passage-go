@@ -1,7 +1,6 @@
 package passage
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -129,15 +128,22 @@ func (a *App) GetApp() (*AppInfo, error) {
 		App AppInfo `json:"app"`
 	}
 	var appResp respAppInfo
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetResult(&appResp).
+		SetError(&errorResponse).
 		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v", a.ID))
 	if err != nil {
-		return nil, errors.New("network error: could not get Passage App Info")
+		return nil, Error{Message: "network error: failed to get Passage App Info"}
 	}
 	if response.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("failed to get Passage App Info. Http Status: %v. Response: %v", response.StatusCode(), response.String())
+		return nil, Error{
+			Message:    "failed to get Passage App Info",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 
 	return &appResp.App, nil
@@ -151,17 +157,24 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 		MagicLink MagicLink `json:"magic_link"`
 	}
 	var magicLinkResp respMagicLink
+	var errorResponse HTTPError
 
 	response, err := resty.New().R().
 		SetResult(&magicLinkResp).
+		SetError(&errorResponse).
 		SetBody(&createMagicLinkBody).
 		SetAuthToken(a.Config.APIKey).
 		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/magic-links/", a.ID))
 	if err != nil {
-		return nil, errors.New("network error: could not create Passage Magic Link")
+		return nil, Error{Message: "network error: failed to create Passage Magic Link"}
 	}
 	if response.StatusCode() != http.StatusCreated {
-		return nil, fmt.Errorf("failed to create Passage Magic Link. Http Status: %v. Response: %v", response.StatusCode(), response.String())
+		return nil, Error{
+			Message:    "failed to create Passage Magic Link",
+			StatusCode: response.StatusCode(),
+			StatusText: http.StatusText(response.StatusCode()),
+			ErrorText:  errorResponse.ErrorText,
+		}
 	}
 
 	return &magicLinkResp.MagicLink, nil

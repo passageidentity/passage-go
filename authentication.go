@@ -2,7 +2,6 @@ package passage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -25,12 +24,12 @@ func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
 func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {
 	authHeaderFields := strings.Fields(r.Header.Get("Authorization"))
 	if len(authHeaderFields) != 2 || authHeaderFields[0] == "Bearer" {
-		return "", errors.New("missing authentication token: expected \"Bearer\" header")
+		return "", Error{Message: "missing authentication token: expected \"Bearer\" header"}
 	}
 
 	userID, valid := a.ValidateAuthToken(authHeaderFields[1])
 	if !valid {
-		return "", errors.New("invalid authentication token")
+		return "", Error{Message: "invalid authentication token"}
 	}
 
 	return userID, nil
@@ -40,7 +39,7 @@ func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {
 func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 	keyID, ok := token.Header["kid"].(string)
 	if !ok {
-		return nil, errors.New("expecting JWT header to have string kid")
+		return nil, Error{Message: "expecting JWT header to have string kid"}
 	}
 
 	key, ok := jwkCache[a.ID].LookupKeyID(keyID)
@@ -49,7 +48,7 @@ func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 		a.fetchJWKS()
 		key, ok := jwkCache[a.ID].LookupKeyID(keyID)
 		if !ok {
-			return nil, fmt.Errorf("unable to find key %q", keyID)
+			return nil, Error{Message: fmt.Sprintf("unable to find key %q", keyID)}
 		}
 
 		var pubKey interface{}
@@ -66,7 +65,7 @@ func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 func (a *App) fetchJWKS() (jwkLibrary.Set, error) {
 	jwks, err := jwkLibrary.Fetch(context.Background(), fmt.Sprintf("https://auth.passage.id/v1/apps/%v/.well-known/jwks.json", a.ID))
 	if err != nil {
-		return nil, errors.New("failed to fetch jwks")
+		return nil, Error{Message: "failed to fetch jwks"}
 	}
 	jwkCache[a.ID] = jwks
 	return jwks, nil
@@ -77,12 +76,12 @@ func (a *App) fetchJWKS() (jwkLibrary.Set, error) {
 func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
 	authTokenCookie, err := r.Cookie("psg_auth_token")
 	if err != nil {
-		return "", errors.New("missing authentication token: expected \"psg_auth_token\" cookie")
+		return "", Error{Message: "missing authentication token: expected \"psg_auth_token\" cookie"}
 	}
 
 	userID, valid := a.ValidateAuthToken(authTokenCookie.Value)
 	if !valid {
-		return "", errors.New("invalid authentication token")
+		return "", Error{Message: "invalid authentication token"}
 	}
 
 	return userID, nil
