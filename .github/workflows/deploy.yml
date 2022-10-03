@@ -29,6 +29,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set version
+        run: |
+          _short_sha=$(git rev-parse --short HEAD)
+          cat <<EOF > ./version.go
+          package passage
+
+          var version = "passage-go $(echo -n $_short_sha)"
+          EOF
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
