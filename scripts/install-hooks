@@ -12,3 +12,5 @@ fi
 
 echo "Installing pre-commit hooks"
 pre-commit install --install-hooks --overwrite -t commit-msg -t pre-push
+echo "Pulling pre-commit hook images"
+docker pull --quiet us-docker.pkg.dev/passage-images/pre-commit/set-version:latest
