@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"gopkg.in/resty.v1"
 )
 
 type UserStatus string
@@ -48,7 +46,7 @@ func (a *App) GetUser(userID string) (*User, error) {
 	var userBody respUser
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
 		SetError(&errorResponse).
@@ -86,7 +84,7 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 	var userBody respUser
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
 		SetError(&errorResponse).
@@ -124,7 +122,7 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 	var userBody respUser
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
 		SetBody(&errorResponse).
@@ -169,7 +167,7 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 	var userBody respUser
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&userBody).
 		SetBody(updateBody).
@@ -205,7 +203,7 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetError(&errorResponse).
 		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v", a.ID, userID))
@@ -248,7 +246,7 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	var userBody respUser
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetResult(&userBody).
 		SetBody(&createUserBody).
 		SetError(&errorResponse).
@@ -279,7 +277,7 @@ func (a *App) ListUserDevices(userID string) ([]Device, error) {
 	var devicesBody respDevices
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetResult(&devicesBody).
 		SetError(&errorResponse).
@@ -314,7 +312,7 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetError(&errorResponse).
 		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/devices/%v", a.ID, userID, deviceID))
@@ -347,7 +345,7 @@ func (a *App) SignOut(userID string) (bool, error) {
 
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetAuthToken(a.Config.APIKey).
 		SetError(&errorResponse).
 		Delete(fmt.Sprintf("https://api.passage.id/v1/apps/%v/users/%v/tokens/", a.ID, userID))

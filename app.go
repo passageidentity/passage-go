@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
-	"gopkg.in/resty.v1"
 )
 
 type Config struct {
@@ -130,7 +129,7 @@ func (a *App) GetApp() (*AppInfo, error) {
 	var appResp respAppInfo
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetResult(&appResp).
 		SetError(&errorResponse).
 		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v", a.ID))
@@ -159,7 +158,7 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 	var magicLinkResp respMagicLink
 	var errorResponse HTTPError
 
-	response, err := resty.New().R().
+	response, err := newRequest().
 		SetResult(&magicLinkResp).
 		SetError(&errorResponse).
 		SetBody(&createMagicLinkBody).
