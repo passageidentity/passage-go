@@ -14,3 +14,4 @@ repos:
         language: docker_image
         entry: us-docker.pkg.dev/passage-images/pre-commit/set-version:latest
         pass_filenames: false
+        always_run: true
