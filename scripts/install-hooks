@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [ -z "$(command -v pre-commit)" ]; then
+  echo "Attempting to install pre-commit with Homebrew"
+  if [ -z "$(command -v brew)" ]; then
+    echo "Homebrew is not installed, view pre-commit alternate installation instructions here: https://pre-commit.com/"
+    exit 0
+  else
+    brew install pre-commit
+  fi
+fi
+
+echo "Installing pre-commit hooks"
+pre-commit install --install-hooks --overwrite -t commit-msg -t pre-push
+echo "Pulling pre-commit hook images"
+docker pull --quiet us-docker.pkg.dev/passage-images/pre-commit/set-version:latest

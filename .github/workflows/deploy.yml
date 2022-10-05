@@ -29,11 +29,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Read version
+        run: |
+          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+
+      - name: Check if release is needed
+        id: check
+        run: |
+          _last_version=`git describe --tags --abbrev=0`
+          if [[ "$VERSION" == "$_last_version" ]]; then
+            # no release needed
+            echo ::set-output name=create_release::false
+          else
+            echo ::set-output name=create_release::true
+          fi
+
       - name: Create Release
+        if: ${{ steps.check.outputs.create_release }}
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
