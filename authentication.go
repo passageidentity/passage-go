@@ -23,7 +23,7 @@ func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
 // returns the userID (string) on success, error on failure
 func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {
 	authHeaderFields := strings.Fields(r.Header.Get("Authorization"))
-	if len(authHeaderFields) != 2 || authHeaderFields[0] == "Bearer" {
+	if len(authHeaderFields) != 2 || authHeaderFields[0] != "Bearer" {
 		return "", Error{Message: "missing authentication token: expected \"Bearer\" header"}
 	}
 
