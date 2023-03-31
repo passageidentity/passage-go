@@ -86,6 +86,8 @@ type AppInfo struct {
 	UserMetadataSchemaResponse    []UserMetadataField `json:"user_metadata_schema"`            // The schema for user_metadata that will be stored about users
 	Layouts                       Layouts             `json:"layouts"`                         // The layouts of user_metadata on the register/profile element
 	DefaultLanguage               string              `json:"default_language"`                // The default_language to be used by the app
+	AuthFallbackMethod            string              `json:"auth_fallback_method"`
+	AuthFallbackMethodTTL         int                 `json:"auth_fallback_method_ttl"`
 }
 type UserMetadataField struct {
 	Handle       string                `json:"id"`            // Unique id for the user metadata field
