@@ -56,6 +56,7 @@ type CreateMagicLinkBody struct {
 	RedirectURL   string      `json:"redirect_url"`
 	TTL           int         `json:"ttl"`
 	Language      string      `json:"language"`
+	Type          string      `json:"type"`
 }
 
 type MagicLink struct {
