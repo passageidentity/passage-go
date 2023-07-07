@@ -47,7 +47,7 @@ func TestAuthenticationWithCookie(t *testing.T) {
 
 		userID, err := psg.AuthenticateRequest(req)
 		require.Nil(t, err)
-		assert.Equal(t, "bEXIZKYyApgz5oWYc5WM9vfF", userID)
+		assert.Equal(t, PassageUserID, userID)
 	})
 }
 
@@ -79,7 +79,7 @@ func TestAuthenticationWithHeader(t *testing.T) {
 
 		userID, err := psg.AuthenticateRequest(req)
 		require.Nil(t, err)
-		assert.Equal(t, "bEXIZKYyApgz5oWYc5WM9vfF", userID)
+		assert.Equal(t, PassageUserID, userID)
 	})
 }
 
