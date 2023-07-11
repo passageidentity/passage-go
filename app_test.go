@@ -18,6 +18,7 @@ func TestCreateMagicLink(t *testing.T) {
 		Email:   "chris@passage.id",
 		Channel: passage.EmailChannel,
 		TTL:     12,
+		Type:    passage.LoginType,
 	}
 
 	magicLink, err := psg.CreateMagicLink(createMagicLinkBody)
