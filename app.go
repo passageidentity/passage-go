@@ -46,17 +46,24 @@ const (
 	PhoneChannel ChannelType = "phone"
 )
 
+type MagicLinkType string
+
+const (
+	LoginType            MagicLinkType = "login"
+	VerifyIdentifierType MagicLinkType = "verify_identifier"
+)
+
 type CreateMagicLinkBody struct {
-	UserID        string      `json:"user_id"`
-	Email         string      `json:"email"`
-	Phone         string      `json:"phone"`
-	Channel       ChannelType `json:"channel"`
-	Send          bool        `json:"send"`
-	MagicLinkPath string      `json:"magic_link_path"`
-	RedirectURL   string      `json:"redirect_url"`
-	TTL           int         `json:"ttl"`
-	Language      string      `json:"language"`
-	Type          string      `json:"type"`
+	UserID        string        `json:"user_id"`
+	Email         string        `json:"email"`
+	Phone         string        `json:"phone"`
+	Channel       ChannelType   `json:"channel"`
+	Send          bool          `json:"send"`
+	MagicLinkPath string        `json:"magic_link_path"`
+	RedirectURL   string        `json:"redirect_url"`
+	TTL           int           `json:"ttl"`
+	Language      string        `json:"language"`
+	Type          MagicLinkType `json:"type,omitempty"`
 }
 
 type MagicLink struct {
