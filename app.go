@@ -1,8 +1,7 @@
 package passage
 
 import (
-	"fmt"
-	"net/http"
+	"context"
 
 	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
 )
@@ -16,6 +15,7 @@ type App struct {
 	ID     string
 	JWKS   jwkLibrary.Set
 	Config *Config
+	client *ClientWithResponses
 }
 
 func New(appID string, config *Config) (*App, error) {
@@ -23,12 +23,21 @@ func New(appID string, config *Config) (*App, error) {
 		config = &Config{}
 	}
 
+	client, err := NewClientWithResponses(
+		"https://api.passage.id/v1/",
+		withPassageVersion,
+		withAPIKey(config.APIKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	app := App{
 		ID:     appID,
 		Config: config,
+		client: client,
 	}
 
-	var err error
 	app.JWKS, err = app.fetchJWKS()
 	if err != nil {
 		return nil, err
@@ -39,152 +48,64 @@ func New(appID string, config *Config) (*App, error) {
 
 var jwkCache map[string]jwkLibrary.Set = make(map[string]jwkLibrary.Set)
 
-type ChannelType string
-
-const (
-	EmailChannel ChannelType = "email"
-	PhoneChannel ChannelType = "phone"
-)
-
-type MagicLinkType string
-
-const (
-	LoginType            MagicLinkType = "login"
-	VerifyIdentifierType MagicLinkType = "verify_identifier"
-)
-
-type CreateMagicLinkBody struct {
-	UserID        string        `json:"user_id"`
-	Email         string        `json:"email"`
-	Phone         string        `json:"phone"`
-	Channel       ChannelType   `json:"channel"`
-	Send          bool          `json:"send"`
-	MagicLinkPath string        `json:"magic_link_path"`
-	RedirectURL   string        `json:"redirect_url"`
-	TTL           int           `json:"ttl"`
-	Language      string        `json:"language"`
-	Type          MagicLinkType `json:"type,omitempty"`
-}
-
-type MagicLink struct {
-	ID          string `json:"id"`
-	Secret      string `json:"secret"`
-	Activated   bool   `json:"activated"`
-	UserID      string `json:"user_id"`
-	AppID       string `json:"app_id"`
-	Identifier  string `json:"identifier"`
-	Type        string `json:"type"`
-	RedirectURL string `json:"redirect_url"`
-	TTL         int    `json:"ttl"`
-	URL         string `json:"url"`
-}
-type AppInfo struct {
-	Name                          string              `json:"name"`                            // The name of the App
-	ID                            string              `json:"id"`                              // The appID of the App
-	AuthOrigin                    string              `json:"auth_origin"`                     // The url being used for the App's authentication
-	RedirectURL                   string              `json:"redirect_url"`                    // Where users should be redirected on successful authentication
-	LoginURL                      string              `json:"login_url"`                       // Where users should attempt to log in
-	PublicKey                     string              `json:"rsa_public_key"`                  // The PublicKey associated with the app.
-	AllowedIdentifier             string              `json:"allowed_identifier"`              // Which identifier(s) are allowed for this app (email, phone, both)
-	RequireIdentifierVerification bool                `json:"require_identifier_verification"` // Whether this app requires identifier verification
-	SessionTimeoutLength          int                 `json:"session_timeout_length"`          // How long a JWT will last for the app when a user logs in
-	RefreshEnabled                bool                `json:"refresh_enabled"`                 // Whether this app has refresh tokens enabled
-	RefreshAbsoluteLifetime       int                 `json:"refresh_absolute_lifetime"`       // The absolute lifetime of a refresh token in seconds
-	RefreshInactivityLifetime     int                 `json:"refresh_inactivity_lifetime"`     // The inactivity lifetime of a refresh token in seconds
-	UserMetadataSchemaResponse    []UserMetadataField `json:"user_metadata_schema"`            // The schema for user_metadata that will be stored about users
-	Layouts                       Layouts             `json:"layouts"`                         // The layouts of user_metadata on the register/profile element
-	DefaultLanguage               string              `json:"default_language"`                // The default_language to be used by the app
-	AuthFallbackMethod            string              `json:"auth_fallback_method"`            // The fallback method to be used by the app
-	AuthFallbackMethodTTL         int                 `json:"auth_fallback_method_ttl"`        // The fallback method ttl to be used by the app
-}
-type UserMetadataField struct {
-	Handle       string                `json:"id"`            // Unique id for the user metadata field
-	FieldName    string                `json:"field_name"`    // The name that will be used in user requests to create/update user_metadata
-	FieldType    UserMetadataFieldType `json:"type"`          // The type of data stored in this field
-	FriendlyName string                `json:"friendly_name"` // The human readable name for this field
-	Registration bool                  `json:"registration"`  // Whether or not this field will be accepted on user registration
-	Profile      bool                  `json:"profile"`       // Whether or not this field can be updated via the passage-profile
-}
-
-type UserMetadataFieldType string
-
-const (
-	StringMD  UserMetadataFieldType = "string"
-	BooleanMD UserMetadataFieldType = "boolean"
-	NumberMD  UserMetadataFieldType = "integer"
-	DateMD    UserMetadataFieldType = "date"
-	PhoneMD   UserMetadataFieldType = "phone"
-	EmailMD   UserMetadataFieldType = "email"
-)
-
-type Layouts struct {
-	Registration []LayoutConfig `json:"registration"` // The UI layout for user_metadata in the passage-register/passage-auth element
-	Profile      []LayoutConfig `json:"profile"`      // The UI layout for user_metadata in the passage-profile element
-}
-
-type LayoutConfig struct {
-	ID string `json:"id"`
-	X  uint   `json:"x"`
-	Y  uint   `json:"y"`
-	W  uint   `json:"w"`
-	H  uint   `json:"h"`
-}
-
 // GetApp gets information about an app
 // returns App on success, error on failure
 func (a *App) GetApp() (*AppInfo, error) {
-	type respAppInfo struct {
-		App AppInfo `json:"app"`
-	}
-	var appResp respAppInfo
-	var errorResponse HTTPError
-
-	response, err := newRequest().
-		SetResult(&appResp).
-		SetError(&errorResponse).
-		Get(fmt.Sprintf("https://api.passage.id/v1/apps/%v", a.ID))
+	res, err := a.client.GetAppWithResponse(context.Background(), a.ID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to get Passage App Info"}
 	}
-	if response.StatusCode() != http.StatusOK {
-		return nil, Error{
-			Message:    "failed to get Passage App Info",
-			StatusCode: response.StatusCode(),
-			StatusText: http.StatusText(response.StatusCode()),
-			ErrorText:  errorResponse.ErrorText,
-		}
+
+	if res.JSON200 != nil {
+		return &res.JSON200.App, nil
 	}
 
-	return &appResp.App, nil
+	var errorText string
+	switch {
+	case res.JSON401 != nil:
+		errorText = res.JSON401.Error
+	case res.JSON404 != nil:
+		errorText = res.JSON404.Error
+	case res.JSON500 != nil:
+		errorText = res.JSON500.Error
+	}
+
+	return nil, Error{
+		Message:    "failed to get Passage App Info",
+		StatusCode: res.StatusCode(),
+		StatusText: res.Status(),
+		ErrorText:  errorText,
+	}
 }
 
 // CreateMagicLink receives a CreateMagicLinkBody struct, creating a magic link with provided values
 // returns MagicLink on success, error on failure
 func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
-
-	type respMagicLink struct {
-		MagicLink MagicLink `json:"magic_link"`
-	}
-	var magicLinkResp respMagicLink
-	var errorResponse HTTPError
-
-	response, err := newRequest().
-		SetResult(&magicLinkResp).
-		SetError(&errorResponse).
-		SetBody(&createMagicLinkBody).
-		SetAuthToken(a.Config.APIKey).
-		Post(fmt.Sprintf("https://api.passage.id/v1/apps/%v/magic-links/", a.ID))
+	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.ID, createMagicLinkBody)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to create Passage Magic Link"}
 	}
-	if response.StatusCode() != http.StatusCreated {
-		return nil, Error{
-			Message:    "failed to create Passage Magic Link",
-			StatusCode: response.StatusCode(),
-			StatusText: http.StatusText(response.StatusCode()),
-			ErrorText:  errorResponse.ErrorText,
-		}
+
+	if res.JSON201 != nil {
+		return &res.JSON201.MagicLink, nil
 	}
 
-	return &magicLinkResp.MagicLink, nil
+	var errorText string
+	switch {
+	case res.JSON400 != nil:
+		errorText = res.JSON400.Error
+	case res.JSON401 != nil:
+		errorText = res.JSON401.Error
+	case res.JSON404 != nil:
+		errorText = res.JSON404.Error
+	case res.JSON500 != nil:
+		errorText = res.JSON500.Error
+	}
+
+	return nil, Error{
+		Message:    "failed to create Passage Magic Link",
+		StatusCode: res.StatusCode(),
+		StatusText: res.Status(),
+		ErrorText:  errorText,
+	}
 }

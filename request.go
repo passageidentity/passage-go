@@ -1,15 +1,26 @@
 package passage
 
 import (
+	"context"
 	_ "embed"
 	"fmt"
-
-	"gopkg.in/resty.v1"
+	"net/http"
 )
 
 //go:embed version.txt
 var version string
 
-func newRequest() *resty.Request {
-	return resty.New().SetHeader("Passage-Version", fmt.Sprintf("passage-go %s", version)).R()
+var withPassageVersion ClientOption = WithRequestEditorFn(
+	func(ctx context.Context, req *http.Request) error {
+		req.Header.Set("Passage-Version", fmt.Sprintf("passage-go %s", version))
+		return nil
+	})
+
+func withAPIKey(apiKey string) ClientOption {
+	return WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+		if apiKey != "" {
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+		}
+		return nil
+	})
 }
