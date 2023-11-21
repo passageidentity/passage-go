@@ -112,6 +112,14 @@ const (
 	Vue        Technologies = "vue"
 )
 
+// Defines values for TTLDisplayUnit.
+const (
+	D TTLDisplayUnit = "d"
+	H TTLDisplayUnit = "h"
+	M TTLDisplayUnit = "m"
+	S TTLDisplayUnit = "s"
+)
+
 // Defines values for UserMetadataFieldType.
 const (
 	BooleanMD UserMetadataFieldType = "boolean"
@@ -184,9 +192,18 @@ type AppInfo struct {
 	AllowedLogoutURLs []string `json:"allowed_logout_urls"`
 
 	// ApplicationLoginURI A route within your application that redirects to the Authorization URL endpoint.
-	ApplicationLoginURI      string               `json:"application_login_uri"`
-	AuthFallbackMethod       string               `json:"auth_fallback_method"`
-	AuthFallbackMethodTTL    int                  `json:"auth_fallback_method_ttl"`
+	ApplicationLoginURI string `json:"application_login_uri"`
+
+	// AuthFallbackMethod Deprecated Property. Please refer to `auth_methods` to view settings for individual authentication methods.
+	// Deprecated:
+	AuthFallbackMethod string `json:"auth_fallback_method"`
+
+	// AuthFallbackMethodTTL Deprecated Property. Please refer to `auth_methods` to view settings for individual authentication methods.
+	// Deprecated:
+	AuthFallbackMethodTTL int `json:"auth_fallback_method_ttl"`
+
+	// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
+	AuthMethods              AuthMethods          `json:"auth_methods"`
 	AuthOrigin               string               `json:"auth_origin"`
 	CreatedAt                time.Time            `json:"created_at"`
 	DarkLogoURL              *string              `json:"dark_logo_url,omitempty"`
@@ -232,6 +249,13 @@ type AppInfoType string
 // AppResponse defines model for AppResponse.
 type AppResponse struct {
 	App AppInfo `json:"app"`
+}
+
+// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
+type AuthMethods struct {
+	MagicLink EmailSmsAuthMethod `json:"magic_link"`
+	Otp       EmailSmsAuthMethod `json:"otp"`
+	Passkey   PasskeyAuthMethod  `json:"passkey"`
 }
 
 // CreateMagicLinkBody defines model for CreateMagicLinkBody.
@@ -327,6 +351,22 @@ type ElementCustomization struct {
 	PassageSecondaryButtonTextColor *string `json:"passage_secondary_button_text_color,omitempty"`
 }
 
+// EmailSmsAuthMethod defines model for EmailSmsAuthMethod.
+type EmailSmsAuthMethod struct {
+	Enabled bool `json:"enabled"`
+
+	// TTL Maximum time (IN SECONDS) for the auth to expire.
+	TTL int `json:"ttl"`
+
+	// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
+	// * `s` - seconds
+	// * `m` - minutes
+	// * `h` - hours
+	// * `d` - days
+	// Deprecated:
+	TTLDisplayUnit TTLDisplayUnit `json:"ttl_display_unit"`
+}
+
 // FontFamily Body font family
 type FontFamily string
 
@@ -375,8 +415,41 @@ type MagicLinkResponse struct {
 // MagicLinkType defines model for MagicLinkType.
 type MagicLinkType string
 
+// PasskeyAuthMethod defines model for PasskeyAuthMethod.
+type PasskeyAuthMethod struct {
+	Enabled bool `json:"enabled"`
+}
+
 // Technologies defines model for Technologies.
 type Technologies string
+
+// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
+// * `s` - seconds
+// * `m` - minutes
+// * `h` - hours
+// * `d` - days
+type TTLDisplayUnit string
+
+// UpdateEmailSmsAuthMethod defines model for UpdateEmailSmsAuthMethod.
+type UpdateEmailSmsAuthMethod struct {
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// TTL Maximum time (IN SECONDS) for the auth to expire.
+	TTL *int `json:"ttl,omitempty"`
+
+	// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
+	// * `s` - seconds
+	// * `m` - minutes
+	// * `h` - hours
+	// * `d` - days
+	// Deprecated:
+	TTLDisplayUnit *TTLDisplayUnit `json:"ttl_display_unit,omitempty"`
+}
+
+// UpdatePasskeyAuthMethod defines model for UpdatePasskeyAuthMethod.
+type UpdatePasskeyAuthMethod struct {
+	Enabled *bool `json:"enabled,omitempty"`
+}
 
 // UpdateBody defines model for UpdateBody.
 type UpdateBody struct {
