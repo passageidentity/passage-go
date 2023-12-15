@@ -354,6 +354,30 @@ type ElementCustomization struct {
 // FontFamily Body font family
 type FontFamily string
 
+// GithubSocialConnection defines model for GithubSocialConnection.
+type GithubSocialConnection struct {
+	CreatedAt   time.Time `json:"created_at"`
+	LastLoginAt time.Time `json:"last_login_at"`
+
+	// ProviderID The external ID of the Social Connection.
+	ProviderID string `json:"provider_id"`
+
+	// ProviderIdentifier The email of connected social user.
+	ProviderIdentifier string `json:"provider_identifier"`
+}
+
+// GoogleSocialConnection defines model for GoogleSocialConnection.
+type GoogleSocialConnection struct {
+	CreatedAt   time.Time `json:"created_at"`
+	LastLoginAt time.Time `json:"last_login_at"`
+
+	// ProviderID The external ID of the Social Connection.
+	ProviderID string `json:"provider_id"`
+
+	// ProviderIdentifier The email of connected social user.
+	ProviderIdentifier string `json:"provider_identifier"`
+}
+
 // LayoutConfig defines model for LayoutConfig.
 type LayoutConfig struct {
 	H  int    `json:"h"`
@@ -501,20 +525,21 @@ type UserEventInfo struct {
 
 // User defines model for User.
 type User struct {
-	CreatedAt       time.Time              `json:"created_at"`
-	Email           string                 `json:"email"`
-	EmailVerified   bool                   `json:"email_verified"`
-	ID              string                 `json:"id"`
-	LastLoginAt     time.Time              `json:"last_login_at"`
-	LoginCount      int                    `json:"login_count"`
-	Phone           string                 `json:"phone"`
-	PhoneVerified   bool                   `json:"phone_verified"`
-	RecentEvents    []UserEventInfo        `json:"recent_events"`
-	Status          UserStatus             `json:"status"`
-	UpdatedAt       time.Time              `json:"updated_at"`
-	UserMetadata    map[string]interface{} `json:"user_metadata"`
-	Webauthn        bool                   `json:"webauthn"`
-	WebauthnDevices []WebAuthnDevices      `json:"webauthn_devices"`
+	CreatedAt         time.Time              `json:"created_at"`
+	Email             string                 `json:"email"`
+	EmailVerified     bool                   `json:"email_verified"`
+	ID                string                 `json:"id"`
+	LastLoginAt       time.Time              `json:"last_login_at"`
+	LoginCount        int                    `json:"login_count"`
+	Phone             string                 `json:"phone"`
+	PhoneVerified     bool                   `json:"phone_verified"`
+	RecentEvents      []UserEventInfo        `json:"recent_events"`
+	SocialConnections UserSocialConnections  `json:"social_connections"`
+	Status            UserStatus             `json:"status"`
+	UpdatedAt         time.Time              `json:"updated_at"`
+	UserMetadata      map[string]interface{} `json:"user_metadata"`
+	Webauthn          bool                   `json:"webauthn"`
+	WebauthnDevices   []WebAuthnDevices      `json:"webauthn_devices"`
 
 	// WebauthnTypes List of credential types that have been used for authentication
 	WebauthnTypes []WebAuthnType `json:"webauthn_types"`
@@ -536,6 +561,12 @@ type UserMetadataFieldType string
 // UserResponse defines model for UserResponse.
 type UserResponse struct {
 	User User `json:"user"`
+}
+
+// UserSocialConnections defines model for UserSocialConnections.
+type UserSocialConnections struct {
+	Github *GithubSocialConnection `json:"github,omitempty"`
+	Google *GoogleSocialConnection `json:"google,omitempty"`
 }
 
 // UserStatus defines model for UserStatus.
