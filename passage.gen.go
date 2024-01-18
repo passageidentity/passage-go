@@ -50,6 +50,7 @@ const (
 	OrganizationMemberNotFound N404ErrorCode = "organization_member_not_found"
 	SmsProviderNotFound        N404ErrorCode = "sms_provider_not_found"
 	SmsTemplateNotFound        N404ErrorCode = "sms_template_not_found"
+	SocialConnectionNotFound   N404ErrorCode = "social_connection_not_found"
 	UserNotFound               N404ErrorCode = "user_not_found"
 )
 
