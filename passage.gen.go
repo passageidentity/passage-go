@@ -252,6 +252,18 @@ type AppResponse struct {
 	App AppInfo `json:"app"`
 }
 
+// AppleUserSocialConnection defines model for AppleUserSocialConnection.
+type AppleUserSocialConnection struct {
+	CreatedAt   time.Time `json:"created_at"`
+	LastLoginAt time.Time `json:"last_login_at"`
+
+	// ProviderID The external ID of the Social Connection.
+	ProviderID string `json:"provider_id"`
+
+	// ProviderIdentifier The email of connected social user.
+	ProviderIdentifier string `json:"provider_identifier"`
+}
+
 // AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
 type AuthMethods struct {
 	MagicLink MagicLinkAuthMethod `json:"magic_link"`
@@ -355,8 +367,8 @@ type ElementCustomization struct {
 // FontFamily Body font family
 type FontFamily string
 
-// GithubSocialConnection defines model for GithubSocialConnection.
-type GithubSocialConnection struct {
+// GithubUserSocialConnection defines model for GithubUserSocialConnection.
+type GithubUserSocialConnection struct {
 	CreatedAt   time.Time `json:"created_at"`
 	LastLoginAt time.Time `json:"last_login_at"`
 
@@ -367,8 +379,8 @@ type GithubSocialConnection struct {
 	ProviderIdentifier string `json:"provider_identifier"`
 }
 
-// GoogleSocialConnection defines model for GoogleSocialConnection.
-type GoogleSocialConnection struct {
+// GoogleUserSocialConnection defines model for GoogleUserSocialConnection.
+type GoogleUserSocialConnection struct {
 	CreatedAt   time.Time `json:"created_at"`
 	LastLoginAt time.Time `json:"last_login_at"`
 
@@ -515,15 +527,6 @@ type UpdateBody struct {
 	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
 
-// UserEventInfo defines model for UserEventInfo.
-type UserEventInfo struct {
-	CreatedAt time.Time `json:"created_at"`
-	ID        string    `json:"id"`
-	IPAddr    string    `json:"ip_addr"`
-	Type      string    `json:"type"`
-	UserAgent string    `json:"user_agent"`
-}
-
 // User defines model for User.
 type User struct {
 	CreatedAt         time.Time              `json:"created_at"`
@@ -534,7 +537,7 @@ type User struct {
 	LoginCount        int                    `json:"login_count"`
 	Phone             string                 `json:"phone"`
 	PhoneVerified     bool                   `json:"phone_verified"`
-	RecentEvents      []UserEventInfo        `json:"recent_events"`
+	RecentEvents      []UserRecentEvent      `json:"recent_events"`
 	SocialConnections UserSocialConnections  `json:"social_connections"`
 	Status            UserStatus             `json:"status"`
 	UpdatedAt         time.Time              `json:"updated_at"`
@@ -559,6 +562,15 @@ type UserMetadataField struct {
 // UserMetadataFieldType defines model for UserMetadataFieldType.
 type UserMetadataFieldType string
 
+// UserRecentEvent defines model for UserRecentEvent.
+type UserRecentEvent struct {
+	CreatedAt time.Time `json:"created_at"`
+	ID        string    `json:"id"`
+	IPAddr    string    `json:"ip_addr"`
+	Type      string    `json:"type"`
+	UserAgent string    `json:"user_agent"`
+}
+
 // UserResponse defines model for UserResponse.
 type UserResponse struct {
 	User User `json:"user"`
@@ -566,8 +578,9 @@ type UserResponse struct {
 
 // UserSocialConnections defines model for UserSocialConnections.
 type UserSocialConnections struct {
-	Github *GithubSocialConnection `json:"github,omitempty"`
-	Google *GoogleSocialConnection `json:"google,omitempty"`
+	Apple  *AppleUserSocialConnection  `json:"apple,omitempty"`
+	Github *GithubUserSocialConnection `json:"github,omitempty"`
+	Google *GoogleUserSocialConnection `json:"google,omitempty"`
 }
 
 // UserStatus defines model for UserStatus.
