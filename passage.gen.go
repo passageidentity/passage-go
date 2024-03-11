@@ -61,8 +61,8 @@ const (
 
 // Defines values for AppInfoType.
 const (
-	Complete AppInfoType = "complete"
-	Flex     AppInfoType = "flex"
+	AppInfoTypeComplete AppInfoType = "complete"
+	AppInfoTypeFlex     AppInfoType = "flex"
 )
 
 // Defines values for FontFamily.
@@ -119,6 +119,12 @@ const (
 	H TTLDisplayUnit = "h"
 	M TTLDisplayUnit = "m"
 	S TTLDisplayUnit = "s"
+)
+
+// Defines values for UserEventStatus.
+const (
+	UserEventStatusComplete   UserEventStatus = "complete"
+	UserEventStatusIncomplete UserEventStatus = "incomplete"
 )
 
 // Defines values for UserMetadataFieldType.
@@ -527,6 +533,9 @@ type UpdateBody struct {
 	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
 
+// UserEventStatus defines model for UserEventStatus.
+type UserEventStatus string
+
 // User defines model for User.
 type User struct {
 	CreatedAt         time.Time              `json:"created_at"`
@@ -564,11 +573,13 @@ type UserMetadataFieldType string
 
 // UserRecentEvent defines model for UserRecentEvent.
 type UserRecentEvent struct {
-	CreatedAt time.Time `json:"created_at"`
-	ID        string    `json:"id"`
-	IPAddr    string    `json:"ip_addr"`
-	Type      string    `json:"type"`
-	UserAgent string    `json:"user_agent"`
+	CompletedAt *time.Time      `json:"completed_at"`
+	CreatedAt   time.Time       `json:"created_at"`
+	ID          string          `json:"id"`
+	IPAddr      string          `json:"ip_addr"`
+	Status      UserEventStatus `json:"status"`
+	Type        string          `json:"type"`
+	UserAgent   string          `json:"user_agent"`
 }
 
 // UserResponse defines model for UserResponse.

@@ -19,6 +19,9 @@ for field in $fields; do
   jq "$field |= . + {\"x-go-type-skip-optional-pointer\": true}" openapi.json > tmp.json && mv tmp.json openapi.json
 done
 
+# Rename component to avoid name clash with generated struct
+jq ".components.schemas.ListPaginatedUsersResponse |= . + {\"x-go-name\": \"PaginatedUsersResponse\"}" openapi.json > tmp.json && mv tmp.json openapi.json
+
 # JSON string of key-value pairs
 transforms='{
     "Active": "StatusActive",
