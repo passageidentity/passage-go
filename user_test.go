@@ -37,10 +37,10 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 	userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
 	require.Nil(t, err)
 
-	userById, err := psg.GetUser(PassageUserID)
+	userById, err := psg.GetUser(user.ID)
 	require.Nil(t, err)
 
-	assert.Equal(t, PassageUserID, userById.ID)
+	assert.Equal(t, user.ID, userById.ID)
 
 	assert.Equal(t, userById, userByIdentifier)
 }
