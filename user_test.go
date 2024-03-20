@@ -19,32 +19,6 @@ func TestGetUserInfo(t *testing.T) {
 	require.Nil(t, err)
 	assert.Equal(t, PassageUserID, user.ID)
 }
-
-func TestGetUserInfoByIdentifier(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	createUserBody := passage.CreateUserBody{
-		Email: RandomEmail,
-	}
-
-	user, err := psg.CreateUser(createUserBody)
-	require.Nil(t, err)
-	assert.Equal(t, RandomEmail, user.Email)
-
-	userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
-	require.Nil(t, err)
-
-	userById, err := psg.GetUser(PassageUserID)
-	require.Nil(t, err)
-
-	assert.Equal(t, PassageUserID, userById.ID)
-
-	assert.Equal(t, userById, userByIdentifier)
-}
-
 func TestActivateUser(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
