@@ -3,6 +3,7 @@ package passage
 import (
 	"context"
 	"fmt"
+	"net/http"
 )
 
 const (
@@ -58,7 +59,7 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 	)
 
 	if err != nil {
-		return nil, Error{Message: "network error:failed to get Passage User by Identifier"}
+		return nil, Error{Message: "network error:failed to get Passage User by Identifier" + message, err}
 	}
 
 	if res.JSON200 != nil {
@@ -67,9 +68,9 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 			message = fmt.Sprintf(IdentifierDoesNotExist, identifier)
 			return nil, Error{
 				Message:    message,
-				StatusCode: 404,
-				StatusText: "404 not found",
-				ErrorText:  "user_not_found",
+				StatusCode: http.StatusNotFound,
+				StatusText: http.StatusText(http.StatusNotFound),
+				ErrorText:  string(UserNotFound),
 			}
 		}
 
@@ -81,7 +82,6 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(IdentifierDoesNotExist, identifier)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
