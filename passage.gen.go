@@ -30,6 +30,17 @@ const (
 // Defines values for N401ErrorCode.
 const (
 	InvalidAccessToken N401ErrorCode = "invalid_access_token"
+	InvalidNonce       N401ErrorCode = "invalid_nonce"
+)
+
+// Defines values for N403ErrorCode.
+const (
+	CannotCreateOrganizationBillingPortalSession N403ErrorCode = "cannot_create_organization_billing_portal_session"
+	CannotCreateTransaction                      N403ErrorCode = "cannot_create_transaction"
+	CannotDeleteAdmin                            N403ErrorCode = "cannot_delete_admin"
+	CannotDeleteOrganizationMember               N403ErrorCode = "cannot_delete_organization_member"
+	CannotSelfUpdateOrganizationMember           N403ErrorCode = "cannot_self_update_organization_member"
+	OperationNotAllowed                          N403ErrorCode = "operation_not_allowed"
 )
 
 // Defines values for N404ErrorCode.
@@ -168,6 +179,15 @@ type N401Error struct {
 
 // N401ErrorCode defines model for 401Error.Code.
 type N401ErrorCode string
+
+// N403Error defines model for 403Error.
+type N403Error struct {
+	Code  N403ErrorCode `json:"code"`
+	Error string        `json:"error"`
+}
+
+// N403ErrorCode defines model for 403Error.Code.
+type N403ErrorCode string
 
 // N404Error defines model for 404Error.
 type N404Error struct {
@@ -412,9 +432,43 @@ type Layouts struct {
 	Registration []LayoutConfig `json:"registration"`
 }
 
+// Link defines model for Link.
+type Link struct {
+	Href string `json:"href"`
+}
+
 // ListDevicesResponse defines model for ListDevicesResponse.
 type ListDevicesResponse struct {
 	Devices []WebAuthnDevices `json:"devices"`
+}
+
+// ListPaginatedUsersItem defines model for ListPaginatedUsersItem.
+type ListPaginatedUsersItem struct {
+	CreatedAt     time.Time               `json:"created_at"`
+	Email         string                  `json:"email"`
+	EmailVerified bool                    `json:"email_verified"`
+	ID            string                  `json:"id"`
+	LastLoginAt   time.Time               `json:"last_login_at"`
+	LoginCount    int                     `json:"login_count"`
+	Phone         string                  `json:"phone"`
+	PhoneVerified bool                    `json:"phone_verified"`
+	Status        UserStatus              `json:"status"`
+	UpdatedAt     time.Time               `json:"updated_at"`
+	UserMetadata  *map[string]interface{} `json:"user_metadata"`
+}
+
+// PaginatedUsersResponse defines model for ListPaginatedUsersResponse.
+type PaginatedUsersResponse struct {
+	Links PaginatedLinks `json:"_links"`
+
+	// CreatedBefore time anchor (Unix timestamp) --> all users returned created before this timestamp
+	CreatedBefore int64 `json:"created_before"`
+	Limit         int   `json:"limit"`
+	Page          int   `json:"page"`
+
+	// TotalUsers total number of users for a particular query
+	TotalUsers int64                    `json:"total_users"`
+	Users      []ListPaginatedUsersItem `json:"users"`
 }
 
 // MagicLink defines model for MagicLink.
@@ -474,6 +528,15 @@ type OtpAuthMethod struct {
 	TTLDisplayUnit TTLDisplayUnit `json:"ttl_display_unit"`
 }
 
+// PaginatedLinks defines model for PaginatedLinks.
+type PaginatedLinks struct {
+	First    Link `json:"first"`
+	Last     Link `json:"last"`
+	Next     Link `json:"next"`
+	Previous Link `json:"previous"`
+	Self     Link `json:"self"`
+}
+
 // PasskeysAuthMethod defines model for PasskeysAuthMethod.
 type PasskeysAuthMethod struct {
 	Enabled bool `json:"enabled"`
@@ -488,43 +551,6 @@ type Technologies string
 // * `h` - hours
 // * `d` - days
 type TTLDisplayUnit string
-
-// UpdateMagicLinkAuthMethod defines model for UpdateMagicLinkAuthMethod.
-type UpdateMagicLinkAuthMethod struct {
-	Enabled *bool `json:"enabled,omitempty"`
-
-	// TTL Maximum time (IN SECONDS) for the auth to expire.
-	TTL *int `json:"ttl,omitempty"`
-
-	// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
-	// * `s` - seconds
-	// * `m` - minutes
-	// * `h` - hours
-	// * `d` - days
-	// Deprecated:
-	TTLDisplayUnit *TTLDisplayUnit `json:"ttl_display_unit,omitempty"`
-}
-
-// UpdateOtpAuthMethod defines model for UpdateOtpAuthMethod.
-type UpdateOtpAuthMethod struct {
-	Enabled *bool `json:"enabled,omitempty"`
-
-	// TTL Maximum time (IN SECONDS) for the auth to expire.
-	TTL *int `json:"ttl,omitempty"`
-
-	// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
-	// * `s` - seconds
-	// * `m` - minutes
-	// * `h` - hours
-	// * `d` - days
-	// Deprecated:
-	TTLDisplayUnit *TTLDisplayUnit `json:"ttl_display_unit,omitempty"`
-}
-
-// UpdatePasskeysAuthMethod defines model for UpdatePasskeysAuthMethod.
-type UpdatePasskeysAuthMethod struct {
-	Enabled *bool `json:"enabled,omitempty"`
-}
 
 // UpdateBody defines model for UpdateBody.
 type UpdateBody struct {
@@ -646,6 +672,45 @@ type AppID = string
 // UserID defines model for user_id.
 type UserID = string
 
+// N403Forbidden defines model for 403Forbidden.
+type N403Forbidden = N403Error
+
+// ListPaginatedUsersParams defines parameters for ListPaginatedUsers.
+type ListPaginatedUsersParams struct {
+	// Page page to fetch (min=1)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit number of users to fetch per page (max=500)
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// CreatedBefore Unix timestamp to anchor pagination results (fetches events that were created before the timestamp)
+	CreatedBefore *int `form:"created_before,omitempty" json:"created_before,omitempty"`
+
+	// OrderBy Comma separated list of <field>:<ASC/DESC> (example: order_by=id:DESC,created_at:ASC) **cannot order_by `identifier`
+	OrderBy *string `form:"order_by,omitempty" json:"order_by,omitempty"`
+
+	// Identifier search users email OR phone (pagination prepended operators identifier=<val>, identifier=<ne:val>, identifier=<gt:val>, identifier=<lt:val>, identifier=<like:val>, identifier=<not_like:val>)
+	Identifier *string `form:"identifier,omitempty" json:"identifier,omitempty"`
+
+	// ID search users id (pagination prepended operators id=<val>, id=<ne:val>, id=<gt:val>, id=<lt:val>, id=<like:val>, id=<not_like:val>)
+	ID *string `form:"id,omitempty" json:"id,omitempty"`
+
+	// LoginCount search users login_count (pagination prepended operators login_count=<val>, login_count=<ne:val>, login_count=<gt:val>, login_count=<lt:val>)
+	LoginCount *int `form:"login_count,omitempty" json:"login_count,omitempty"`
+
+	// Status search users by status (pagination prepended operators status=<val>, status=<ne:val>, status=<gt:val>, status=<lt:val>, status=<like:val>, status=<not_like:val>) -- valid values: (active, inactive, pending)
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// CreatedAt search users created_at (pagination prepended operators created_at=<val>, created_at=<ne:val>, created_at=<gt:val>, created_at=<lt:val> -- valid timestamp in the format: 2006-01-02T15:04:05.000000Z required
+	CreatedAt *string `form:"created_at,omitempty" json:"created_at,omitempty"`
+
+	// UpdatedAt search users updated_at (pagination prepended operators updated_at=<val>, updated_at=<ne:val>, updated_at=<gt:val>, updated_at=<lt:val> -- valid timestamp in the format: 2006-01-02T15:04:05.000000Z required
+	UpdatedAt *string `form:"updated_at,omitempty" json:"updated_at,omitempty"`
+
+	// LastLoginAt search users last_login_at (pagination prepended operators last_login_at=<val>, lat_login_at=<ne:val>, last_login_at=<gt:val>, last_login_at=<lt:val> -- valid timestamp in the format: 2006-01-02T15:04:05.000000Z required
+	LastLoginAt *string `form:"last_login_at,omitempty" json:"last_login_at,omitempty"`
+}
+
 // CreateMagicLinkJSONRequestBody defines body for CreateMagicLink for application/json ContentType.
 type CreateMagicLinkJSONRequestBody = CreateMagicLinkBody
 
@@ -736,6 +801,9 @@ type ClientInterface interface {
 
 	CreateMagicLink(ctx context.Context, appID AppID, body CreateMagicLinkJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListPaginatedUsers request
+	ListPaginatedUsers(ctx context.Context, appID AppID, params *ListPaginatedUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// CreateUserWithBody request with any body
 	CreateUserWithBody(ctx context.Context, appID AppID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -794,6 +862,18 @@ func (c *Client) CreateMagicLinkWithBody(ctx context.Context, appID AppID, conte
 
 func (c *Client) CreateMagicLink(ctx context.Context, appID AppID, body CreateMagicLinkJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateMagicLinkRequest(c.Server, appID, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListPaginatedUsers(ctx context.Context, appID AppID, params *ListPaginatedUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPaginatedUsersRequest(c.Server, appID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1013,6 +1093,222 @@ func NewCreateMagicLinkRequestWithBody(server string, appID AppID, contentType s
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListPaginatedUsersRequest generates requests for ListPaginatedUsers
+func NewListPaginatedUsersRequest(server string, appID AppID, params *ListPaginatedUsersParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "app_id", runtime.ParamLocationPath, appID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/apps/%s/users", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, *params.Page); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.CreatedBefore != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "created_before", runtime.ParamLocationQuery, *params.CreatedBefore); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.OrderBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "order_by", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Identifier != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "identifier", runtime.ParamLocationQuery, *params.Identifier); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "id", runtime.ParamLocationQuery, *params.ID); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.LoginCount != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "login_count", runtime.ParamLocationQuery, *params.LoginCount); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "status", runtime.ParamLocationQuery, *params.Status); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.CreatedAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "created_at", runtime.ParamLocationQuery, *params.CreatedAt); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.UpdatedAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updated_at", runtime.ParamLocationQuery, *params.UpdatedAt); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.LastLoginAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "last_login_at", runtime.ParamLocationQuery, *params.LastLoginAt); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -1463,6 +1759,9 @@ type ClientWithResponsesInterface interface {
 
 	CreateMagicLinkWithResponse(ctx context.Context, appID AppID, body CreateMagicLinkJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMagicLinkResponse, error)
 
+	// ListPaginatedUsersWithResponse request
+	ListPaginatedUsersWithResponse(ctx context.Context, appID AppID, params *ListPaginatedUsersParams, reqEditors ...RequestEditorFn) (*ListPaginatedUsersResponse, error)
+
 	// CreateUserWithBodyWithResponse request with any body
 	CreateUserWithBodyWithResponse(ctx context.Context, appID AppID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
 
@@ -1526,6 +1825,7 @@ type CreateMagicLinkResponse struct {
 	JSON201      *MagicLinkResponse
 	JSON400      *N400Error
 	JSON401      *N401Error
+	JSON403      *N403Forbidden
 	JSON404      *N404Error
 	JSON500      *N500Error
 }
@@ -1540,6 +1840,32 @@ func (r CreateMagicLinkResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateMagicLinkResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListPaginatedUsersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PaginatedUsersResponse
+	JSON400      *N400Error
+	JSON401      *N401Error
+	JSON404      *N404Error
+	JSON500      *N500Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPaginatedUsersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPaginatedUsersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1750,6 +2076,7 @@ type RevokeUserRefreshTokensResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON401      *N401Error
+	JSON403      *N403Forbidden
 	JSON404      *N404Error
 	JSON500      *N500Error
 }
@@ -1794,6 +2121,15 @@ func (c *ClientWithResponses) CreateMagicLinkWithResponse(ctx context.Context, a
 		return nil, err
 	}
 	return ParseCreateMagicLinkResponse(rsp)
+}
+
+// ListPaginatedUsersWithResponse request returning *ListPaginatedUsersResponse
+func (c *ClientWithResponses) ListPaginatedUsersWithResponse(ctx context.Context, appID AppID, params *ListPaginatedUsersParams, reqEditors ...RequestEditorFn) (*ListPaginatedUsersResponse, error) {
+	rsp, err := c.ListPaginatedUsers(ctx, appID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPaginatedUsersResponse(rsp)
 }
 
 // CreateUserWithBodyWithResponse request with arbitrary body returning *CreateUserResponse
@@ -1960,6 +2296,67 @@ func ParseCreateMagicLinkResponse(rsp *http.Response) (*CreateMagicLinkResponse,
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListPaginatedUsersResponse parses an HTTP response from a ListPaginatedUsersWithResponse call
+func ParseListPaginatedUsersResponse(rsp *http.Response) (*ListPaginatedUsersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPaginatedUsersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedUsersResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest N400Error
@@ -2390,6 +2787,13 @@ func ParseRevokeUserRefreshTokensResponse(rsp *http.Response) (*RevokeUserRefres
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
 		var dest N404Error
