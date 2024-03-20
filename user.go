@@ -70,7 +70,7 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 				Message:    message,
 				StatusCode: http.StatusNotFound,
 				StatusText: http.StatusText(http.StatusNotFound),
-				ErrorText:  string(UserNotFound),
+				ErrorText:  "User not found",
 			}
 		}
 
