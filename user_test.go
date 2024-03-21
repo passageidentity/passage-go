@@ -54,7 +54,7 @@ func TestGetUserInfoByIdentifierError(t *testing.T) {
 	_, err = psg.GetUserByIdentifier("error@passage.id")
 	require.NotNil(t, err)
 
-	expectedMessage := "passage User with Identifier error@passage.id does not exist"
+	expectedMessage := "passage User with Identifier \"error@passage.id\" does not exist"
 	assert.Contains(t, err.Error(), expectedMessage)
 }
 
