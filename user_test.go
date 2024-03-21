@@ -19,6 +19,45 @@ func TestGetUserInfo(t *testing.T) {
 	require.Nil(t, err)
 	assert.Equal(t, PassageUserID, user.ID)
 }
+
+func TestGetUserInfoByIdentifier(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
+	})
+	require.Nil(t, err)
+
+	createUserBody := passage.CreateUserBody{
+		Email: RandomEmail,
+	}
+
+	user, err := psg.CreateUser(createUserBody)
+	require.Nil(t, err)
+	assert.Equal(t, RandomEmail, user.Email)
+
+	userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
+	require.Nil(t, err)
+
+	userById, err := psg.GetUser(user.ID)
+	require.Nil(t, err)
+
+	assert.Equal(t, user.ID, userById.ID)
+
+	assert.Equal(t, userById, userByIdentifier)
+}
+
+func TestGetUserInfoByIdentifierError(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
+	})
+	require.Nil(t, err)
+
+	_, err = psg.GetUserByIdentifier("error@passage.id")
+	require.NotNil(t, err)
+
+	expectedMessage := "passage User with Identifier error@passage.id does not exist"
+	assert.Contains(t, err.Error(), expectedMessage)
+}
+
 func TestActivateUser(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
