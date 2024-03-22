@@ -73,7 +73,7 @@ func TestGetUserInfoByIdentifierPhone(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	phone := "+15005550006"
+	phone := "+15005550007"
 	createUserBody := passage.CreateUserBody{
 		Phone: phone,
 	}
