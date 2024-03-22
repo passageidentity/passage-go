@@ -52,16 +52,15 @@ func TestGetUserInfoByIdentifierEmailUpperCase(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	email := strings.ToUpper(RandomEmail)
 	createUserBody := passage.CreateUserBody{
-		Email: email,
+		Email: RandomEmail,
 	}
 
 	user, err := psg.CreateUser(createUserBody)
 	require.Nil(t, err)
 	assert.Equal(t, RandomEmail, user.Email)
 
-	userByIdentifier, err := psg.GetUserByIdentifier(email)
+	userByIdentifier, err := psg.GetUserByIdentifier(strings.ToUpper(RandomEmail))
 	require.Nil(t, err)
 
 	assert.Equal(t, user.ID, userByIdentifier.ID)
