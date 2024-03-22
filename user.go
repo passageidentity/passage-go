@@ -3,9 +3,14 @@ package passage
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
 )
 
-const UserIDDoesNotExist string = "passage User with ID \"%v\" does not exist"
+const (
+	UserIDDoesNotExist     string = "passage User with ID \"%v\" does not exist"
+	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
+)
 
 // GetUser gets a user using their userID
 // returns user on success, error on failure
@@ -27,6 +32,58 @@ func (a *App) GetUser(userID string) (*User, error) {
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
 		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+	case res.JSON500 != nil:
+		errorText = res.JSON500.Error
+	}
+
+	return nil, Error{
+		Message:    message,
+		StatusCode: res.StatusCode(),
+		StatusText: res.Status(),
+		ErrorText:  errorText,
+	}
+}
+
+// GetUserByIdentifier gets a user using their identifier
+// returns user on success, error on failure
+func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
+	var errorText string
+	message := "failed to get Passage User By Identifier"
+	limit := 1
+	lowerIdentifier := strings.ToLower(identifier)
+	res, err := a.client.ListPaginatedUsersWithResponse(
+		context.Background(),
+		a.ID,
+		&ListPaginatedUsersParams{
+			Limit:      &limit,
+			Identifier: &lowerIdentifier,
+		},
+	)
+
+	if err != nil {
+		return nil, Error{Message: fmt.Sprintf("network error:failed to get Passage User by Identifier. message: %s, err: %+v", message, err)}
+	}
+
+	if res.JSON200 != nil {
+		users := res.JSON200.Users
+		if len(users) == 0 {
+			message = fmt.Sprintf(IdentifierDoesNotExist, identifier)
+			return nil, Error{
+				Message:    message,
+				StatusCode: http.StatusNotFound,
+				StatusText: http.StatusText(http.StatusNotFound),
+				ErrorText:  "User not found",
+			}
+		}
+
+		return a.GetUser(users[0].ID)
+	}
+
+	switch {
+	case res.JSON401 != nil:
+		errorText = res.JSON401.Error
+	case res.JSON404 != nil:
+		errorText = res.JSON404.Error
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
