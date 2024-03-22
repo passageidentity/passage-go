@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 const (
@@ -50,13 +49,13 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 	var errorText string
 	message := "failed to get Passage User By Identifier"
 	limit := 1
-	lowerIdentifier := strings.ToLower(identifier)
+	ilikeIdentifier := "like:(?i)" + identifier
 	res, err := a.client.ListPaginatedUsersWithResponse(
 		context.Background(),
 		a.ID,
 		&ListPaginatedUsersParams{
 			Limit:      &limit,
-			Identifier: &lowerIdentifier,
+			Identifier: &ilikeIdentifier,
 		},
 	)
 
