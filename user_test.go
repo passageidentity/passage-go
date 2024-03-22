@@ -2,6 +2,7 @@ package passage_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/passageidentity/passage-go"
@@ -35,6 +36,53 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 	assert.Equal(t, RandomEmail, user.Email)
 
 	userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
+	require.Nil(t, err)
+
+	userById, err := psg.GetUser(user.ID)
+	require.Nil(t, err)
+
+	assert.Equal(t, user.ID, userById.ID)
+
+	assert.Equal(t, userById, userByIdentifier)
+}
+
+func TestGetUserInfoByIdentifierEmailUpperCase(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
+	})
+	require.Nil(t, err)
+
+	email := strings.ToUpper(RandomEmail)
+	createUserBody := passage.CreateUserBody{
+		Email: email,
+	}
+
+	user, err := psg.CreateUser(createUserBody)
+	require.Nil(t, err)
+	assert.Equal(t, RandomEmail, user.Email)
+
+	userByIdentifier, err := psg.GetUserByIdentifier(email)
+	require.Nil(t, err)
+
+	assert.Equal(t, user.ID, userByIdentifier.ID)
+}
+
+func TestGetUserInfoByIdentifierPhone(t *testing.T) {
+	psg, err := passage.New(PassageAppID, &passage.Config{
+		APIKey: PassageApiKey,
+	})
+	require.Nil(t, err)
+
+	phone := "+15005550006"
+	createUserBody := passage.CreateUserBody{
+		Phone: phone,
+	}
+
+	user, err := psg.CreateUser(createUserBody)
+	require.Nil(t, err)
+	assert.Equal(t, phone, user.Phone)
+
+	userByIdentifier, err := psg.GetUserByIdentifier(phone)
 	require.Nil(t, err)
 
 	userById, err := psg.GetUser(user.ID)
