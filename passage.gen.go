@@ -232,6 +232,7 @@ type AppInfo struct {
 	// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
 	AuthMethods              AuthMethods          `json:"auth_methods"`
 	AuthOrigin               string               `json:"auth_origin"`
+	AutoThemeEnabled         bool                 `json:"auto_theme_enabled"`
 	CreatedAt                time.Time            `json:"created_at"`
 	DarkLogoURL              *string              `json:"dark_logo_url,omitempty"`
 	DefaultLanguage          string               `json:"default_language"`
@@ -444,9 +445,12 @@ type ListDevicesResponse struct {
 
 // ListPaginatedUsersItem defines model for ListPaginatedUsersItem.
 type ListPaginatedUsersItem struct {
-	CreatedAt     time.Time               `json:"created_at"`
-	Email         string                  `json:"email"`
-	EmailVerified bool                    `json:"email_verified"`
+	CreatedAt     time.Time `json:"created_at"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+
+	// ExternalID The external ID of the user. Only set if the user was created in a Flex app.
+	ExternalID    string                  `json:"external_id"`
 	ID            string                  `json:"id"`
 	LastLoginAt   time.Time               `json:"last_login_at"`
 	LoginCount    int                     `json:"login_count"`
@@ -564,9 +568,12 @@ type UserEventStatus string
 
 // User defines model for User.
 type User struct {
-	CreatedAt         time.Time              `json:"created_at"`
-	Email             string                 `json:"email"`
-	EmailVerified     bool                   `json:"email_verified"`
+	CreatedAt     time.Time `json:"created_at"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+
+	// ExternalID The external ID of the user. Only set if the user was created in a Flex app.
+	ExternalID        string                 `json:"external_id"`
 	ID                string                 `json:"id"`
 	LastLoginAt       time.Time              `json:"last_login_at"`
 	LoginCount        int                    `json:"login_count"`
