@@ -1,6 +1,8 @@
 module github.com/passageidentity/passage-go
 
-go 1.22.5
+go 1.22.0
+
+toolchain go1.22.5
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
