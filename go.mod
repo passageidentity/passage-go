@@ -2,7 +2,7 @@ module github.com/passageidentity/passage-go
 
 go 1.21
 
-toolchain go1.22.1
+toolchain go1.21.0
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
