@@ -124,6 +124,13 @@ const (
 	Vue        Technologies = "vue"
 )
 
+// Defines values for ThemeType.
+const (
+	Auto  ThemeType = "auto"
+	Dark  ThemeType = "dark"
+	Light ThemeType = "light"
+)
+
 // Defines values for TTLDisplayUnit.
 const (
 	D TTLDisplayUnit = "d"
@@ -232,6 +239,7 @@ type AppInfo struct {
 	// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
 	AuthMethods              AuthMethods          `json:"auth_methods"`
 	AuthOrigin               string               `json:"auth_origin"`
+	AutoThemeEnabled         bool                 `json:"auto_theme_enabled"`
 	CreatedAt                time.Time            `json:"created_at"`
 	DarkLogoURL              *string              `json:"dark_logo_url,omitempty"`
 	DefaultLanguage          string               `json:"default_language"`
@@ -242,25 +250,26 @@ type AppInfo struct {
 	Hosted bool `json:"hosted"`
 
 	// HostedSubdomain the subdomain of the app's hosted login page
-	HostedSubdomain               string  `json:"hosted_subdomain"`
-	ID                            string  `json:"id"`
-	IDTokenLifetime               *int    `json:"id_token_lifetime,omitempty"`
-	Layouts                       Layouts `json:"layouts"`
-	LightLogoURL                  *string `json:"light_logo_url,omitempty"`
-	LoginURL                      string  `json:"login_url"`
-	Name                          string  `json:"name"`
-	PassageBranding               bool    `json:"passage_branding"`
-	ProfileManagement             bool    `json:"profile_management"`
-	PublicSignup                  bool    `json:"public_signup"`
-	RedirectURL                   string  `json:"redirect_url"`
-	RefreshAbsoluteLifetime       int     `json:"refresh_absolute_lifetime"`
-	RefreshEnabled                bool    `json:"refresh_enabled"`
-	RefreshInactivityLifetime     int     `json:"refresh_inactivity_lifetime"`
-	RequireEmailVerification      bool    `json:"require_email_verification"`
-	RequireIdentifierVerification bool    `json:"require_identifier_verification"`
-	RequiredIdentifier            string  `json:"required_identifier"`
-	Role                          string  `json:"role"`
-	RSAPublicKey                  string  `json:"rsa_public_key"`
+	HostedSubdomain               string    `json:"hosted_subdomain"`
+	HostedTheme                   ThemeType `json:"hosted_theme"`
+	ID                            string    `json:"id"`
+	IDTokenLifetime               *int      `json:"id_token_lifetime,omitempty"`
+	Layouts                       Layouts   `json:"layouts"`
+	LightLogoURL                  *string   `json:"light_logo_url,omitempty"`
+	LoginURL                      string    `json:"login_url"`
+	Name                          string    `json:"name"`
+	PassageBranding               bool      `json:"passage_branding"`
+	ProfileManagement             bool      `json:"profile_management"`
+	PublicSignup                  bool      `json:"public_signup"`
+	RedirectURL                   string    `json:"redirect_url"`
+	RefreshAbsoluteLifetime       int       `json:"refresh_absolute_lifetime"`
+	RefreshEnabled                bool      `json:"refresh_enabled"`
+	RefreshInactivityLifetime     int       `json:"refresh_inactivity_lifetime"`
+	RequireEmailVerification      bool      `json:"require_email_verification"`
+	RequireIdentifierVerification bool      `json:"require_identifier_verification"`
+	RequiredIdentifier            string    `json:"required_identifier"`
+	Role                          string    `json:"role"`
+	RSAPublicKey                  string    `json:"rsa_public_key"`
 
 	// Secret can only be retrieved by an app admin
 	Secret               *string             `json:"secret,omitempty"`
@@ -303,7 +312,9 @@ type CreateMagicLinkBody struct {
 	Email   string      `json:"email"`
 
 	// Language language of the email to send (optional)
-	Language      string        `json:"language,omitempty"`
+	Language string `json:"language,omitempty"`
+
+	// MagicLinkPath must be a relative url
 	MagicLinkPath string        `json:"magic_link_path"`
 	Phone         string        `json:"phone"`
 	RedirectURL   string        `json:"redirect_url"`
@@ -444,9 +455,12 @@ type ListDevicesResponse struct {
 
 // ListPaginatedUsersItem defines model for ListPaginatedUsersItem.
 type ListPaginatedUsersItem struct {
-	CreatedAt     time.Time               `json:"created_at"`
-	Email         string                  `json:"email"`
-	EmailVerified bool                    `json:"email_verified"`
+	CreatedAt     time.Time `json:"created_at"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+
+	// ExternalID The external ID of the user. Only set if the user was created in a Flex app.
+	ExternalID    string                  `json:"external_id"`
 	ID            string                  `json:"id"`
 	LastLoginAt   time.Time               `json:"last_login_at"`
 	LoginCount    int                     `json:"login_count"`
@@ -545,6 +559,9 @@ type PasskeysAuthMethod struct {
 // Technologies defines model for Technologies.
 type Technologies string
 
+// ThemeType defines model for ThemeType.
+type ThemeType string
+
 // TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
 // * `s` - seconds
 // * `m` - minutes
@@ -564,9 +581,12 @@ type UserEventStatus string
 
 // User defines model for User.
 type User struct {
-	CreatedAt         time.Time              `json:"created_at"`
-	Email             string                 `json:"email"`
-	EmailVerified     bool                   `json:"email_verified"`
+	CreatedAt     time.Time `json:"created_at"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+
+	// ExternalID The external ID of the user. Only set if the user was created in a Flex app.
+	ExternalID        string                 `json:"external_id"`
 	ID                string                 `json:"id"`
 	LastLoginAt       time.Time              `json:"last_login_at"`
 	LoginCount        int                    `json:"login_count"`
