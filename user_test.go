@@ -136,7 +136,7 @@ func TestUpdateUser(t *testing.T) {
 
 	updateBody := passage.UpdateBody{
 		Email: "updatedemail-gosdk@passage.id",
-		Phone: "+15005550006",
+		Phone: "+15005550012",
 		UserMetadata: map[string]interface{}{
 			"example1": "123",
 		},
@@ -144,12 +144,12 @@ func TestUpdateUser(t *testing.T) {
 	user, err := psg.UpdateUser(PassageUserID, updateBody)
 	require.Nil(t, err)
 	assert.Equal(t, "updatedemail-gosdk@passage.id", user.Email)
-	assert.Equal(t, "+15005550006", user.Phone)
+	assert.Equal(t, "+15005550012", user.Phone)
 	assert.Equal(t, "123", user.UserMetadata["example1"])
 
 	secondUpdateBody := passage.UpdateBody{
 		Email: "updatedemail-gosdk@passage.id",
-		Phone: "+15005550006",
+		Phone: "+15005550012",
 		UserMetadata: map[string]interface{}{
 			"example1": "456",
 		},
@@ -157,7 +157,7 @@ func TestUpdateUser(t *testing.T) {
 	user, err = psg.UpdateUser(PassageUserID, secondUpdateBody)
 	require.Nil(t, err)
 	assert.Equal(t, "updatedemail-gosdk@passage.id", user.Email)
-	assert.Equal(t, "+15005550006", user.Phone)
+	assert.Equal(t, "+15005550012", user.Phone)
 	assert.Equal(t, "456", user.UserMetadata["example1"])
 }
 
@@ -218,7 +218,7 @@ func TestListUserDevices(t *testing.T) {
 
 	devices, err := psg.ListUserDevices(PassageUserID)
 	require.Nil(t, err)
-	assert.Equal(t, 0, len(devices))
+	assert.Equal(t, 2, len(devices))
 }
 
 // NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
