@@ -4,6 +4,6 @@
 
 ✨ Easily authenticate requests and manage Passage users.
 
-📚 See examples in the [Passage docs](https://docs.passage.id/backend-libraries/go).
+📚 See examples in the [Passage docs](https://docs.passage.id/complete/backend-sdks/go).
 
 🔎 Reference detailed documentation in the [Go Reference](https://pkg.go.dev/github.com/passageidentity/passage-go).
