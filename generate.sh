@@ -45,7 +45,7 @@ transforms='{
 }'
 
 # Function to perform replacements
-command -v gorename &> /dev/null || go install golang.org/x/tools/cmd/gorename@latest
+command -v gorename &> /dev/null || go install golang.org/x/tools/cmd/gorename@v0.24.0
 replace() {
     local in=$1 out=$2
     gorename -from "\"github.com/passageidentity/passage-go\".$in" -to "$out" -force
