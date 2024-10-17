@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt"
-	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
 )
 
 // AuthenticateRequest determines whether or not to authenticate via header or cookie authentication
@@ -42,33 +41,32 @@ func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 		return nil, Error{Message: "expecting JWT header to have string kid"}
 	}
 
-	key, ok := jwkCache[a.ID].LookupKeyID(keyID)
+	key, ok := a.JWKS.LookupKeyID(keyID)
 	// if key doesn't exist, re-fetch one more time to see if this jwk was just added
 	if !ok {
-		a.fetchJWKS()
-		key, ok := jwkCache[a.ID].LookupKeyID(keyID)
+		if err := a.refreshJWKSCache(); err != nil {
+			return nil, err
+		}
+
+		key, ok = a.JWKS.LookupKeyID(keyID)
 		if !ok {
 			return nil, Error{Message: fmt.Sprintf("unable to find key %q", keyID)}
 		}
-
-		var pubKey interface{}
-		err := key.Raw(&pubKey)
-		return pubKey, err
 	}
 
 	var pubKey interface{}
 	err := key.Raw(&pubKey)
+
 	return pubKey, err
 }
 
-// fetchJWKS returns the JWKS for the current app
-func (a *App) fetchJWKS() (jwkLibrary.Set, error) {
-	jwks, err := jwkLibrary.Fetch(context.Background(), fmt.Sprintf("https://auth.passage.id/v1/apps/%v/.well-known/jwks.json", a.ID))
-	if err != nil {
-		return nil, Error{Message: "failed to fetch jwks"}
+func (a *App) refreshJWKSCache() error {
+	var err error
+	if a.JWKS, err = a.jwksCache.Refresh(context.Background(), fmt.Sprintf(jwksUrl, a.ID)); err != nil {
+		return Error{Message: "failed to fetch jwks"}
 	}
-	jwkCache[a.ID] = jwks
-	return jwks, nil
+
+	return nil
 }
 
 // AuthenticateRequestWithCookie fetches a cookie from the request and uses it to authenticate
