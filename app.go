@@ -2,9 +2,12 @@ package passage
 
 import (
 	"context"
+	"fmt"
 
-	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/v2/jwk"
 )
+
+const jwksUrl = "https://auth.passage.id/v1/apps/%v/.well-known/jwks.json"
 
 type Config struct {
 	APIKey     string
@@ -12,10 +15,11 @@ type Config struct {
 }
 
 type App struct {
-	ID     string
-	JWKS   jwkLibrary.Set
-	Config *Config
-	client *ClientWithResponses
+	ID        string
+	JWKS      jwk.Set
+	Config    *Config
+	client    *ClientWithResponses
+	jwksCache *jwk.Cache
 }
 
 func New(appID string, config *Config) (*App, error) {
@@ -38,15 +42,16 @@ func New(appID string, config *Config) (*App, error) {
 		client: client,
 	}
 
-	app.JWKS, err = app.fetchJWKS()
-	if err != nil {
+	// cached set setup taken from https://github.com/lestrrat-go/jwx/blob/8d1d78351e9f259723f9f558889a78e327379683/examples/jwk_cache_example_test.go#L21-L36
+	app.jwksCache = jwk.NewCache(context.Background())
+	app.jwksCache.Register(fmt.Sprintf(jwksUrl, appID))
+
+	if err := app.refreshJWKSCache(); err != nil {
 		return nil, err
 	}
 
 	return &app, nil
 }
-
-var jwkCache map[string]jwkLibrary.Set = make(map[string]jwkLibrary.Set)
 
 // GetApp gets information about an app
 // returns App on success, error on failure
