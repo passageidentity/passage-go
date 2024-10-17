@@ -1,6 +1,7 @@
 name: Run Tests
 
-on: 
+on:
+  workflow_call:
   workflow_dispatch:
   pull_request:
 
@@ -26,3 +27,6 @@ jobs:
 
       - name: Test
         run: go test ./...
+
+      - name: Test with race detector
+        run: go test -race -run TestAppJWKSCacheWriteConcurrency
