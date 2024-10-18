@@ -105,9 +105,28 @@ func (a *App) ValidateAuthToken(authToken string) (string, bool) {
 		return "", false
 	}
 
-	if !claims.VerifyAudience(a.ID, true) {
+	expectedAud, err := a.getExpectedAudienceValue()
+	if err != nil {
+		return "", false
+	}
+
+	if !claims.VerifyAudience(expectedAud, true) {
 		return "", false;
 	}
 
 	return userID, true
+}
+
+
+func (a *App) getExpectedAudienceValue() (string, error) {
+	appInfo, err := a.GetApp()
+	if err != nil {
+		return "", err
+	}
+
+	if appInfo.Hosted {
+		return appInfo.ID, nil
+	} else {
+		return appInfo.AuthOrigin, nil
+	}
 }
