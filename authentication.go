@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
+	"golang.org/x/exp/slices"
 )
 
 // AuthenticateRequest determines whether or not to authenticate via header or cookie authentication
@@ -105,5 +106,14 @@ func (a *App) ValidateAuthToken(authToken string) (string, bool) {
 		return "", false
 	}
 
+	audience, ok := claims["aud"].([]string)
+	if !ok {
+		return "", false
+	}
+
+	if !slices.Contains(audience, a.ID) {
+		return "", false
+	}
+	
 	return userID, true
 }
