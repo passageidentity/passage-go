@@ -105,5 +105,9 @@ func (a *App) ValidateAuthToken(authToken string) (string, bool) {
 		return "", false
 	}
 
+	if !claims.VerifyAudience(a.ID, true) {
+		return "", false;
+	}
+
 	return userID, true
 }
