@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.1] - 2024-10-24
+
+### Added
+
+- LICENSE file added
+
+### Changed
+
+- README updated
+
 ## [1.11.0] - 2024-03-21
 
 ### Added
