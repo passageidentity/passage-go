@@ -44,8 +44,6 @@ go get github.com/passageidentity/passage-go
 
 ```go
 import (
-	"net/http"
-
 	"github.com/passageidentity/passage-go"
 )
 ```
@@ -53,7 +51,7 @@ import (
 ### Initialize
 
 ```go
-psg, _ := passage.New("YOUR_PASSAGE_APP_ID", nil)
+psg, err := passage.New(os.Getenv("PASSAGE_APP_ID"), &passage.Config{APIKey: os.Getenv("PASSAGE_API_KEY")})
 ```
 
 ### Go Passwordless
