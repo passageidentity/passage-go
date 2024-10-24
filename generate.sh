@@ -28,7 +28,8 @@ transforms='{
     "CreateMagicLinkRequest": "CreateMagicLinkBody",
     "CreateUserRequest": "CreateUserBody",
     "Inactive": "StatusInactive",
-    "Login": "LoginType",
+    "MagicLinkTypeLogin": "LoginType",
+    "MagicLinkTypeVerifyIdentifier": "VerifyIdentifierType",
     "MagicLinkChannel": "ChannelType",
     "MagicLinkChannelEmail": "EmailChannel",
     "MagicLinkChannelPhone": "PhoneChannel",
@@ -40,8 +41,7 @@ transforms='{
     "UserMetadataFieldTypeEmail": "EmailMD",
     "UserMetadataFieldTypeInteger": "IntegerMD",
     "UserMetadataFieldTypePhone": "PhoneMD",
-    "UserMetadataFieldTypeString": "StringMD",
-    "VerifyIdentifier": "VerifyIdentifierType"
+    "UserMetadataFieldTypeString": "StringMD"
 }'
 
 # Function to perform replacements
