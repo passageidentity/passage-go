@@ -15,10 +15,12 @@ env:
 jobs:
   run-test-workflow:
     uses: ./.github/workflows/on-pull-request.yml
+    secrets: inherit
 
   build:
     name: Create Release
     runs-on: ubuntu-latest
+    needs: run-test-workflow
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
