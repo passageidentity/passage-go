@@ -42,7 +42,6 @@ func New(appID string, config *Config) (*App, error) {
 		client: client,
 	}
 
-	// cached set setup taken from https://github.com/lestrrat-go/jwx/blob/8d1d78351e9f259723f9f558889a78e327379683/examples/jwk_cache_example_test.go#L21-L36
 	app.jwksCache = jwk.NewCache(context.Background())
 	app.jwksCache.Register(fmt.Sprintf(jwksUrl, appID))
 
