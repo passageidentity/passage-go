@@ -13,20 +13,67 @@ env:
   PASSAGE_AUTH_TOKEN: ${{ secrets.PASSAGE_AUTH_TOKEN }}
 
 jobs:
-  build:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.20.14'
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.20.14'
+      - name: Format
+        run: |
+          if [[ $(gofmt -s -d .) ]]; then
+            echo "Run 'gofmt -s -w .' to format code."
+            exit 1
+          fi
+  test:
     name: Run Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: '1.20.14'
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Test
         run: go test ./...
-
       - name: Test with race detector
         run: go test -race -run TestAppJWKSCacheWriteConcurrency
+  lint-pr-title:
+    name: Lint PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        id: lint_pr_title
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        # When the previous steps fails, the workflow would stop. By adding this
+        # condition you can continue the execution with the populated error message.
+        if: always() && (steps.lint_pr_title.outputs.error_message != null)
+        with:
+          header: pr-title-lint-error
+          message: |
+            Please update the pull request title to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/).
+            Details:
+            ```
+            ${{ steps.lint_pr_title.outputs.error_message }}
+            ```
+      # Delete a previous comment when the issue has been resolved
+      - if: ${{ steps.lint_pr_title.outputs.error_message == null }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          delete: true
