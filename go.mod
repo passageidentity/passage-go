@@ -9,6 +9,8 @@ require (
 	github.com/stretchr/testify v1.9.0
 )
 
+require github.com/go-ozzo/ozzo-validation/v4 v4.3.0
+
 require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect

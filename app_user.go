@@ -5,13 +5,74 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// Deprecated: Use Get() instead.
-// GetUser gets a user using their userID
+type AppUser struct {
+	AppID  string
+	UserID string
+	client *ClientWithResponses
+}
+
+const (
+	UserIDDoesNotExist     string = "passage User with ID \"%v\" does not exist"
+	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
+)
+
+func NewAppUser(appID, userID string, config *Config) (*AppUser, error) {
+	if config == nil {
+		config = &Config{}
+	}
+
+	client, err := NewClientWithResponses(
+		"https://api.passage.id/v1/",
+		withPassageVersion,
+		withAPIKey(config.APIKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	appUser := AppUser{
+		AppID:  appID,
+		UserID: userID,
+		client: client,
+	}
+
+	return &appUser, nil
+}
+
+func NewAppUserByIdentifier(appID, identifier string, config *Config) (*AppUser, error) {
+	if config == nil {
+		config = &Config{}
+	}
+
+	client, err := NewClientWithResponses(
+		"https://api.passage.id/v1/",
+		withPassageVersion,
+		withAPIKey(config.APIKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := getUserIdByIdentifier(appID, identifier, client)
+
+	appUser := AppUser{
+		AppID:  appID,
+		UserID: *userID,
+		client: client,
+	}
+
+	return &appUser, nil
+}
+
+// Get gets a user using their userID
 // returns user on success, error on failure
-func (a *App) GetUser(userID string) (*User, error) {
-	res, err := a.client.GetUserWithResponse(context.Background(), a.ID, userID)
+func (a *AppUser) Get() (*User, error) {
+	a.validate()
+	res, err := a.client.GetUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to get Passage User"}
 	}
@@ -27,7 +88,7 @@ func (a *App) GetUser(userID string) (*User, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -40,64 +101,11 @@ func (a *App) GetUser(userID string) (*User, error) {
 	}
 }
 
-// Deprecated: Use GetByIdentifier() instead.
-// GetUserByIdentifier gets a user using their identifier
+// Activate activates a user using their userID
 // returns user on success, error on failure
-func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
-	var errorText string
-	message := "failed to get Passage User By Identifier"
-	limit := 1
-	lowerIdentifier := strings.ToLower(identifier)
-	res, err := a.client.ListPaginatedUsersWithResponse(
-		context.Background(),
-		a.ID,
-		&ListPaginatedUsersParams{
-			Limit:      &limit,
-			Identifier: &lowerIdentifier,
-		},
-	)
-
-	if err != nil {
-		return nil, Error{Message: fmt.Sprintf("network error:failed to get Passage User by Identifier. message: %s, err: %+v", message, err)}
-	}
-
-	if res.JSON200 != nil {
-		users := res.JSON200.Users
-		if len(users) == 0 {
-			message = fmt.Sprintf(IdentifierDoesNotExist, identifier)
-			return nil, Error{
-				Message:    message,
-				StatusCode: http.StatusNotFound,
-				StatusText: http.StatusText(http.StatusNotFound),
-				ErrorText:  "User not found",
-			}
-		}
-
-		return a.GetUser(users[0].ID)
-	}
-
-	switch {
-	case res.JSON401 != nil:
-		errorText = res.JSON401.Error
-	case res.JSON404 != nil:
-		errorText = res.JSON404.Error
-	case res.JSON500 != nil:
-		errorText = res.JSON500.Error
-	}
-
-	return nil, Error{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		StatusText: res.Status(),
-		ErrorText:  errorText,
-	}
-}
-
-// Deprecated: Use Activate() instead.
-// ActivateUser activates a user using their userID
-// returns user on success, error on failure
-func (a *App) ActivateUser(userID string) (*User, error) {
-	res, err := a.client.ActivateUserWithResponse(context.Background(), a.ID, userID)
+func (a *AppUser) Activate() (*User, error) {
+	a.validate()
+	res, err := a.client.ActivateUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to activate Passage User"}
 	}
@@ -113,7 +121,7 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -126,11 +134,11 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 	}
 }
 
-// Deprecated: Use Deactivate() instead.
-// DeactivateUser deactivates a user using their userID
+// Deactivate deactivates a user using their userID
 // returns user on success, error on failure
-func (a *App) DeactivateUser(userID string) (*User, error) {
-	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.ID, userID)
+func (a *AppUser) Deactivate() (*User, error) {
+	a.validate()
+	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to deactivate Passage User"}
 	}
@@ -146,7 +154,7 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -159,11 +167,11 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 	}
 }
 
-// Deprecated: Use Update() instead.
-// UpdateUser receives an UpdateBody struct, updating the corresponding user's attribute(s)
+// Update receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
-func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
-	res, err := a.client.UpdateUserWithResponse(context.Background(), a.ID, userID, updateBody)
+func (a *AppUser) Update(updateBody UpdateBody) (*User, error) {
+	a.validate()
+	res, err := a.client.UpdateUserWithResponse(context.Background(), a.AppID, a.UserID, updateBody)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to update Passage User's attributes"}
 	}
@@ -181,7 +189,7 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -194,11 +202,11 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 	}
 }
 
-// Deprecated: Use Delete() instead.
-// DeleteUser receives a userID (string), and deletes the corresponding user
+// Delete deletes a user by their user string
 // returns true on success, false and error on failure (bool, err)
-func (a *App) DeleteUser(userID string) (bool, error) {
-	res, err := a.client.DeleteUserWithResponse(context.Background(), a.ID, userID)
+func (a *AppUser) Delete() (bool, error) {
+	a.validate()
+	res, err := a.client.DeleteUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return false, Error{Message: "network error: failed to delete Passage User"}
 	}
@@ -214,7 +222,7 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -227,11 +235,11 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 	}
 }
 
-// Deprecated: Use Create() instead.
-// CreateUser receives a CreateUserBody struct, creating a user with provided values
+// Create receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
-func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
-	res, err := a.client.CreateUserWithResponse(context.Background(), a.ID, createUserBody)
+func (a *AppUser) Create(createUserBody CreateUserBody) (*User, error) {
+	a.validateForCreate()
+	res, err := a.client.CreateUserWithResponse(context.Background(), a.AppID, createUserBody)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to create Passage User"}
 	}
@@ -260,11 +268,11 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	}
 }
 
-// Deprecated: Use ListDevices() instead.
-// ListUserDevices lists a user's devices
+// ListDevices lists a user's devices
 // returns a list of devices on success, error on failure
-func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
-	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.ID, userID)
+func (a *AppUser) ListDevices() ([]WebAuthnDevices, error) {
+	a.validate()
+	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to list devices for a Passage User"}
 	}
@@ -280,7 +288,7 @@ func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -293,11 +301,11 @@ func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 	}
 }
 
-// Deprecated: Use RevokeDevice() instead.
-// RevokeUserDevice gets a user using their userID
+// RevokeDevice gets a user using their userID
 // returns a true success, error on failure
-func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
-	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.ID, userID, deviceID)
+func (a *AppUser) RevokeDevice(deviceID string) (bool, error) {
+	a.validate()
+	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.AppID, a.UserID, deviceID)
 	if err != nil {
 		return false, Error{Message: "network error: failed to delete a device for a Passage User"}
 	}
@@ -315,7 +323,7 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 		errorText = res.JSON404.Error
 		switch res.JSON404.Code {
 		case UserNotFound:
-			message = fmt.Sprintf(UserIDDoesNotExist, userID)
+			message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 		case DeviceNotFound:
 			message = fmt.Sprintf("Device with ID \"%v\" does not exist", deviceID)
 		}
@@ -331,11 +339,11 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 	}
 }
 
-// Deprecated: Use SignOut() instead.
 // Signout revokes a users refresh tokens
 // returns true on success, error on failure
-func (a *App) SignOut(userID string) (bool, error) {
-	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.ID, userID)
+func (a *AppUser) SignOut() (bool, error) {
+	a.validate()
+	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return false, Error{Message: "network error: failed to revoke all refresh tokens for a Passage User"}
 	}
@@ -351,7 +359,7 @@ func (a *App) SignOut(userID string) (bool, error) {
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		message = fmt.Sprintf(UserIDDoesNotExist, a.UserID)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
 	}
@@ -362,4 +370,74 @@ func (a *App) SignOut(userID string) (bool, error) {
 		StatusText: res.Status(),
 		ErrorText:  errorText,
 	}
+}
+
+// getByIdentifier gets a userID using their identifier
+// returns userID on success, error on failure
+func getUserIdByIdentifier(appID, identifier string, client *ClientWithResponses) (*string, error) {
+	var errorText string
+	message := "failed to get Passage User By Identifier"
+	limit := 1
+	lowerIdentifier := strings.ToLower(identifier)
+	res, err := client.ListPaginatedUsersWithResponse(
+		context.Background(),
+		appID,
+		&ListPaginatedUsersParams{
+			Limit:      &limit,
+			Identifier: &lowerIdentifier,
+		},
+	)
+
+	if err != nil {
+		return nil, Error{Message: fmt.Sprintf("network error:failed to get Passage User by Identifier. message: %s, err: %+v", message, err)}
+	}
+
+	if res.JSON200 != nil {
+		users := res.JSON200.Users
+		if len(users) == 0 {
+			message = fmt.Sprintf(IdentifierDoesNotExist, identifier)
+			return nil, Error{
+				Message:    message,
+				StatusCode: http.StatusNotFound,
+				StatusText: http.StatusText(http.StatusNotFound),
+				ErrorText:  "User not found",
+			}
+		}
+
+		userID := users[0].ID
+		return &userID, nil
+	}
+
+	switch {
+	case res.JSON401 != nil:
+		errorText = res.JSON401.Error
+	case res.JSON404 != nil:
+		errorText = res.JSON404.Error
+	case res.JSON500 != nil:
+		errorText = res.JSON500.Error
+	}
+
+	return nil, Error{
+		Message:    message,
+		StatusCode: res.StatusCode(),
+		StatusText: res.Status(),
+		ErrorText:  errorText,
+	}
+}
+
+func (a *AppUser) validate() error {
+	return validation.ValidateStruct(
+		a,
+		validation.Field(&a.AppID, validation.Required),
+		validation.Field(&a.client, validation.Required),
+		validation.Field(&a.UserID, validation.Required),
+	)
+}
+
+func (a *AppUser) validateForCreate() error {
+	return validation.ValidateStruct(
+		a,
+		validation.Field(&a.AppID, validation.Required),
+		validation.Field(&a.client, validation.Required),
+	)
 }
