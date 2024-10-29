@@ -31,7 +31,7 @@ func generateRandomEmail(prefixLength int) string {
 }
 
 func TestMain(m *testing.M) {
-	godotenv.Load(".env")
+	_ = godotenv.Load(".env")
 
 	PassageAppID = os.Getenv("PASSAGE_APP_ID")
 	PassageApiKey = os.Getenv("PASSAGE_API_KEY")
