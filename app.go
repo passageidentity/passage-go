@@ -43,7 +43,9 @@ func New(appID string, config *Config) (*App, error) {
 	}
 
 	app.jwksCache = jwk.NewCache(context.Background())
-	app.jwksCache.Register(fmt.Sprintf(jwksUrl, appID))
+	if err := app.jwksCache.Register(fmt.Sprintf(jwksUrl, appID)); err != nil {
+		return nil, err
+	}
 
 	if err := app.refreshJWKSCache(); err != nil {
 		return nil, err
