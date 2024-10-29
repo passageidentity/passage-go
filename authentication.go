@@ -42,14 +42,8 @@ func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 	}
 
 	key, ok := a.JWKS.LookupKeyID(keyID)
-	// if key doesn't exist, re-fetch one more time to see if this jwk was just added
 	if !ok {
 		if err := a.refreshJWKSCache(); err != nil {
-			return nil, err
-		}
-
-		key, ok = a.JWKS.LookupKeyID(keyID)
-		if !ok {
 			return nil, Error{Message: fmt.Sprintf("unable to find key %q", keyID)}
 		}
 	}
