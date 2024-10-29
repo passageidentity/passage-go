@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.0] - 2024-10-24
+
+### Changed
+
+- go version from 1.16 to 1.22
+
 ## [1.11.2] - 2024-10-24
 
 ### Added
