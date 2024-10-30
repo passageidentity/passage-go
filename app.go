@@ -54,6 +54,7 @@ func New(appID string, config *Config) (*App, error) {
 	return &app, nil
 }
 
+// Deprecate: GetApp
 // GetApp gets information about an app
 // returns App on success, error on failure
 func (a *App) GetApp() (*AppInfo, error) {
