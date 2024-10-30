@@ -1,4 +1,4 @@
-name: Run Tests
+name: Lint, Format, and Test
 
 on:
   workflow_call:
@@ -6,7 +6,6 @@ on:
   pull_request:
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PASSAGE_APP_ID: ${{ secrets.PASSAGE_APP_ID }}
   PASSAGE_API_KEY: ${{ secrets.PASSAGE_API_KEY }}
   PASSAGE_USER_ID: ${{ secrets.PASSAGE_USER_ID }}
@@ -40,7 +39,7 @@ jobs:
             exit 1
           fi
   test:
-    name: Run Tests
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
