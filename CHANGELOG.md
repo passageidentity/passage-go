@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.3] - 2024-11-30
+
+### Added
+- deprecated methods
+- added replacement to deprecated methods
+
 ## [1.11.2] - 2024-10-24
 
 ### Added
