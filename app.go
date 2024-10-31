@@ -14,6 +14,7 @@ type Config struct {
 	HeaderAuth bool
 }
 
+// Deprecate: will be replace with a different object in v2
 type App struct {
 	ID        string
 	JWKS      jwk.Set
@@ -22,6 +23,7 @@ type App struct {
 	jwksCache *jwk.Cache
 }
 
+// Deprecate: Will be replaced with a different signature in v2
 func New(appID string, config *Config) (*App, error) {
 	if config == nil {
 		config = &Config{}
