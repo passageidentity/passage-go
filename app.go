@@ -45,7 +45,9 @@ func New(appID string, config *Config) (*App, error) {
 	if err := cache.Register(fmt.Sprintf(jwksUrl, appID)); err != nil {
 		return nil, err
 	}
-	app.jwksCacheSet = jwk.NewCachedSet(cache, jwksUrl)
+
+	app.jwksCacheSet = jwk.NewCachedSet(cache, fmt.Sprintf(jwksUrl, appID))
+	var _ jwk.Set = app.jwksCacheSet
 
 	return &app, nil
 }
