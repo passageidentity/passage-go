@@ -1,7 +1,6 @@
 package passage
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -41,7 +40,7 @@ func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 		return nil, Error{Message: "expecting JWT header to have string kid"}
 	}
 
-	key, ok := a.JWKS.LookupKeyID(keyID)
+	key, ok := a.jwksCacheSet.LookupKeyID(keyID)
 	if !ok {
 		return nil, Error{Message: fmt.Sprintf("unable to find key %q", keyID)}
 	}
@@ -50,15 +49,6 @@ func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
 	err := key.Raw(&pubKey)
 
 	return pubKey, err
-}
-
-func (a *App) refreshJWKSCache() error {
-	var err error
-	if a.JWKS, err = a.jwksCache.Refresh(context.Background(), fmt.Sprintf(jwksUrl, a.ID)); err != nil {
-		return Error{Message: "failed to fetch jwks"}
-	}
-
-	return nil
 }
 
 // AuthenticateRequestWithCookie fetches a cookie from the request and uses it to authenticate
