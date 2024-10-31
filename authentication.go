@@ -105,3 +105,24 @@ func (a *App) ValidateAuthToken(authToken string) (string, bool) {
 
 	return userID, true
 }
+
+// ValidateJwt determines whether a JWT is valid or not
+// returns userID (string) on success, error on failure
+func (a *App) ValidateJwt(authToken string) (string, bool) {
+	parsedToken, err := jwt.Parse(authToken, a.getPublicKey)
+	if err != nil {
+		return "", false
+	}
+
+	// Extract claims from JWT:
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", false
+	}
+	userID, ok := claims["sub"].(string)
+	if !ok {
+		return "", false
+	}
+
+	return userID, true
+}
