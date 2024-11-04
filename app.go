@@ -41,16 +41,17 @@ func New(appID string, config *Config) (*App, error) {
 		client: client,
 	}
 
+	url := fmt.Sprintf(jwksUrl, appID)
 	cache := jwk.NewCache(context.Background())
-	if err := cache.Register(fmt.Sprintf(jwksUrl, appID)); err != nil {
+	if err := cache.Register(url); err != nil {
 		return nil, err
 	}
 
-	if _, err = cache.Refresh(context.Background(), fmt.Sprintf(jwksUrl, appID)); err != nil {
+	if _, err = cache.Refresh(context.Background(), url); err != nil {
 		return nil, Error{Message: "failed to fetch jwks"}
 	}
 
-	app.jwksCacheSet = jwk.NewCachedSet(cache, fmt.Sprintf(jwksUrl, appID))
+	app.jwksCacheSet = jwk.NewCachedSet(cache, url)
 
 	return &app, nil
 }
