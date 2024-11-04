@@ -71,7 +71,10 @@ func NewAppUserByIdentifier(appID, identifier string, config *Config) (*AppUser,
 // Get gets a user using their userID
 // returns user on success, error on failure
 func (a *AppUser) Get() (*User, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return nil, err
+	}
+
 	res, err := a.client.GetUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to get Passage User"}
@@ -104,7 +107,10 @@ func (a *AppUser) Get() (*User, error) {
 // Activate activates a user using their userID
 // returns user on success, error on failure
 func (a *AppUser) Activate() (*User, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return nil, err
+	}
+
 	res, err := a.client.ActivateUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to activate Passage User"}
@@ -137,7 +143,10 @@ func (a *AppUser) Activate() (*User, error) {
 // Deactivate deactivates a user using their userID
 // returns user on success, error on failure
 func (a *AppUser) Deactivate() (*User, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return nil, err
+	}
+
 	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to deactivate Passage User"}
@@ -170,7 +179,10 @@ func (a *AppUser) Deactivate() (*User, error) {
 // Update receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
 func (a *AppUser) Update(updateBody UpdateBody) (*User, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return nil, err
+	}
+
 	res, err := a.client.UpdateUserWithResponse(context.Background(), a.AppID, a.UserID, updateBody)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to update Passage User's attributes"}
@@ -205,7 +217,10 @@ func (a *AppUser) Update(updateBody UpdateBody) (*User, error) {
 // Delete deletes a user by their user string
 // returns true on success, false and error on failure (bool, err)
 func (a *AppUser) Delete() (bool, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return false, err
+	}
+
 	res, err := a.client.DeleteUserWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return false, Error{Message: "network error: failed to delete Passage User"}
@@ -238,7 +253,10 @@ func (a *AppUser) Delete() (bool, error) {
 // Create receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
 func (a *AppUser) Create(createUserBody CreateUserBody) (*User, error) {
-	a.validateForCreate()
+	if err := a.validateForCreate(); err!= nil {
+		return nil, err
+	}
+
 	res, err := a.client.CreateUserWithResponse(context.Background(), a.AppID, createUserBody)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to create Passage User"}
@@ -271,7 +289,10 @@ func (a *AppUser) Create(createUserBody CreateUserBody) (*User, error) {
 // ListDevices lists a user's devices
 // returns a list of devices on success, error on failure
 func (a *AppUser) ListDevices() ([]WebAuthnDevices, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return nil, err
+	}
+
 	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return nil, Error{Message: "network error: failed to list devices for a Passage User"}
@@ -304,7 +325,10 @@ func (a *AppUser) ListDevices() ([]WebAuthnDevices, error) {
 // RevokeDevice gets a user using their userID
 // returns a true success, error on failure
 func (a *AppUser) RevokeDevice(deviceID string) (bool, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return false, err
+	}
+
 	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.AppID, a.UserID, deviceID)
 	if err != nil {
 		return false, Error{Message: "network error: failed to delete a device for a Passage User"}
@@ -342,7 +366,10 @@ func (a *AppUser) RevokeDevice(deviceID string) (bool, error) {
 // Signout revokes a users refresh tokens
 // returns true on success, error on failure
 func (a *AppUser) SignOut() (bool, error) {
-	a.validate()
+	if err := a.validate(); err!= nil {
+		return false, err
+	}
+
 	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.AppID, a.UserID)
 	if err != nil {
 		return false, Error{Message: "network error: failed to revoke all refresh tokens for a Passage User"}
