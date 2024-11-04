@@ -58,6 +58,9 @@ func NewAppUserByIdentifier(appID, identifier string, config *Config) (*AppUser,
 	}
 
 	userID, err := getUserIdByIdentifier(appID, identifier, client)
+	if err != nil {
+		return nil, err
+	}
 
 	appUser := AppUser{
 		AppID:  appID,
@@ -71,7 +74,7 @@ func NewAppUserByIdentifier(appID, identifier string, config *Config) (*AppUser,
 // Get gets a user using their userID
 // returns user on success, error on failure
 func (a *AppUser) Get() (*User, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return nil, err
 	}
 
@@ -107,7 +110,7 @@ func (a *AppUser) Get() (*User, error) {
 // Activate activates a user using their userID
 // returns user on success, error on failure
 func (a *AppUser) Activate() (*User, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +146,7 @@ func (a *AppUser) Activate() (*User, error) {
 // Deactivate deactivates a user using their userID
 // returns user on success, error on failure
 func (a *AppUser) Deactivate() (*User, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return nil, err
 	}
 
@@ -179,7 +182,7 @@ func (a *AppUser) Deactivate() (*User, error) {
 // Update receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
 func (a *AppUser) Update(updateBody UpdateBody) (*User, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return nil, err
 	}
 
@@ -217,7 +220,7 @@ func (a *AppUser) Update(updateBody UpdateBody) (*User, error) {
 // Delete deletes a user by their user string
 // returns true on success, false and error on failure (bool, err)
 func (a *AppUser) Delete() (bool, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return false, err
 	}
 
@@ -253,7 +256,7 @@ func (a *AppUser) Delete() (bool, error) {
 // Create receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
 func (a *AppUser) Create(createUserBody CreateUserBody) (*User, error) {
-	if err := a.validateForCreate(); err!= nil {
+	if err := a.validateForCreate(); err != nil {
 		return nil, err
 	}
 
@@ -289,7 +292,7 @@ func (a *AppUser) Create(createUserBody CreateUserBody) (*User, error) {
 // ListDevices lists a user's devices
 // returns a list of devices on success, error on failure
 func (a *AppUser) ListDevices() ([]WebAuthnDevices, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return nil, err
 	}
 
@@ -325,7 +328,7 @@ func (a *AppUser) ListDevices() ([]WebAuthnDevices, error) {
 // RevokeDevice gets a user using their userID
 // returns a true success, error on failure
 func (a *AppUser) RevokeDevice(deviceID string) (bool, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return false, err
 	}
 
@@ -366,7 +369,7 @@ func (a *AppUser) RevokeDevice(deviceID string) (bool, error) {
 // Signout revokes a users refresh tokens
 // returns true on success, error on failure
 func (a *AppUser) SignOut() (bool, error) {
-	if err := a.validate(); err!= nil {
+	if err := a.validate(); err != nil {
 		return false, err
 	}
 

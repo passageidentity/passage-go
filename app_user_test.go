@@ -19,6 +19,7 @@ func TestGetInfo(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	user, err := appUser.Get()
 	require.Nil(t, err)
@@ -95,7 +96,6 @@ func TestNewAppUserByIdentifierError(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	
 	_, err = passage.NewAppUserByIdentifier(psg.ID, "error@passage.id", &passage.Config{
 		APIKey: PassageApiKey,
 	})
@@ -114,6 +114,7 @@ func TestActivate(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	user, err := appUser.Activate()
 	require.Nil(t, err)
@@ -129,6 +130,7 @@ func TestDeactivate(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	user, err := appUser.Deactivate()
 	require.Nil(t, err)
@@ -145,6 +147,7 @@ func TestUpdate(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	updateBody := passage.UpdateBody{
 		Email: "updatedemail-gosdk@passage.id",
@@ -186,6 +189,7 @@ func TestCreate(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	user, err := appUser.Create(createUserBody)
 	require.Nil(t, err)
@@ -210,6 +214,7 @@ func TestCreateWithMetadata(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	user, err := appUser.Create(createUserBody)
 	require.Nil(t, err)
@@ -228,6 +233,7 @@ func TestDelete(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	result, err := appUser.Delete()
 	require.Nil(t, err)
@@ -243,6 +249,7 @@ func TestListDevices(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	devices, err := appUser.ListDevices()
 	require.Nil(t, err)
@@ -260,6 +267,7 @@ func TestSignOut(t *testing.T) {
 	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
+	require.Nil(t, err)
 
 	result, err := appUser.SignOut()
 	require.Nil(t, err)
