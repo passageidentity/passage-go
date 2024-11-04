@@ -21,6 +21,7 @@ type App struct {
 	Config    *Config
 	client    *ClientWithResponses
 	jwksCache *jwk.Cache
+	User      *AppUser
 }
 
 // Deprecated: Will be replaced with a different signature in v2
@@ -50,6 +51,11 @@ func New(appID string, config *Config) (*App, error) {
 	}
 
 	if err := app.refreshJWKSCache(); err != nil {
+		return nil, err
+	}
+
+	app.User, err = newAppUser(appID, app)
+	if err != nil {
 		return nil, err
 	}
 
