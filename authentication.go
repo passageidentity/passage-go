@@ -85,7 +85,7 @@ func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
 	return userID, nil
 }
 
-// Deprecate: Use ValidateJwt() instead.
+// Deprecated: Use ValidateJwt() instead.
 // ValidateAuthToken determines whether a JWT is valid or not
 // returns userID (string) on success, error on failure
 func (a *App) ValidateAuthToken(authToken string) (string, bool) {
