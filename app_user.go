@@ -11,13 +11,13 @@ const (
 	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
 )
 
-func newAppUser(appID string, app App) (*AppUser, error) {
+func newAppUser(appID string, app App) *AppUser {
 	appUser := AppUser{
 		appID: appID,
 		app:   app,
 	}
 
-	return &appUser, nil
+	return &appUser
 }
 
 // Get gets a user using their userID

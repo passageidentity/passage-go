@@ -56,10 +56,7 @@ func New(appID string, config *Config) (*App, error) {
 
 	app.jwksCacheSet = jwk.NewCachedSet(cache, url)
 
-	app.User, err = newAppUser(appID, app)
-	if err != nil {
-		return nil, err
-	}
+	app.User = newAppUser(appID, app)
 
 	return &app, nil
 }
