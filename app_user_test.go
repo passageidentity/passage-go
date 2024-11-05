@@ -16,17 +16,12 @@ func TestGetInfo(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	user, err := appUser.Get()
+	user, err := psg.User.Get(PassageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, PassageUserID, user.ID)
 }
 
-func TestNewAppUserByIdentifier(t *testing.T) {
+func TestGetInfoByIdentifier(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
@@ -36,18 +31,22 @@ func TestNewAppUserByIdentifier(t *testing.T) {
 		Email: RandomEmail,
 	}
 
-	user, err := psg.CreateUser(createUserBody)
+	user, err := psg.User.Create(createUserBody)
 	require.Nil(t, err)
 	assert.Equal(t, RandomEmail, user.Email)
 
-	appUser, err := passage.NewAppUserByIdentifier(psg.ID, RandomEmail, &passage.Config{
-		APIKey: PassageApiKey,
-	})
+	userByIdentifier, err := psg.User.GetByIdentifier(RandomEmail)
 	require.Nil(t, err)
-	assert.Equal(t, user.ID, appUser.UserID)
+
+	userById, err := psg.User.Get(user.ID)
+	require.Nil(t, err)
+
+	assert.Equal(t, user.ID, userById.ID)
+
+	assert.Equal(t, userById, userByIdentifier)
 }
 
-func TestNewAppUserByIdentifierEmailUpperCase(t *testing.T) {
+func TestGetInfoByIdentifierEmailUpperCase(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
@@ -57,18 +56,17 @@ func TestNewAppUserByIdentifierEmailUpperCase(t *testing.T) {
 		Email: RandomEmail,
 	}
 
-	user, err := psg.CreateUser(createUserBody)
+	user, err := psg.User.Create(createUserBody)
 	require.Nil(t, err)
 	assert.Equal(t, RandomEmail, user.Email)
 
-	appUser, err := passage.NewAppUserByIdentifier(psg.ID, strings.ToUpper(RandomEmail), &passage.Config{
-		APIKey: PassageApiKey,
-	})
+	userByIdentifier, err := psg.User.GetByIdentifier(strings.ToUpper(RandomEmail))
 	require.Nil(t, err)
-	assert.Equal(t, user.ID, appUser.UserID)
+
+	assert.Equal(t, user.ID, userByIdentifier.ID)
 }
 
-func TestNewAppUserByIdentifierPhone(t *testing.T) {
+func TestGetInfoByIdentifierPhone(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
@@ -79,26 +77,28 @@ func TestNewAppUserByIdentifierPhone(t *testing.T) {
 		Phone: phone,
 	}
 
-	user, err := psg.CreateUser(createUserBody)
+	user, err := psg.User.Create(createUserBody)
 	require.Nil(t, err)
 	assert.Equal(t, phone, user.Phone)
 
-	appUser, err := passage.NewAppUserByIdentifier(psg.ID, phone, &passage.Config{
-		APIKey: PassageApiKey,
-	})
+	userByIdentifier, err := psg.User.GetByIdentifier(phone)
 	require.Nil(t, err)
-	assert.Equal(t, user.ID, appUser.UserID)
+
+	userById, err := psg.User.Get(user.ID)
+	require.Nil(t, err)
+
+	assert.Equal(t, user.ID, userById.ID)
+
+	assert.Equal(t, userById, userByIdentifier)
 }
 
-func TestNewAppUserByIdentifierError(t *testing.T) {
+func TestGetInfoByIdentifierError(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
 		APIKey: PassageApiKey,
 	})
 	require.Nil(t, err)
 
-	_, err = passage.NewAppUserByIdentifier(psg.ID, "error@passage.id", &passage.Config{
-		APIKey: PassageApiKey,
-	})
+	_, err = psg.User.GetByIdentifier("error@passage.id")
 	require.NotNil(t, err)
 
 	expectedMessage := "passage User with Identifier \"error@passage.id\" does not exist"
@@ -111,12 +111,7 @@ func TestActivate(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	user, err := appUser.Activate()
+	user, err := psg.User.Activate(PassageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, PassageUserID, user.ID)
 	assert.Equal(t, passage.StatusActive, user.Status)
@@ -127,12 +122,7 @@ func TestDeactivate(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	user, err := appUser.Deactivate()
+	user, err := psg.User.Deactivate(PassageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, PassageUserID, user.ID)
 	assert.Equal(t, passage.StatusInactive, user.Status)
@@ -144,11 +134,6 @@ func TestUpdate(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
 	updateBody := passage.UpdateBody{
 		Email: "updatedemail-gosdk@passage.id",
 		Phone: "+15005550012",
@@ -156,7 +141,7 @@ func TestUpdate(t *testing.T) {
 			"example1": "123",
 		},
 	}
-	user, err := appUser.Update(updateBody)
+	user, err := psg.User.Update(PassageUserID, updateBody)
 	require.Nil(t, err)
 	assert.Equal(t, "updatedemail-gosdk@passage.id", user.Email)
 	assert.Equal(t, "+15005550012", user.Phone)
@@ -169,7 +154,7 @@ func TestUpdate(t *testing.T) {
 			"example1": "456",
 		},
 	}
-	user, err = appUser.Update(secondUpdateBody)
+	user, err = psg.User.Update(PassageUserID, secondUpdateBody)
 	require.Nil(t, err)
 	assert.Equal(t, "updatedemail-gosdk@passage.id", user.Email)
 	assert.Equal(t, "+15005550012", user.Phone)
@@ -186,12 +171,7 @@ func TestCreate(t *testing.T) {
 		Email: RandomEmail,
 	}
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	user, err := appUser.Create(createUserBody)
+	user, err := psg.User.Create(createUserBody)
 	require.Nil(t, err)
 	assert.Equal(t, RandomEmail, user.Email)
 
@@ -211,12 +191,7 @@ func TestCreateWithMetadata(t *testing.T) {
 		},
 	}
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	user, err := appUser.Create(createUserBody)
+	user, err := psg.User.Create(createUserBody)
 	require.Nil(t, err)
 	assert.Equal(t, "1"+RandomEmail, user.Email)
 	assert.Equal(t, "test", user.UserMetadata["example1"].(string))
@@ -230,12 +205,7 @@ func TestDelete(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	result, err := appUser.Delete()
+	result, err := psg.User.Delete(CreatedUser.ID)
 	require.Nil(t, err)
 	assert.Equal(t, result, true)
 }
@@ -246,12 +216,7 @@ func TestListDevices(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	devices, err := appUser.ListDevices()
+	devices, err := psg.User.ListDevices(PassageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, 2, len(devices))
 }
@@ -264,12 +229,7 @@ func TestSignOut(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	appUser, err := passage.NewAppUser(psg.ID, PassageUserID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
-
-	result, err := appUser.SignOut()
+	result, err := psg.User.SignOut(PassageUserID)
 	require.Nil(t, err)
 	assert.Equal(t, result, true)
 }
