@@ -40,14 +40,6 @@ func TestGetApp(t *testing.T) {
 
 }
 
-func TestAppNewJWKSCache(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-	})
-	require.Nil(t, err)
-	assert.NotNil(t, psg.JWKS)
-}
-
 // should be run with the -race flag, i.e. `go test -race -run TestAppJWKSCacheWriteConcurrency`
 func TestAppJWKSCacheWriteConcurrency(t *testing.T) {
 	goRoutineCount := 2
