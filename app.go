@@ -15,11 +15,10 @@ type Config struct {
 }
 
 type App struct {
-	ID        string
-	JWKS      jwk.Set
-	Config    *Config
-	client    *ClientWithResponses
-	jwksCache *jwk.Cache
+	ID           string
+	Config       *Config
+	client       *ClientWithResponses
+	jwksCacheSet jwk.Set
 }
 
 func New(appID string, config *Config) (*App, error) {
@@ -42,14 +41,17 @@ func New(appID string, config *Config) (*App, error) {
 		client: client,
 	}
 
-	app.jwksCache = jwk.NewCache(context.Background())
-	if err := app.jwksCache.Register(fmt.Sprintf(jwksUrl, appID)); err != nil {
+	url := fmt.Sprintf(jwksUrl, appID)
+	cache := jwk.NewCache(context.Background())
+	if err := cache.Register(url); err != nil {
 		return nil, err
 	}
 
-	if err := app.refreshJWKSCache(); err != nil {
-		return nil, err
+	if _, err = cache.Refresh(context.Background(), url); err != nil {
+		return nil, Error{Message: "failed to fetch jwks"}
 	}
+
+	app.jwksCacheSet = jwk.NewCachedSet(cache, url)
 
 	return &app, nil
 }
