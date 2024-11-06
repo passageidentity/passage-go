@@ -107,14 +107,19 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 	}
 
 	var errorText string
+	var errorCode string
 	switch {
 	case res.JSON400 != nil:
+		errorCode = string(res.JSON400.Code)
 		errorText = res.JSON400.Error
 	case res.JSON401 != nil:
+		errorCode = string(res.JSON401.Code)
 		errorText = res.JSON401.Error
 	case res.JSON404 != nil:
+		errorCode = string(res.JSON404.Code)
 		errorText = res.JSON404.Error
 	case res.JSON500 != nil:
+		errorCode = string(res.JSON500.Code)
 		errorText = res.JSON500.Error
 	}
 
@@ -123,5 +128,6 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 		StatusCode: res.StatusCode(),
 		StatusText: res.Status(),
 		ErrorText:  errorText,
+		ErrorCode:  errorCode,
 	}
 }

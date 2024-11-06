@@ -8,8 +8,11 @@ import (
 type Error struct {
 	Message    string
 	StatusCode int
+	ErrorCode  string
+	// Deprecated
 	StatusText string
-	ErrorText  string
+	// Deprecated
+	ErrorText string
 }
 
 type HTTPError struct {
@@ -28,6 +31,9 @@ func (e Error) Error() string {
 	}
 	if e.StatusText != "" {
 		fmt.Fprintf(&ps, "status_text: %s, ", e.StatusText)
+	}
+	if e.ErrorCode != "" {
+		fmt.Fprintf(&ps, "error_code: %s, ", e.ErrorCode)
 	}
 	if e.ErrorText != "" {
 		fmt.Fprintf(&ps, "error: %s, ", e.ErrorText)
