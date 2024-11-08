@@ -57,6 +57,7 @@ const (
 	FunctionSecretKeyNotFound  N404ErrorCode = "function_secret_key_not_found"
 	FunctionVersionNotFound    N404ErrorCode = "function_version_not_found"
 	MetadataFieldNotFound      N404ErrorCode = "metadata_field_not_found"
+	NativeClientNotFound       N404ErrorCode = "native_client_not_found"
 	Oauth2AppNotFound          N404ErrorCode = "oauth2_app_not_found"
 	OrganizationMemberNotFound N404ErrorCode = "organization_member_not_found"
 	SmsProviderNotFound        N404ErrorCode = "sms_provider_not_found"
@@ -112,6 +113,13 @@ const (
 	VerifyIdentifierType MagicLinkType = "verify_identifier"
 )
 
+// Defines values for SocialConnectionType.
+const (
+	Apple  SocialConnectionType = "apple"
+	Github SocialConnectionType = "github"
+	Google SocialConnectionType = "google"
+)
+
 // Defines values for Technologies.
 const (
 	Android    Technologies = "android"
@@ -124,12 +132,26 @@ const (
 	Vue        Technologies = "vue"
 )
 
+// Defines values for ThemeType.
+const (
+	Auto  ThemeType = "auto"
+	Dark  ThemeType = "dark"
+	Light ThemeType = "light"
+)
+
 // Defines values for TTLDisplayUnit.
 const (
 	D TTLDisplayUnit = "d"
 	H TTLDisplayUnit = "h"
 	M TTLDisplayUnit = "m"
 	S TTLDisplayUnit = "s"
+)
+
+// Defines values for UserEventAction.
+const (
+	UserEventActionLogin    UserEventAction = "login"
+	UserEventActionOther    UserEventAction = "other"
+	UserEventActionRegister UserEventAction = "register"
 )
 
 // Defines values for UserEventStatus.
@@ -230,37 +252,42 @@ type AppInfo struct {
 	AuthFallbackMethodTTL int `json:"auth_fallback_method_ttl"`
 
 	// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
-	AuthMethods              AuthMethods          `json:"auth_methods"`
-	AuthOrigin               string               `json:"auth_origin"`
+	AuthMethods AuthMethods `json:"auth_methods"`
+	AuthOrigin  string      `json:"auth_origin"`
+
+	// AutoThemeEnabled Deprecated Property. Please use `hosted_theme` to set hosted page theming instead.
+	// Deprecated:
+	AutoThemeEnabled         bool                 `json:"auto_theme_enabled"`
 	CreatedAt                time.Time            `json:"created_at"`
 	DarkLogoURL              *string              `json:"dark_logo_url,omitempty"`
 	DefaultLanguage          string               `json:"default_language"`
 	ElementCustomization     ElementCustomization `json:"element_customization"`
 	ElementCustomizationDark ElementCustomization `json:"element_customization_dark"`
 
-	// Hosted whether or not the app's login page hosted by passage
+	// Hosted whether or not the app's login page is hosted by Passage
 	Hosted bool `json:"hosted"`
 
 	// HostedSubdomain the subdomain of the app's hosted login page
-	HostedSubdomain               string  `json:"hosted_subdomain"`
-	ID                            string  `json:"id"`
-	IDTokenLifetime               *int    `json:"id_token_lifetime,omitempty"`
-	Layouts                       Layouts `json:"layouts"`
-	LightLogoURL                  *string `json:"light_logo_url,omitempty"`
-	LoginURL                      string  `json:"login_url"`
-	Name                          string  `json:"name"`
-	PassageBranding               bool    `json:"passage_branding"`
-	ProfileManagement             bool    `json:"profile_management"`
-	PublicSignup                  bool    `json:"public_signup"`
-	RedirectURL                   string  `json:"redirect_url"`
-	RefreshAbsoluteLifetime       int     `json:"refresh_absolute_lifetime"`
-	RefreshEnabled                bool    `json:"refresh_enabled"`
-	RefreshInactivityLifetime     int     `json:"refresh_inactivity_lifetime"`
-	RequireEmailVerification      bool    `json:"require_email_verification"`
-	RequireIdentifierVerification bool    `json:"require_identifier_verification"`
-	RequiredIdentifier            string  `json:"required_identifier"`
-	Role                          string  `json:"role"`
-	RSAPublicKey                  string  `json:"rsa_public_key"`
+	HostedSubdomain               string    `json:"hosted_subdomain"`
+	HostedTheme                   ThemeType `json:"hosted_theme"`
+	ID                            string    `json:"id"`
+	IDTokenLifetime               *int      `json:"id_token_lifetime,omitempty"`
+	Layouts                       Layouts   `json:"layouts"`
+	LightLogoURL                  *string   `json:"light_logo_url,omitempty"`
+	LoginURL                      string    `json:"login_url"`
+	Name                          string    `json:"name"`
+	PassageBranding               bool      `json:"passage_branding"`
+	ProfileManagement             bool      `json:"profile_management"`
+	PublicSignup                  bool      `json:"public_signup"`
+	RedirectURL                   string    `json:"redirect_url"`
+	RefreshAbsoluteLifetime       int       `json:"refresh_absolute_lifetime"`
+	RefreshEnabled                bool      `json:"refresh_enabled"`
+	RefreshInactivityLifetime     int       `json:"refresh_inactivity_lifetime"`
+	RequireEmailVerification      bool      `json:"require_email_verification"`
+	RequireIdentifierVerification bool      `json:"require_identifier_verification"`
+	RequiredIdentifier            string    `json:"required_identifier"`
+	Role                          string    `json:"role"`
+	RSAPublicKey                  string    `json:"rsa_public_key"`
 
 	// Secret can only be retrieved by an app admin
 	Secret               *string             `json:"secret,omitempty"`
@@ -303,7 +330,9 @@ type CreateMagicLinkBody struct {
 	Email   string      `json:"email"`
 
 	// Language language of the email to send (optional)
-	Language      string        `json:"language,omitempty"`
+	Language string `json:"language,omitempty"`
+
+	// MagicLinkPath must be a relative url
 	MagicLinkPath string        `json:"magic_link_path"`
 	Phone         string        `json:"phone"`
 	RedirectURL   string        `json:"redirect_url"`
@@ -444,9 +473,12 @@ type ListDevicesResponse struct {
 
 // ListPaginatedUsersItem defines model for ListPaginatedUsersItem.
 type ListPaginatedUsersItem struct {
-	CreatedAt     time.Time               `json:"created_at"`
-	Email         string                  `json:"email"`
-	EmailVerified bool                    `json:"email_verified"`
+	CreatedAt     time.Time `json:"created_at"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+
+	// ExternalID The external ID of the user. Only set if the user was created in a Flex app.
+	ExternalID    string                  `json:"external_id"`
 	ID            string                  `json:"id"`
 	LastLoginAt   time.Time               `json:"last_login_at"`
 	LoginCount    int                     `json:"login_count"`
@@ -542,8 +574,14 @@ type PasskeysAuthMethod struct {
 	Enabled bool `json:"enabled"`
 }
 
+// SocialConnectionType defines model for SocialConnectionType.
+type SocialConnectionType string
+
 // Technologies defines model for Technologies.
 type Technologies string
+
+// ThemeType defines model for ThemeType.
+type ThemeType string
 
 // TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
 // * `s` - seconds
@@ -559,14 +597,20 @@ type UpdateBody struct {
 	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
 
+// UserEventAction defines model for UserEventAction.
+type UserEventAction string
+
 // UserEventStatus defines model for UserEventStatus.
 type UserEventStatus string
 
 // User defines model for User.
 type User struct {
-	CreatedAt         time.Time              `json:"created_at"`
-	Email             string                 `json:"email"`
-	EmailVerified     bool                   `json:"email_verified"`
+	CreatedAt     time.Time `json:"created_at"`
+	Email         string    `json:"email"`
+	EmailVerified bool      `json:"email_verified"`
+
+	// ExternalID The external ID of the user. Only set if the user was created in a Flex app.
+	ExternalID        string                 `json:"external_id"`
 	ID                string                 `json:"id"`
 	LastLoginAt       time.Time              `json:"last_login_at"`
 	LoginCount        int                    `json:"login_count"`
@@ -599,13 +643,20 @@ type UserMetadataFieldType string
 
 // UserRecentEvent defines model for UserRecentEvent.
 type UserRecentEvent struct {
-	CompletedAt *time.Time      `json:"completed_at"`
-	CreatedAt   time.Time       `json:"created_at"`
-	ID          string          `json:"id"`
-	IPAddr      string          `json:"ip_addr"`
-	Status      UserEventStatus `json:"status"`
-	Type        string          `json:"type"`
-	UserAgent   string          `json:"user_agent"`
+	Action          UserEventAction       `json:"action"`
+	CompletedAt     *time.Time            `json:"completed_at"`
+	CreatedAt       time.Time             `json:"created_at"`
+	ID              string                `json:"id"`
+	IPAddr          string                `json:"ip_addr"`
+	SocialLoginType *SocialConnectionType `json:"social_login_type"`
+	Status          UserEventStatus       `json:"status"`
+	Type            string                `json:"type"`
+
+	// UserAgent The raw user agent value from the originating device
+	UserAgent string `json:"user_agent"`
+
+	// UserAgentDisplay A display-friendly version of the user agent
+	UserAgentDisplay string `json:"user_agent_display"`
 }
 
 // UserResponse defines model for UserResponse.
