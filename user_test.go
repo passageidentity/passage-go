@@ -22,7 +22,6 @@ func TestGetUserInfo(t *testing.T) {
 		assert.Equal(t, PassageUserID, user.ID)
 	})
 
-
 	t.Run("Error: unauthorized", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
 			APIKey: "PassageApiKey",
@@ -53,23 +52,23 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 			APIKey: PassageApiKey,
 		})
 		require.Nil(t, err)
-	
+
 		createUserBody := passage.CreateUserBody{
 			Email: RandomEmail,
 		}
-	
+
 		user, err := psg.CreateUser(createUserBody)
 		require.Nil(t, err)
 		assert.Equal(t, RandomEmail, user.Email)
-	
+
 		userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
 		require.Nil(t, err)
-	
+
 		userById, err := psg.GetUser(user.ID)
 		require.Nil(t, err)
-	
+
 		assert.Equal(t, user.ID, userById.ID)
-	
+
 		assert.Equal(t, userById, userByIdentifier)
 	})
 
@@ -78,18 +77,18 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 			APIKey: PassageApiKey,
 		})
 		require.Nil(t, err)
-	
+
 		createUserBody := passage.CreateUserBody{
 			Email: RandomEmail,
 		}
-	
+
 		user, err := psg.CreateUser(createUserBody)
 		require.Nil(t, err)
 		assert.Equal(t, RandomEmail, user.Email)
-	
+
 		userByIdentifier, err := psg.GetUserByIdentifier(strings.ToUpper(RandomEmail))
 		require.Nil(t, err)
-	
+
 		assert.Equal(t, user.ID, userByIdentifier.ID)
 	})
 
@@ -98,24 +97,24 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 			APIKey: PassageApiKey,
 		})
 		require.Nil(t, err)
-	
+
 		phone := "+15005550007"
 		createUserBody := passage.CreateUserBody{
 			Phone: phone,
 		}
-	
+
 		user, err := psg.CreateUser(createUserBody)
 		require.Nil(t, err)
 		assert.Equal(t, phone, user.Phone)
-	
+
 		userByIdentifier, err := psg.GetUserByIdentifier(phone)
 		require.Nil(t, err)
-	
+
 		userById, err := psg.GetUser(user.ID)
 		require.Nil(t, err)
-	
+
 		assert.Equal(t, user.ID, userById.ID)
-	
+
 		assert.Equal(t, userById, userByIdentifier)
 	})
 
@@ -124,10 +123,10 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 			APIKey: PassageApiKey,
 		})
 		require.Nil(t, err)
-	
+
 		_, err = psg.GetUserByIdentifier("error@passage.id")
 		require.NotNil(t, err)
-	
+
 		expectedMessage := "passage User with Identifier \"error@passage.id\" does not exist"
 		assert.Contains(t, err.Error(), expectedMessage)
 	})
