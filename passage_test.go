@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/joho/godotenv"
 	"github.com/passageidentity/passage-go"
 )
@@ -40,4 +41,22 @@ func TestMain(m *testing.M) {
 
 	exitVal := m.Run()
 	os.Exit(exitVal)
+}
+
+func userNotFoundAsserts(t *testing.T, err error) {
+	splitError := strings.Split(err.Error(), ", ")
+		assert.Len(t, splitError, 5)
+		assert.Equal(t, fmt.Sprintf("Passage Error - message: " + passage.UserIDDoesNotExist, "PassageUserID"), splitError[0])
+		assert.Equal(t, "status_code: 404", splitError[1])
+		assert.Equal(t, "status_text: 404 Not Found", splitError[2])
+		assert.Equal(t, "error_code: user_not_found", splitError[3])
+		assert.Equal(t, "error: User not found", splitError[4])
+}
+
+func unauthorizedAsserts(t *testing.T, err error) {
+	splitError := strings.Split(err.Error(), ", ")
+		assert.Len(t, splitError, 3)
+		assert.Equal(t, "Passage Error - message: failed to get Passage User" , splitError[0])
+		assert.Equal(t, "status_code: 401", splitError[1])
+		assert.Equal(t, "status_text: 401 Unauthorized", splitError[2])
 }

@@ -11,14 +11,40 @@ import (
 )
 
 func TestGetUserInfo(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
+	t.Run("Successful get user", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
 
-	user, err := psg.GetUser(PassageUserID)
-	require.Nil(t, err)
-	assert.Equal(t, PassageUserID, user.ID)
+		user, err := psg.GetUser(PassageUserID)
+		require.Nil(t, err)
+		assert.Equal(t, PassageUserID, user.ID)
+	})
+
+
+	t.Run("Error: unauthorized", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: "PassageApiKey",
+		})
+		require.Nil(t, err)
+
+		_, err = psg.GetUser(PassageUserID)
+		require.NotNil(t, err)
+		unauthorizedAsserts(t, err)
+	})
+
+	t.Run("Error: not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+
+		_, err = psg.GetUser("PassageUserID")
+		require.NotNil(t, err)
+
+		userNotFoundAsserts(t, err)
+	})
 }
 
 func TestGetUserInfoByIdentifier(t *testing.T) {
