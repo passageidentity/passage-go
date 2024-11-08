@@ -76,9 +76,9 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 			return nil, Error{
 				Message:    message,
 				StatusCode: http.StatusNotFound,
-				StatusText: http.StatusText(http.StatusNotFound),
+				StatusText: fmt.Sprintf("%d %s", http.StatusNotFound, http.StatusText(http.StatusNotFound)),
 				ErrorText:  "User not found",
-				ErrorCode:  "not_found",
+				ErrorCode:  "user_not_found",
 			}
 		}
 

@@ -42,7 +42,8 @@ func TestGetUserInfo(t *testing.T) {
 		_, err = psg.GetUser("PassageUserID")
 		require.NotNil(t, err)
 
-		userNotFoundAsserts(t, err)
+		expectedMessage := fmt.Sprintf("Passage Error - message: " + passage.UserIDDoesNotExist, "PassageUserID")
+		userNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -127,8 +128,8 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 		_, err = psg.GetUserByIdentifier("error@passage.id")
 		require.NotNil(t, err)
 
-		expectedMessage := "passage User with Identifier \"error@passage.id\" does not exist"
-		assert.Contains(t, err.Error(), expectedMessage)
+		expectedMessage := "Passage Error - message: passage User with Identifier \"error@passage.id\" does not exist"
+		userNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 

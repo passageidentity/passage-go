@@ -43,10 +43,10 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func userNotFoundAsserts(t *testing.T, err error) {
+func userNotFoundAsserts(t *testing.T, err error, message string) {
 	splitError := strings.Split(err.Error(), ", ")
 		assert.Len(t, splitError, 5)
-		assert.Equal(t, fmt.Sprintf("Passage Error - message: " + passage.UserIDDoesNotExist, "PassageUserID"), splitError[0])
+		assert.Equal(t, message, splitError[0])
 		assert.Equal(t, "status_code: 404", splitError[1])
 		assert.Equal(t, "status_text: 404 Not Found", splitError[2])
 		assert.Equal(t, "error_code: user_not_found", splitError[3])
