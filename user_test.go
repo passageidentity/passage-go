@@ -48,87 +48,89 @@ func TestGetUserInfo(t *testing.T) {
 }
 
 func TestGetUserInfoByIdentifier(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
+	t.Run("Success: get user by identifer - exact email", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+	
+		createUserBody := passage.CreateUserBody{
+			Email: RandomEmail,
+		}
+	
+		user, err := psg.CreateUser(createUserBody)
+		require.Nil(t, err)
+		assert.Equal(t, RandomEmail, user.Email)
+	
+		userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
+		require.Nil(t, err)
+	
+		userById, err := psg.GetUser(user.ID)
+		require.Nil(t, err)
+	
+		assert.Equal(t, user.ID, userById.ID)
+	
+		assert.Equal(t, userById, userByIdentifier)
 	})
-	require.Nil(t, err)
 
-	createUserBody := passage.CreateUserBody{
-		Email: RandomEmail,
-	}
-
-	user, err := psg.CreateUser(createUserBody)
-	require.Nil(t, err)
-	assert.Equal(t, RandomEmail, user.Email)
-
-	userByIdentifier, err := psg.GetUserByIdentifier(RandomEmail)
-	require.Nil(t, err)
-
-	userById, err := psg.GetUser(user.ID)
-	require.Nil(t, err)
-
-	assert.Equal(t, user.ID, userById.ID)
-
-	assert.Equal(t, userById, userByIdentifier)
-}
-
-func TestGetUserInfoByIdentifierEmailUpperCase(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
+	t.Run("Success: get user by identifer - email uppercase", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+	
+		createUserBody := passage.CreateUserBody{
+			Email: RandomEmail,
+		}
+	
+		user, err := psg.CreateUser(createUserBody)
+		require.Nil(t, err)
+		assert.Equal(t, RandomEmail, user.Email)
+	
+		userByIdentifier, err := psg.GetUserByIdentifier(strings.ToUpper(RandomEmail))
+		require.Nil(t, err)
+	
+		assert.Equal(t, user.ID, userByIdentifier.ID)
 	})
-	require.Nil(t, err)
 
-	createUserBody := passage.CreateUserBody{
-		Email: RandomEmail,
-	}
-
-	user, err := psg.CreateUser(createUserBody)
-	require.Nil(t, err)
-	assert.Equal(t, RandomEmail, user.Email)
-
-	userByIdentifier, err := psg.GetUserByIdentifier(strings.ToUpper(RandomEmail))
-	require.Nil(t, err)
-
-	assert.Equal(t, user.ID, userByIdentifier.ID)
-}
-
-func TestGetUserInfoByIdentifierPhone(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
+	t.Run("Success: get user by identifer - phone number", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+	
+		phone := "+15005550007"
+		createUserBody := passage.CreateUserBody{
+			Phone: phone,
+		}
+	
+		user, err := psg.CreateUser(createUserBody)
+		require.Nil(t, err)
+		assert.Equal(t, phone, user.Phone)
+	
+		userByIdentifier, err := psg.GetUserByIdentifier(phone)
+		require.Nil(t, err)
+	
+		userById, err := psg.GetUser(user.ID)
+		require.Nil(t, err)
+	
+		assert.Equal(t, user.ID, userById.ID)
+	
+		assert.Equal(t, userById, userByIdentifier)
 	})
-	require.Nil(t, err)
 
-	phone := "+15005550007"
-	createUserBody := passage.CreateUserBody{
-		Phone: phone,
-	}
-
-	user, err := psg.CreateUser(createUserBody)
-	require.Nil(t, err)
-	assert.Equal(t, phone, user.Phone)
-
-	userByIdentifier, err := psg.GetUserByIdentifier(phone)
-	require.Nil(t, err)
-
-	userById, err := psg.GetUser(user.ID)
-	require.Nil(t, err)
-
-	assert.Equal(t, user.ID, userById.ID)
-
-	assert.Equal(t, userById, userByIdentifier)
-}
-
-func TestGetUserInfoByIdentifierError(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
+	t.Run("Error: identifier not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+	
+		_, err = psg.GetUserByIdentifier("error@passage.id")
+		require.NotNil(t, err)
+	
+		expectedMessage := "passage User with Identifier \"error@passage.id\" does not exist"
+		assert.Contains(t, err.Error(), expectedMessage)
 	})
-	require.Nil(t, err)
-
-	_, err = psg.GetUserByIdentifier("error@passage.id")
-	require.NotNil(t, err)
-
-	expectedMessage := "passage User with Identifier \"error@passage.id\" does not exist"
-	assert.Contains(t, err.Error(), expectedMessage)
 }
 
 func TestActivateUser(t *testing.T) {
