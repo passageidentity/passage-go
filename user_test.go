@@ -173,15 +173,42 @@ func TestActivateUser(t *testing.T) {
 	})
 }
 func TestDeactivateUser(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+	t.Run("Success: deactivate user", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+		})
+		require.Nil(t, err)
+	
+		user, err := psg.DeactivateUser(PassageUserID)
+		require.Nil(t, err)
+		assert.Equal(t, PassageUserID, user.ID)
+		assert.Equal(t, passage.StatusInactive, user.Status)
 	})
-	require.Nil(t, err)
 
-	user, err := psg.DeactivateUser(PassageUserID)
-	require.Nil(t, err)
-	assert.Equal(t, PassageUserID, user.ID)
-	assert.Equal(t, passage.StatusInactive, user.Status)
+	t.Run("Error: unauthorized", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: "PassageApiKey",
+		})
+		require.Nil(t, err)
+
+		_, err = psg.DeactivateUser(PassageUserID)
+		require.NotNil(t, err)
+		expectedMessage := "failed to deactivate Passage User"
+		unauthorizedAsserts(t, err, expectedMessage)
+	})
+
+	t.Run("Error: not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+
+		_, err = psg.DeactivateUser("PassageUserID")
+		require.NotNil(t, err)
+
+		expectedMessage := fmt.Sprintf("Passage Error - message: " + passage.UserIDDoesNotExist, "PassageUserID")
+		userNotFoundAsserts(t, err, expectedMessage)
+	})
 }
 
 func TestUpdateUser(t *testing.T) {
