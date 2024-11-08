@@ -53,10 +53,10 @@ func userNotFoundAsserts(t *testing.T, err error, message string) {
 		assert.Equal(t, "error: User not found", splitError[4])
 }
 
-func unauthorizedAsserts(t *testing.T, err error) {
+func unauthorizedAsserts(t *testing.T, err error, message string) {
 	splitError := strings.Split(err.Error(), ", ")
 		assert.Len(t, splitError, 3)
-		assert.Equal(t, "Passage Error - message: failed to get Passage User" , splitError[0])
+		assert.Equal(t, "Passage Error - message: " + message, splitError[0])
 		assert.Equal(t, "status_code: 401", splitError[1])
 		assert.Equal(t, "status_text: 401 Unauthorized", splitError[2])
 }

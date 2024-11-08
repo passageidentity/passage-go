@@ -30,7 +30,8 @@ func TestGetUserInfo(t *testing.T) {
 
 		_, err = psg.GetUser(PassageUserID)
 		require.NotNil(t, err)
-		unauthorizedAsserts(t, err)
+		expectedMessage := "failed to get Passage User"
+		unauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -131,6 +132,20 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 		expectedMessage := "Passage Error - message: passage User with Identifier \"error@passage.id\" does not exist"
 		userNotFoundAsserts(t, err, expectedMessage)
 	})
+}
+
+func TestActivateUser(t *testing.T) {
+	t.Run("Success: activate user", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+		})
+		require.Nil(t, err)
+	
+		user, err := psg.ActivateUser(PassageUserID)
+		require.Nil(t, err)
+		assert.Equal(t, PassageUserID, user.ID)
+		assert.Equal(t, passage.StatusActive, user.Status)
+	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
@@ -138,30 +153,24 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
-			Email: RandomEmail,
-		}
-
-		user, err := psg.CreateUser(createUserBody)
-		require.Nil(t, err)
-		assert.Equal(t, RandomEmail, user.Email)
-
-		_, err = psg.GetUserByIdentifier(RandomEmail)
+		_, err = psg.ActivateUser(PassageUserID)
 		require.NotNil(t, err)
-		unauthorizedAsserts(t, err)
+		expectedMessage := "failed to activate Passage User"
+		unauthorizedAsserts(t, err, expectedMessage)
 	})
-}
 
-func TestActivateUser(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+	t.Run("Error: not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+
+		_, err = psg.ActivateUser("PassageUserID")
+		require.NotNil(t, err)
+
+		expectedMessage := fmt.Sprintf("Passage Error - message: " + passage.UserIDDoesNotExist, "PassageUserID")
+		userNotFoundAsserts(t, err, expectedMessage)
 	})
-	require.Nil(t, err)
-
-	user, err := psg.ActivateUser(PassageUserID)
-	require.Nil(t, err)
-	assert.Equal(t, PassageUserID, user.ID)
-	assert.Equal(t, passage.StatusActive, user.Status)
 }
 func TestDeactivateUser(t *testing.T) {
 	psg, err := passage.New(PassageAppID, &passage.Config{
