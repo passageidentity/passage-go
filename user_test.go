@@ -429,14 +429,41 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestListUserDevices(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey,
-	})
-	require.Nil(t, err)
+	t.Run("Success: list user devices", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
 
-	devices, err := psg.ListUserDevices(PassageUserID)
-	require.Nil(t, err)
-	assert.Equal(t, 2, len(devices))
+		devices, err := psg.ListUserDevices(PassageUserID)
+		require.Nil(t, err)
+		assert.Equal(t, 2, len(devices))
+	})
+
+	t.Run("Error: unauthorized", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: "PassageApiKey",
+		})
+		require.Nil(t, err)
+
+		_, err = psg.ListUserDevices(PassageUserID)
+		require.NotNil(t, err)
+		expectedMessage := "failed to list devices for a Passage Userr"
+		unauthorizedAsserts(t, err, expectedMessage)
+	})
+
+	t.Run("Error: not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+
+		_, err = psg.ListUserDevices("PassageUserID")
+		require.NotNil(t, err)
+
+		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
+		userNotFoundAsserts(t, err, expectedMessage)
+	})
 }
 
 // NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
