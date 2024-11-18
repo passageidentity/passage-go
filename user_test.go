@@ -334,6 +334,27 @@ func TestCreateUser(t *testing.T) {
 		CreatedUser = *user
 	})
 
+	t.Run("Success: create user with metadata", func(t *testing.T){
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+		})
+		require.Nil(t, err)
+	
+		createUserBody := passage.CreateUserBody{
+			Email: fmt.Sprintf("1%v", RandomEmail),
+			UserMetadata: map[string]interface{}{
+				"example1": "test",
+			},
+		}
+	
+		user, err := psg.CreateUser(createUserBody)
+		require.Nil(t, err)
+		assert.Equal(t, "1"+RandomEmail, user.Email)
+		assert.Equal(t, "test", user.UserMetadata["example1"].(string))
+	
+		CreatedUser = *user
+	})
+
 	t.Run("Error: Bad Request - on blank phone number and email", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
 			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
@@ -367,27 +388,6 @@ func TestCreateUser(t *testing.T) {
 		expectedMessage := "failed to create Passage User"
 		unauthorizedAsserts(t, err, expectedMessage)
 	})
-}
-
-func TestCreateUserWithMetadata(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-	})
-	require.Nil(t, err)
-
-	createUserBody := passage.CreateUserBody{
-		Email: fmt.Sprintf("1%v", RandomEmail),
-		UserMetadata: map[string]interface{}{
-			"example1": "test",
-		},
-	}
-
-	user, err := psg.CreateUser(createUserBody)
-	require.Nil(t, err)
-	assert.Equal(t, "1"+RandomEmail, user.Email)
-	assert.Equal(t, "test", user.UserMetadata["example1"].(string))
-
-	CreatedUser = *user
 }
 
 func TestDeleteUser(t *testing.T) {
