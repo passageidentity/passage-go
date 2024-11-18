@@ -132,6 +132,18 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 		expectedMessage := "Passage Error - message: passage User with Identifier \"error@passage.id\" does not exist"
 		userNotFoundAsserts(t, err, expectedMessage)
 	})
+
+	t.Run("Error: unauthorized", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: "PassageApiKey",
+		})
+		require.Nil(t, err)
+
+		_, err = psg.GetUserByIdentifier("any@passage.id")
+		require.NotNil(t, err)
+		expectedMessage := "failed to get Passage User By Identifier"
+		unauthorizedAsserts(t, err, expectedMessage)
+	})
 }
 
 func TestActivateUser(t *testing.T) {
