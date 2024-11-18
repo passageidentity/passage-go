@@ -12,9 +12,10 @@ import (
 //
 // Deprecated: Use Passage.User.Get() instead.
 func (a *App) GetUser(userID string) (*User, error) {
+	message := "failed to get Passage User"
 	res, err := a.client.GetUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to get Passage User"}
+		return nil, networkError(message)
 	}
 
 	if res.JSON200 != nil {
@@ -23,7 +24,6 @@ func (a *App) GetUser(userID string) (*User, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to get Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -66,7 +66,7 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 	)
 
 	if err != nil {
-		return nil, Error{Message: fmt.Sprintf("network error:failed to get Passage User by Identifier. message: %s, err: %+v", message, err)}
+		return nil, networkError(fmt.Sprintf("message: %s, err: %+v", message, err))
 	}
 
 	if res.JSON200 != nil {
@@ -111,9 +111,10 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 //
 // Deprecated: Use Passage.User.Activate() instead.
 func (a *App) ActivateUser(userID string) (*User, error) {
+	message := "failed to activate Passage User"
 	res, err := a.client.ActivateUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to activate Passage User"}
+		return nil, networkError(message)
 	}
 
 	if res.JSON200 != nil {
@@ -122,7 +123,6 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to activate Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -150,9 +150,10 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 //
 // Deprecated: Use Passage.User.Deactivate() instead.
 func (a *App) DeactivateUser(userID string) (*User, error) {
+	message := "failed to deactivate Passage User"
 	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to deactivate Passage User"}
+		return nil, networkError(message)
 	}
 
 	if res.JSON200 != nil {
@@ -161,7 +162,6 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to deactivate Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -189,9 +189,10 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 //
 // Deprecated: Use Passage.User.Update() instead.
 func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
+	message := "failed to update Passage User's attributes"
 	res, err := a.client.UpdateUserWithResponse(context.Background(), a.ID, userID, updateBody)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to update Passage User's attributes"}
+		return nil, networkError(message)
 	}
 
 	if res.JSON200 != nil {
@@ -200,7 +201,6 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to update Passage User's attributes"
 	switch {
 	case res.JSON400 != nil:
 		errorCode = string(res.JSON400.Code)
@@ -231,9 +231,10 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 //
 // Deprecated: Use Passage.User.Delete() instead.
 func (a *App) DeleteUser(userID string) (bool, error) {
+	message := "failed to delete Passage User"
 	res, err := a.client.DeleteUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
-		return false, Error{Message: "network error: failed to delete Passage User"}
+		return false, networkError(message)
 	}
 
 	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
@@ -242,7 +243,6 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to delete Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -270,9 +270,10 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 //
 // Deprecated: Use Passage.User.Create() instead.
 func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
+	message := "failed to create Passage User"
 	res, err := a.client.CreateUserWithResponse(context.Background(), a.ID, createUserBody)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to create Passage User"}
+		return nil, networkError(message)
 	}
 
 	if res.JSON201 != nil {
@@ -297,7 +298,7 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	}
 
 	return nil, Error{
-		Message:    "failed to create Passage User",
+		Message:    message,
 		StatusCode: res.StatusCode(),
 		StatusText: res.Status(),
 		ErrorText:  errorText,
@@ -310,9 +311,10 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 //
 // Deprecated: Use Passage.User.ListDevices() instead.
 func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
+	message := "failed to list devices for a Passage User"
 	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to list devices for a Passage User"}
+		return nil, networkError(message)
 	}
 
 	if res.JSON200 != nil {
@@ -321,7 +323,6 @@ func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to list devices for a Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -349,9 +350,10 @@ func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 //
 // Deprecated: Use Passage.User.RevokeDevice() instead.
 func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
+	message := "failed to delete a device for a Passage User"
 	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.ID, userID, deviceID)
 	if err != nil {
-		return false, Error{Message: "network error: failed to delete a device for a Passage User"}
+		return false, networkError(message)
 	}
 
 	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
@@ -360,7 +362,6 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to delete a device for a Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -393,9 +394,10 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 //
 // Deprecated: Use Passage.User.SignOut() instead.
 func (a *App) SignOut(userID string) (bool, error) {
+	message := "failed to revoke all refresh tokens for a Passage User"
 	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
-		return false, Error{Message: "network error: failed to revoke all refresh tokens for a Passage User"}
+		return false, networkError(message)
 	}
 
 	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
@@ -404,7 +406,6 @@ func (a *App) SignOut(userID string) (bool, error) {
 
 	var errorText string
 	var errorCode string
-	message := "failed to revoke all refresh tokens for a Passage User"
 	switch {
 	case res.JSON401 != nil:
 		errorCode = string(res.JSON401.Code)
@@ -424,5 +425,15 @@ func (a *App) SignOut(userID string) (bool, error) {
 		StatusText: res.Status(),
 		ErrorText:  errorText,
 		ErrorCode:  errorCode,
+	}
+}
+
+func networkError(message string) error{
+	return Error{
+		Message:    message,
+		StatusCode: 500,
+		StatusText: "500 Service Error",
+		ErrorText:  "internal_service_error",
+		ErrorCode:  "Internal Service Error",
 	}
 }
