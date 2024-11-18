@@ -448,7 +448,7 @@ func TestListUserDevices(t *testing.T) {
 
 		_, err = psg.ListUserDevices(PassageUserID)
 		require.NotNil(t, err)
-		expectedMessage := "failed to list devices for a Passage Userr"
+		expectedMessage := "failed to list devices for a Passage User"
 		unauthorizedAsserts(t, err, expectedMessage)
 	})
 
@@ -469,12 +469,39 @@ func TestListUserDevices(t *testing.T) {
 // NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
 
 func TestSignOutUser(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+	t.Run("Success: sign out user", func(t *testing.T){
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+		})
+		require.Nil(t, err)
+	
+		result, err := psg.SignOut(PassageUserID)
+		require.Nil(t, err)
+		assert.Equal(t, result, true)
 	})
-	require.Nil(t, err)
 
-	result, err := psg.SignOut(PassageUserID)
-	require.Nil(t, err)
-	assert.Equal(t, result, true)
+	t.Run("Error: unauthorized", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: "PassageApiKey",
+		})
+		require.Nil(t, err)
+
+		_, err = psg.SignOut(PassageUserID)
+		require.NotNil(t, err)
+		expectedMessage := "failed to revoke all refresh tokens for a Passage User"
+		unauthorizedAsserts(t, err, expectedMessage)
+	})
+
+	t.Run("Error: not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+
+		_, err = psg.SignOut("PassageUserID")
+		require.NotNil(t, err)
+
+		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
+		userNotFoundAsserts(t, err, expectedMessage)
+	})
 }
