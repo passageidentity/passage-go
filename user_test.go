@@ -334,24 +334,24 @@ func TestCreateUser(t *testing.T) {
 		CreatedUser = *user
 	})
 
-	t.Run("Success: create user with metadata", func(t *testing.T){
+	t.Run("Success: create user with metadata", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
 			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 		})
 		require.Nil(t, err)
-	
+
 		createUserBody := passage.CreateUserBody{
 			Email: fmt.Sprintf("1%v", RandomEmail),
 			UserMetadata: map[string]interface{}{
 				"example1": "test",
 			},
 		}
-	
+
 		user, err := psg.CreateUser(createUserBody)
 		require.Nil(t, err)
 		assert.Equal(t, "1"+RandomEmail, user.Email)
 		assert.Equal(t, "test", user.UserMetadata["example1"].(string))
-	
+
 		CreatedUser = *user
 	})
 
@@ -391,14 +391,41 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	psg, err := passage.New(PassageAppID, &passage.Config{
-		APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-	})
-	require.Nil(t, err)
+	t.Run("Success: delete user", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+		})
+		require.Nil(t, err)
 
-	result, err := psg.DeleteUser(CreatedUser.ID)
-	require.Nil(t, err)
-	assert.Equal(t, result, true)
+		result, err := psg.DeleteUser(CreatedUser.ID)
+		require.Nil(t, err)
+		assert.Equal(t, result, true)
+	})
+
+	t.Run("Error: unauthorized", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: "PassageApiKey",
+		})
+		require.Nil(t, err)
+
+		_, err = psg.DeleteUser(CreatedUser.ID)
+		require.NotNil(t, err)
+		expectedMessage := "failed to delete Passage User"
+		unauthorizedAsserts(t, err, expectedMessage)
+	})
+
+	t.Run("Error: not found", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey,
+		})
+		require.Nil(t, err)
+
+		_, err = psg.DeleteUser("PassageUserID")
+		require.NotNil(t, err)
+
+		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
+		userNotFoundAsserts(t, err, expectedMessage)
+	})
 }
 
 func TestListUserDevices(t *testing.T) {
