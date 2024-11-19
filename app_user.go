@@ -2,7 +2,7 @@ package passage
 
 type PassageUser = User
 type appUser struct {
-	app   App
+	app App
 }
 
 const (
@@ -12,7 +12,7 @@ const (
 
 func newAppUser(app App) *appUser {
 	appUser := appUser{
-		app:   app,
+		app: app,
 	}
 
 	return &appUser
