@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Deprecated: Use Get() instead.
+// Deprecated: Use Passage.User.Get() instead.
 // GetUser gets a user using their userID
 // returns user on success, error on failure
 func (a *App) GetUser(userID string) (*User, error) {
@@ -40,7 +40,7 @@ func (a *App) GetUser(userID string) (*User, error) {
 	}
 }
 
-// Deprecated: Use GetByIdentifier() instead.
+// Deprecated: Use Passage.User.GetByIdentifier() instead.
 // GetUserByIdentifier gets a user using their identifier
 // returns user on success, error on failure
 func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
@@ -93,7 +93,7 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 	}
 }
 
-// Deprecated: Use Activate() instead.
+// Deprecated: Use Passage.User.Activate() instead.
 // ActivateUser activates a user using their userID
 // returns user on success, error on failure
 func (a *App) ActivateUser(userID string) (*User, error) {
@@ -126,7 +126,7 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 	}
 }
 
-// Deprecated: Use Deactivate() instead.
+// Deprecated: Use Passage.User.Deactivate() instead.
 // DeactivateUser deactivates a user using their userID
 // returns user on success, error on failure
 func (a *App) DeactivateUser(userID string) (*User, error) {
@@ -159,7 +159,7 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 	}
 }
 
-// Deprecated: Use Update() instead.
+// Deprecated: Use Passage.User.Update() instead.
 // UpdateUser receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
 func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
@@ -194,7 +194,7 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 	}
 }
 
-// Deprecated: Use Delete() instead.
+// Deprecated: Use Passage.User.Delete() instead.
 // DeleteUser receives a userID (string), and deletes the corresponding user
 // returns true on success, false and error on failure (bool, err)
 func (a *App) DeleteUser(userID string) (bool, error) {
@@ -227,7 +227,7 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 	}
 }
 
-// Deprecated: Use Create() instead.
+// Deprecated: Use Passage.User.Create() instead.
 // CreateUser receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
 func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
@@ -260,7 +260,7 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	}
 }
 
-// Deprecated: Use ListDevices() instead.
+// Deprecated: Use Passage.User.ListDevices() instead.
 // ListUserDevices lists a user's devices
 // returns a list of devices on success, error on failure
 func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
@@ -293,7 +293,7 @@ func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 	}
 }
 
-// Deprecated: Use RevokeDevice() instead.
+// Deprecated: Use Passage.User.RevokeDevice() instead.
 // RevokeUserDevice gets a user using their userID
 // returns a true success, error on failure
 func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
@@ -331,7 +331,7 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 	}
 }
 
-// Deprecated: Use SignOut() instead.
+// Deprecated: Use Passage.User.SignOut() instead.
 // Signout revokes a users refresh tokens
 // returns true on success, error on failure
 func (a *App) SignOut(userID string) (bool, error) {
