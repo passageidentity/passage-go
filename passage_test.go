@@ -60,7 +60,7 @@ func unauthorizedAsserts(t *testing.T, err error, message string) {
 	assert.Equal(t, "status_code: 401", splitError[1])
 	assert.Equal(t, "status_text: 401 Unauthorized", splitError[2])
 	assert.Equal(t, "error_code: invalid_access_token", splitError[3])
-	assert.Equal(t, "error: Invalid Access Token", splitError[4])
+	assert.Equal(t, "error: Invalid access token", splitError[4])
 }
 
 func badRequestAsserts(t *testing.T, err error, message, errorText string) {
