@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.3](https://github.com/passageidentity/passage-go/compare/v1.11.2...v1.11.3) (2024-11-19)
+
+
+### Bug Fixes
+
+* updates jwx library to use its thread-safe jwks cache ([#88](https://github.com/passageidentity/passage-go/issues/88)) ([b677920](https://github.com/passageidentity/passage-go/commit/b67792097093386c667d940327d859b3dc7e5e32))
+
 ## [1.11.2] - 2024-10-24
 
 ### Added
