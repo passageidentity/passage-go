@@ -2,32 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.11.3] - 2024-11-30
-
-### Added
-- deprecated methods
-    - Passage.GetUser(userId: string): User
-    - Passage.GetUserByIdentifier(identifier: string): User
-    - Passage.ActivateUser(userId: string): User
-    - Passage.DeactivateUser(userId: string): User
-    - Passage.UpdateUser(userId: string, options: UpdateUserArgs): User
-    - Passage.CreateUser(args: CreateUserArgs): User
-    - Passage.DeleteUser(userId: string): boolean
-    - Passage.ListUserDevices(userId: string): WebAuthnDevice[]
-    - Passage.RevokeUserDevice(userId: string, deviceId: string): boolean
-    - Passage.ValidateAuthToken(authToken: string): string, bool
-- added new methods
-    - Passage.User.Get(userId: string): User
-    - Passage.User.GetByIdentifier(identifier: string): User
-    - Passage.User.Activate(userId: string): User
-    - Passage.User.Deactivate(userId: string): User
-    - Passage.User.Update(userId: string, options: UpdateUserArgs): User
-    - Passage.User.Create(args: CreateUserArgs): User
-    - Passage.User.Delete(userId: string): boolean
-    - Passage.User.ListDevices(userId: string): WebAuthnDevice[]
-    - Passage.User.RevokeDevice(userId: string, deviceId: string): boolean
-    - Passage.ValidateJwt(authToken: string): string, bool
-
 ## [1.11.2] - 2024-10-24
 
 ### Added
