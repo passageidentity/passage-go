@@ -2,7 +2,6 @@ package passage
 
 type PassageUser = User
 type appUser struct {
-	appID string
 	app   App
 }
 
@@ -11,9 +10,8 @@ const (
 	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
 )
 
-func newAppUser(appID string, app App) *appUser {
+func newAppUser(app App) *appUser {
 	appUser := appUser{
-		appID: appID,
 		app:   app,
 	}
 
