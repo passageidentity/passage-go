@@ -1,0 +1,38 @@
+name: Release As
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Major.Minor.Patch'
+        required: true
+
+jobs:
+  release-as:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get latest tag
+        id: latest-tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - uses: jackbilestech/semver-compare@1.0.4
+        with:
+          head: ${{ inputs.version }}
+          base: ${{ steps.latest-tag.outputs.tag }}
+          operator: '>'
+      # https://github.com/googleapis/release-please?tab=readme-ov-file#how-do-i-change-the-version-number
+      - name: Release as 
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git switch -c release-as-v${{ github.event.inputs.version }}
+          git commit --allow-empty -m "chore: release ${{ github.event.inputs.version }}" -m "Release-As: ${{ github.event.inputs.version }}"
+          git push origin release-as-v${{ github.event.inputs.version }}
+          gh pr create --title "chore: Release as v${{ github.event.inputs.version }}" --body "Release as v${{ github.event.inputs.version }}" --base main
+          gh pr merge --squash --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  call-release-workflow:
+    needs: release-as
+    uses: ./.github/workflows/release.yml
+    secrets: inherit
