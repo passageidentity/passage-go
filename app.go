@@ -16,10 +16,10 @@ type Config struct {
 
 // Deprecated: will be rename to `Passage` in v2
 type App struct {
-	ID           string
+	ID string
 	// Deprecated
 	Config       *Config
-	User         *AppUser
+	User         *appUser
 	client       *ClientWithResponses
 	jwksCacheSet jwk.Set
 }
