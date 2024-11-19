@@ -428,7 +428,7 @@ func (a *App) SignOut(userID string) (bool, error) {
 	}
 }
 
-func networkError(message string) error{
+func networkError(message string) error {
 	return Error{
 		Message:    message,
 		StatusCode: 500,
