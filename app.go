@@ -14,13 +14,17 @@ type Config struct {
 	HeaderAuth bool
 }
 
+// Deprecated: will be renamed to `Passage` in v2
 type App struct {
-	ID           string
+	ID string
+	// Deprecated
 	Config       *Config
+	User         *appUser
 	client       *ClientWithResponses
 	jwksCacheSet jwk.Set
 }
 
+// Deprecated: Will be replaced with a different signature in v2
 func New(appID string, config *Config) (*App, error) {
 	if config == nil {
 		config = &Config{}
@@ -53,11 +57,15 @@ func New(appID string, config *Config) (*App, error) {
 
 	app.jwksCacheSet = jwk.NewCachedSet(cache, url)
 
+	app.User = newAppUser(app)
+
 	return &app, nil
 }
 
 // GetApp gets information about an app
 // returns App on success, error on failure
+//
+// Deprecated: GetApp - this method will not be replaced
 func (a *App) GetApp() (*AppInfo, error) {
 	res, err := a.client.GetAppWithResponse(context.Background(), a.ID)
 	if err != nil {

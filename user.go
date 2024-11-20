@@ -7,13 +7,10 @@ import (
 	"strings"
 )
 
-const (
-	UserIDDoesNotExist     string = "passage User with ID \"%v\" does not exist"
-	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
-)
-
 // GetUser gets a user using their userID
 // returns user on success, error on failure
+//
+// Deprecated: Use Passage.User.Get() instead.
 func (a *App) GetUser(userID string) (*User, error) {
 	res, err := a.client.GetUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
@@ -46,6 +43,8 @@ func (a *App) GetUser(userID string) (*User, error) {
 
 // GetUserByIdentifier gets a user using their identifier
 // returns user on success, error on failure
+//
+// Deprecated: Use Passage.User.GetByIdentifier() instead.
 func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 	var errorText string
 	message := "failed to get Passage User By Identifier"
@@ -98,6 +97,8 @@ func (a *App) GetUserByIdentifier(identifier string) (*User, error) {
 
 // ActivateUser activates a user using their userID
 // returns user on success, error on failure
+//
+// Deprecated: Use Passage.User.Activate() instead.
 func (a *App) ActivateUser(userID string) (*User, error) {
 	res, err := a.client.ActivateUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
@@ -130,6 +131,8 @@ func (a *App) ActivateUser(userID string) (*User, error) {
 
 // DeactivateUser deactivates a user using their userID
 // returns user on success, error on failure
+//
+// Deprecated: Use Passage.User.Deactivate() instead.
 func (a *App) DeactivateUser(userID string) (*User, error) {
 	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
@@ -162,6 +165,8 @@ func (a *App) DeactivateUser(userID string) (*User, error) {
 
 // UpdateUser receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
+//
+// Deprecated: Use Passage.User.Update() instead.
 func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 	res, err := a.client.UpdateUserWithResponse(context.Background(), a.ID, userID, updateBody)
 	if err != nil {
@@ -196,6 +201,8 @@ func (a *App) UpdateUser(userID string, updateBody UpdateBody) (*User, error) {
 
 // DeleteUser receives a userID (string), and deletes the corresponding user
 // returns true on success, false and error on failure (bool, err)
+//
+// Deprecated: Use Passage.User.Delete() instead.
 func (a *App) DeleteUser(userID string) (bool, error) {
 	res, err := a.client.DeleteUserWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
@@ -228,6 +235,8 @@ func (a *App) DeleteUser(userID string) (bool, error) {
 
 // CreateUser receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
+//
+// Deprecated: Use Passage.User.Create() instead.
 func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 	res, err := a.client.CreateUserWithResponse(context.Background(), a.ID, createUserBody)
 	if err != nil {
@@ -260,6 +269,8 @@ func (a *App) CreateUser(createUserBody CreateUserBody) (*User, error) {
 
 // ListUserDevices lists a user's devices
 // returns a list of devices on success, error on failure
+//
+// Deprecated: Use Passage.User.ListDevices() instead.
 func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
@@ -292,6 +303,8 @@ func (a *App) ListUserDevices(userID string) ([]WebAuthnDevices, error) {
 
 // RevokeUserDevice gets a user using their userID
 // returns a true success, error on failure
+//
+// Deprecated: Use Passage.User.RevokeDevice() instead.
 func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.ID, userID, deviceID)
 	if err != nil {
@@ -329,6 +342,8 @@ func (a *App) RevokeUserDevice(userID, deviceID string) (bool, error) {
 
 // Signout revokes a users refresh tokens
 // returns true on success, error on failure
+//
+// Deprecated: Use Passage.User.SignOut() instead.
 func (a *App) SignOut(userID string) (bool, error) {
 	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.ID, userID)
 	if err != nil {
