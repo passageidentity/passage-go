@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.0](https://github.com/passageidentity/passage-go/compare/v1.11.2...v1.12.0) (2024-11-20)
+
+
+### Features
+
+* Psg 5154 introduce new method names ([#98](https://github.com/passageidentity/passage-go/issues/98)) ([c63c75e](https://github.com/passageidentity/passage-go/commit/c63c75e44705500f2caf45e4a553c0064f3950b8))
+
+
+### Bug Fixes
+
+* updates jwx library to use its thread-safe jwks cache ([#88](https://github.com/passageidentity/passage-go/issues/88)) ([b677920](https://github.com/passageidentity/passage-go/commit/b67792097093386c667d940327d859b3dc7e5e32))
+
 ## [1.11.2] - 2024-10-24
 
 ### Added
