@@ -14,7 +14,7 @@ type Config struct {
 	HeaderAuth bool
 }
 
-// Deprecated: will be rename to `Passage` in v2
+// Deprecated: will be renamed to `Passage` in v2
 type App struct {
 	ID string
 	// Deprecated
@@ -62,9 +62,10 @@ func New(appID string, config *Config) (*App, error) {
 	return &app, nil
 }
 
-// Deprecated: GetApp - this method will not be replaced
 // GetApp gets information about an app
 // returns App on success, error on failure
+//
+// Deprecated: GetApp - this method will not be replaced
 func (a *App) GetApp() (*AppInfo, error) {
 	res, err := a.client.GetAppWithResponse(context.Background(), a.ID)
 	if err != nil {
