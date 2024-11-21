@@ -31,7 +31,7 @@ func TestGetInfo(t *testing.T) {
 		_, err = psg.User.Get(PassageUserID)
 		require.NotNil(t, err)
 		expectedMessage := "failed to get Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestGetInfo(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -130,7 +130,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := "Passage Error - message: passage User with Identifier \"error@passage.id\" does not exist"
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -142,7 +142,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 		_, err = psg.User.GetByIdentifier("any@passage.id")
 		require.NotNil(t, err)
 		expectedMessage := "failed to get Passage User By Identifier"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -168,7 +168,7 @@ func TestActivate(t *testing.T) {
 		_, err = psg.User.Activate(PassageUserID)
 		require.NotNil(t, err)
 		expectedMessage := "failed to activate Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -181,7 +181,7 @@ func TestActivate(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 func TestDeactivate(t *testing.T) {
@@ -206,7 +206,7 @@ func TestDeactivate(t *testing.T) {
 		_, err = psg.User.Deactivate(PassageUserID)
 		require.NotNil(t, err)
 		expectedMessage := "failed to deactivate Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -219,7 +219,7 @@ func TestDeactivate(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -271,7 +271,7 @@ func TestUpdate(t *testing.T) {
 		require.NotNil(t, err)
 		expectedMessage := "failed to update Passage User's attributes"
 		expectedErrorText := "error: identifier: must be a valid E164 number.; identifier: must be a valid email address."
-		badRequestAsserts(t, err, expectedMessage, expectedErrorText)
+		passageBadRequestAsserts(t, err, expectedMessage, expectedErrorText)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -292,7 +292,7 @@ func TestUpdate(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -312,7 +312,7 @@ func TestUpdate(t *testing.T) {
 		_, err = psg.User.Update(PassageUserID, updateBody)
 		require.NotNil(t, err)
 		expectedMessage := "failed to update Passage User's attributes"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -370,7 +370,7 @@ func TestCreate(t *testing.T) {
 		require.NotNil(t, err)
 		expectedMessage := "failed to create Passage User"
 		expectedErrorText := "error: email: cannot be blank; phone: cannot be blank."
-		badRequestAsserts(t, err, expectedMessage, expectedErrorText)
+		passageBadRequestAsserts(t, err, expectedMessage, expectedErrorText)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -386,7 +386,7 @@ func TestCreate(t *testing.T) {
 		_, err = psg.User.Create(createUserBody)
 		require.NotNil(t, err)
 		expectedMessage := "failed to create Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -411,7 +411,7 @@ func TestDelete(t *testing.T) {
 		_, err = psg.User.Delete(CreatedUser.ID)
 		require.NotNil(t, err)
 		expectedMessage := "failed to delete Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -424,7 +424,7 @@ func TestDelete(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 
@@ -449,7 +449,7 @@ func TestListUser(t *testing.T) {
 		_, err = psg.User.ListDevices(PassageUserID)
 		require.NotNil(t, err)
 		expectedMessage := "failed to list devices for a Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -462,20 +462,20 @@ func TestListUser(t *testing.T) {
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 }
 
 // NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
 
-func TestSignOut(t *testing.T) {
+func TestRevokeRefreshTokens(t *testing.T) {
 	t.Run("Success: sign out user", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
 			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 		})
 		require.Nil(t, err)
 
-		result, err := psg.User.SignOut(PassageUserID)
+		result, err := psg.User.RevokeRefreshTokens(PassageUserID)
 		require.Nil(t, err)
 		assert.Equal(t, result, true)
 	})
@@ -486,10 +486,10 @@ func TestSignOut(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		_, err = psg.User.SignOut(PassageUserID)
+		_, err = psg.User.RevokeRefreshTokens(PassageUserID)
 		require.NotNil(t, err)
 		expectedMessage := "failed to revoke all refresh tokens for a Passage User"
-		unauthorizedAsserts(t, err, expectedMessage)
+		passageUnauthorizedAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -498,10 +498,10 @@ func TestSignOut(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		_, err = psg.User.SignOut("PassageUserID")
+		_, err = psg.User.RevokeRefreshTokens("PassageUserID")
 		require.NotNil(t, err)
 
 		expectedMessage := fmt.Sprintf("Passage Error - message: "+passage.UserIDDoesNotExist, "PassageUserID")
-		userNotFoundAsserts(t, err, expectedMessage)
+		passageUserNotFoundAsserts(t, err, expectedMessage)
 	})
 }
