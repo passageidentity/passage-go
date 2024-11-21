@@ -11,7 +11,6 @@ type PassageError struct {
 	ErrorCode  string
 }
 
-
 func (e PassageError) Error() string {
 	var ps strings.Builder
 	ps.WriteString("Passage Error - ")

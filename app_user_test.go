@@ -270,8 +270,7 @@ func TestUpdate(t *testing.T) {
 		_, err = psg.User.Update(PassageUserID, updateBody)
 		require.NotNil(t, err)
 		expectedMessage := "failed to update Passage User's attributes"
-		expectedErrorText := "error: identifier: must be a valid E164 number.; identifier: must be a valid email address."
-		passageBadRequestAsserts(t, err, expectedMessage, expectedErrorText)
+		passageBadRequestAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
@@ -369,8 +368,7 @@ func TestCreate(t *testing.T) {
 
 		require.NotNil(t, err)
 		expectedMessage := "failed to create Passage User"
-		expectedErrorText := "error: email: cannot be blank; phone: cannot be blank."
-		passageBadRequestAsserts(t, err, expectedMessage, expectedErrorText)
+		passageBadRequestAsserts(t, err, expectedMessage)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {

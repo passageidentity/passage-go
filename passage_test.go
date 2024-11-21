@@ -86,7 +86,7 @@ func passageUnauthorizedAsserts(t *testing.T, err error, message string) {
 	assert.Equal(t, "error_code: invalid_access_token", splitError[2])
 }
 
-func passageBadRequestAsserts(t *testing.T, err error, message, errorText string) {
+func passageBadRequestAsserts(t *testing.T, err error, message string) {
 	splitError := strings.Split(err.Error(), ", ")
 	assert.Len(t, splitError, 3)
 	assert.Equal(t, "Passage Error - message: "+message, splitError[0])
