@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Deprecated: will use Passage Error instead
+// Deprecated: this will be replaced by [PassageError] in v2
 type Error struct {
 	Message    string
 	StatusCode int
