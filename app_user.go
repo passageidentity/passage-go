@@ -1,5 +1,7 @@
 package passage
 
+import "errors"
+
 type PassageUser = User
 type appUser struct {
 	app App
@@ -17,13 +19,17 @@ func newAppUser(app App) *appUser {
 // returns user on success, error on failure
 func (a *appUser) Get(userID string) (*PassageUser, error) {
 	user, err := a.app.GetUser(userID)
-	//nolint
 	if err != nil {
-		return user, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return user, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return user, err
 	}
 
 	return user, nil
@@ -33,13 +39,17 @@ func (a *appUser) Get(userID string) (*PassageUser, error) {
 // returns user on success, error on failure
 func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 	user, err := a.app.GetUserByIdentifier(identifier)
-	//nolint
 	if err != nil {
-		return user, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return user, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return user, err
 	}
 
 	return user, nil
@@ -49,13 +59,17 @@ func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 // returns user on success, error on failure
 func (a *appUser) Activate(userID string) (*PassageUser, error) {
 	user, err := a.app.ActivateUser(userID)
-	//nolint
 	if err != nil {
-		return user, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return user, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return user, err
 	}
 
 	return user, nil
@@ -65,13 +79,17 @@ func (a *appUser) Activate(userID string) (*PassageUser, error) {
 // returns user on success, error on failure
 func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
 	user, err := a.app.DeactivateUser(userID)
-	//nolint
 	if err != nil {
-		return user, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return user, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return user, err
 	}
 
 	return user, nil
@@ -81,13 +99,17 @@ func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
 // returns user on success, error on failure
 func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, error) {
 	user, err := a.app.UpdateUser(userID, updateBody)
-	//nolint
 	if err != nil {
-		return user, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return user, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return user, err
 	}
 
 	return user, nil
@@ -97,13 +119,17 @@ func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, er
 // returns true on success, false and error on failure (bool, err)
 func (a *appUser) Delete(userID string) (bool, error) {
 	ok, err := a.app.DeleteUser(userID)
-	//nolint
 	if err != nil {
-		return ok, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return ok, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return ok, err
 	}
 
 	return ok, nil
@@ -113,13 +139,17 @@ func (a *appUser) Delete(userID string) (bool, error) {
 // returns user on success, error on failure
 func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
 	user, err := a.app.CreateUser(createUserBody)
-	//nolint
 	if err != nil {
-		return user, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return user, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return user, err
 	}
 
 	return user, nil
@@ -129,13 +159,17 @@ func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
 // returns a list of devices on success, error on failure
 func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
 	devices, err := a.app.ListUserDevices(userID)
-	//nolint
 	if err != nil {
-		return devices, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return devices, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return devices, err
 	}
 
 	return devices, nil
@@ -145,13 +179,17 @@ func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
 // returns a true success, error on failure
 func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
 	ok, err := a.app.RevokeUserDevice(userID, deviceID)
-	//nolint
 	if err != nil {
-		return ok, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return ok, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return ok, err
 	}
 
 	return ok, nil
@@ -161,13 +199,17 @@ func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
 // returns true on success, error on failure
 func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
 	ok, err := a.app.SignOut(userID)
-	//nolint
 	if err != nil {
-		return ok, PassageError{
-			Message:    err.(Error).Message,
-			StatusCode: err.(Error).StatusCode,
-			ErrorCode:  err.(Error).ErrorCode,
+		var e Error
+		if errors.As(err, &e) {
+			return ok, PassageError{
+				Message:    e.Message,
+				StatusCode: e.StatusCode,
+				ErrorCode:  e.ErrorCode,
+			}
 		}
+
+		return ok, err
 	}
 
 	return ok, nil
