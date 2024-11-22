@@ -331,12 +331,6 @@ func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
 	case res.JSON404 != nil:
 		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		switch res.JSON404.Code {
-		// case UserNotFound:
-		// 	message = fmt.Sprintf(UserIDDoesNotExist, userID)
-		// case DeviceNotFound:
-		// 	message = fmt.Sprintf("Device with ID \"%v\" does not exist", deviceID)
-		}
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)

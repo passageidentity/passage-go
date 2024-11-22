@@ -41,7 +41,7 @@ func TestGetInfoX(t *testing.T) {
 
 		_, err = psg.User.Get("PassageUserID")
 		require.NotNil(t, err)
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 }
 
@@ -125,7 +125,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 
 		_, err = psg.User.GetByIdentifier("error@passage.id")
 		require.NotNil(t, err)
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -172,7 +172,7 @@ func TestActivate(t *testing.T) {
 
 		_, err = psg.User.Activate("PassageUserID")
 		require.NotNil(t, err)
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 }
 func TestDeactivate(t *testing.T) {
@@ -208,7 +208,7 @@ func TestDeactivate(t *testing.T) {
 		_, err = psg.User.Deactivate("PassageUserID")
 		require.NotNil(t, err)
 
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 }
 
@@ -278,7 +278,7 @@ func TestUpdate(t *testing.T) {
 
 		_, err = psg.User.Update("PassageUserID", updateBody)
 		require.NotNil(t, err)
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -405,7 +405,7 @@ func TestDelete(t *testing.T) {
 		_, err = psg.User.Delete("PassageUserID")
 		require.NotNil(t, err)
 
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 }
 
@@ -441,7 +441,7 @@ func TestListUser(t *testing.T) {
 		_, err = psg.User.ListDevices("PassageUserID")
 		require.NotNil(t, err)
 
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 }
 
@@ -479,6 +479,6 @@ func TestRevokeRefreshTokens(t *testing.T) {
 		_, err = psg.User.RevokeRefreshTokens("PassageUserID")
 		require.NotNil(t, err)
 
-		passageUserNotFoundAsserts(t, err, UserNotFoundDefaultMessage)
+		passageUserNotFoundAsserts(t, err)
 	})
 }
