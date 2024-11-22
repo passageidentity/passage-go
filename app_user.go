@@ -2,7 +2,6 @@ package passage
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -12,8 +11,6 @@ type appUser struct {
 	client *ClientWithResponses
 	appID  string
 }
-
-
 
 func newAppUser(client *ClientWithResponses, appID string) *appUser {
 	appUser := appUser{
@@ -27,10 +24,9 @@ func newAppUser(client *ClientWithResponses, appID string) *appUser {
 // Get gets a user using their userID
 // returns user on success, error on failure
 func (a *appUser) Get(userID string) (*PassageUser, error) {
-	message := "failed to get Passage User"
 	res, err := a.client.GetUserWithResponse(context.Background(), a.appID, userID)
 	if err != nil {
-		return nil, networkPassageError(message)
+		return nil, networkPassageError()
 	}
 
 	if res.JSON200 != nil {
@@ -38,6 +34,7 @@ func (a *appUser) Get(userID string) (*PassageUser, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -61,7 +58,7 @@ func (a *appUser) Get(userID string) (*PassageUser, error) {
 // returns user on success, error on failure
 func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 	var errorCode string
-	message := "failed to get Passage User By Identifier"
+	var message string
 	limit := 1
 	lowerIdentifier := strings.ToLower(identifier)
 	res, err := a.client.ListPaginatedUsersWithResponse(
@@ -74,7 +71,7 @@ func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 	)
 
 	if err != nil {
-		return nil, networkPassageError(fmt.Sprintf("message: %s, err: %+v", message, err))
+		return nil, networkPassageError()
 	}
 
 	if res.JSON200 != nil {
@@ -112,10 +109,9 @@ func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 // Activate activates a user using their userID
 // returns user on success, error on failure
 func (a *appUser) Activate(userID string) (*PassageUser, error) {
-	message := "failed to activate Passage User"
 	res, err := a.client.ActivateUserWithResponse(context.Background(), a.appID, userID)
 	if err != nil {
-		return nil, networkPassageError(message)
+		return nil, networkPassageError()
 	}
 
 	if res.JSON200 != nil {
@@ -123,6 +119,7 @@ func (a *appUser) Activate(userID string) (*PassageUser, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -145,10 +142,9 @@ func (a *appUser) Activate(userID string) (*PassageUser, error) {
 // Deactivate deactivates a user using their userID
 // returns user on success, error on failure
 func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
-	message := "failed to deactivate Passage User"
 	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.appID, userID)
 	if err != nil {
-		return nil, networkPassageError(message)
+		return nil, networkPassageError()
 	}
 
 	if res.JSON200 != nil {
@@ -156,6 +152,7 @@ func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -178,10 +175,9 @@ func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
 // Update receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
 func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, error) {
-	message := "failed to update Passage User's attributes"
 	res, err := a.client.UpdateUserWithResponse(context.Background(), a.appID, userID, updateBody)
 	if err != nil {
-		return nil, networkPassageError(message)
+		return nil, networkPassageError()
 	}
 
 	if res.JSON200 != nil {
@@ -189,6 +185,7 @@ func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, er
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON400 != nil:
 		message = res.JSON400.Error
@@ -214,10 +211,9 @@ func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, er
 // Delete deletes a user by their user string
 // returns true on success, false and error on failure (bool, err)
 func (a *appUser) Delete(userID string) (bool, error) {
-	message := "failed to delete Passage User"
 	res, err := a.client.DeleteUserWithResponse(context.Background(), a.appID, userID)
 	if err != nil {
-		return false, networkPassageError(message)
+		return false, networkPassageError()
 	}
 
 	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
@@ -225,6 +221,7 @@ func (a *appUser) Delete(userID string) (bool, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -247,10 +244,9 @@ func (a *appUser) Delete(userID string) (bool, error) {
 // Create receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
 func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
-	message := "failed to create Passage User"
 	res, err := a.client.CreateUserWithResponse(context.Background(), a.appID, createUserBody)
 	if err != nil {
-		return nil, networkPassageError(message)
+		return nil, networkPassageError()
 	}
 
 	if res.JSON201 != nil {
@@ -258,6 +254,7 @@ func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON400 != nil:
 		message = res.JSON400.Error
@@ -283,10 +280,9 @@ func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
 // ListDevices lists a user's devices
 // returns a list of devices on success, error on failure
 func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
-	message := "failed to list devices for a Passage User"
 	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.appID, userID)
 	if err != nil {
-		return nil, networkPassageError(message)
+		return nil, networkPassageError()
 	}
 
 	if res.JSON200 != nil {
@@ -294,6 +290,7 @@ func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -316,10 +313,9 @@ func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
 // RevokeDevice gets a user using their userID
 // returns a true success, error on failure
 func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
-	message := "failed to delete a device for a Passage User"
 	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.appID, userID, deviceID)
 	if err != nil {
-		return false, networkPassageError(message)
+		return false, networkPassageError()
 	}
 
 	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
@@ -327,6 +323,7 @@ func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -355,10 +352,9 @@ func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
 // RevokeRefreshTokens revokes a users refresh tokens
 // returns true on success, error on failure
 func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
-	message := "failed to revoke all refresh tokens for a Passage User"
 	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.appID, userID)
 	if err != nil {
-		return false, networkPassageError(message)
+		return false, networkPassageError()
 	}
 
 	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
@@ -366,6 +362,7 @@ func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
 	}
 
 	var errorCode string
+	var message string
 	switch {
 	case res.JSON401 != nil:
 		message = res.JSON401.Error
@@ -385,10 +382,10 @@ func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
 	}
 }
 
-func networkPassageError(message string) PassageError {
+func networkPassageError() PassageError {
 	return PassageError{
-		Message:    message,
+		Message:    "Internal Service Error",
 		StatusCode: 500,
-		ErrorCode:  "Internal Service Error",
+		ErrorCode:  "internal_service_error",
 	}
 }
