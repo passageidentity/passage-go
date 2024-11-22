@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const UserNotFoundDefaultMessage = "User not found"
+
 var (
 	PassageAppID     string
 	PassageApiKey    string
@@ -73,15 +75,15 @@ func badRequestAsserts(t *testing.T, err error, message, errorText string) {
 func passageUserNotFoundAsserts(t *testing.T, err error, message string) {
 	splitError := strings.Split(err.Error(), ", ")
 	assert.Len(t, splitError, 3)
-	assert.Equal(t, message, splitError[0])
+	assert.Equal(t, "Passage Error - message: "+message, splitError[0])
 	assert.Equal(t, "status_code: 404", splitError[1])
 	assert.Equal(t, "error_code: user_not_found", splitError[2])
 }
 
-func passageUnauthorizedAsserts(t *testing.T, err error, message string) {
+func passageUnauthorizedAsserts(t *testing.T, err error) {
 	splitError := strings.Split(err.Error(), ", ")
 	assert.Len(t, splitError, 3)
-	assert.Equal(t, "Passage Error - message: "+message, splitError[0])
+	assert.Equal(t, "Passage Error - message: Invalid access token", splitError[0])
 	assert.Equal(t, "status_code: 401", splitError[1])
 	assert.Equal(t, "error_code: invalid_access_token", splitError[2])
 }

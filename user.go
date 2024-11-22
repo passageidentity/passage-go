@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	UserIDDoesNotExist     string = "passage User with ID \"%v\" does not exist"
+	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
+)
+
 // GetUser gets a user using their userID
 // returns user on success, error on failure
 //

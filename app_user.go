@@ -13,10 +13,7 @@ type appUser struct {
 	appID  string
 }
 
-const (
-	UserIDDoesNotExist     string = "passage User with ID \"%v\" does not exist"
-	IdentifierDoesNotExist string = "passage User with Identifier \"%v\" does not exist"
-)
+
 
 func newAppUser(client *ClientWithResponses, appID string) *appUser {
 	appUser := appUser{
@@ -43,11 +40,13 @@ func (a *appUser) Get(userID string) (*PassageUser, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -81,9 +80,8 @@ func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 	if res.JSON200 != nil {
 		users := res.JSON200.Users
 		if len(users) == 0 {
-			message = fmt.Sprintf(IdentifierDoesNotExist, identifier)
 			return nil, PassageError{
-				Message:    message,
+				Message:    "User not found",
 				StatusCode: http.StatusNotFound,
 				ErrorCode:  "user_not_found",
 			}
@@ -94,10 +92,13 @@ func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
 
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -124,11 +125,13 @@ func (a *appUser) Activate(userID string) (*PassageUser, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -155,11 +158,13 @@ func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -186,13 +191,16 @@ func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, er
 	var errorCode string
 	switch {
 	case res.JSON400 != nil:
+		message = res.JSON400.Error
 		errorCode = string(res.JSON400.Code)
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -219,11 +227,13 @@ func (a *appUser) Delete(userID string) (bool, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -250,12 +260,16 @@ func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
 	var errorCode string
 	switch {
 	case res.JSON400 != nil:
+		message = res.JSON400.Error
 		errorCode = string(res.JSON400.Code)
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -282,11 +296,13 @@ func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -313,16 +329,19 @@ func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
 		switch res.JSON404.Code {
-		case UserNotFound:
-			message = fmt.Sprintf(UserIDDoesNotExist, userID)
-		case DeviceNotFound:
-			message = fmt.Sprintf("Device with ID \"%v\" does not exist", deviceID)
+		// case UserNotFound:
+		// 	message = fmt.Sprintf(UserIDDoesNotExist, userID)
+		// case DeviceNotFound:
+		// 	message = fmt.Sprintf("Device with ID \"%v\" does not exist", deviceID)
 		}
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
@@ -349,11 +368,13 @@ func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
 	var errorCode string
 	switch {
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
-		message = fmt.Sprintf(UserIDDoesNotExist, userID)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
