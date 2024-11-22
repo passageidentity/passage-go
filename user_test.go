@@ -366,7 +366,7 @@ func TestCreateUser(t *testing.T) {
 		_, err = psg.CreateUser(createUserBody)
 
 		require.NotNil(t, err)
-		expectedErrorText := "gsemail: cannot be blank; phone: cannot be blank."
+		expectedErrorText := "email: cannot be blank; phone: cannot be blank."
 		badRequestAsserts(t, err, expectedErrorText)
 	})
 
