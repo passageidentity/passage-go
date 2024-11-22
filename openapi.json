@@ -1,0 +1,2361 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Passage Management API",
+    "description": "Passage's management API to manage your Passage apps and users.",
+    "version": "1",
+    "contact": {
+      "name": "API Support",
+      "url": "https://passage.id/support",
+      "email": "support@passage.id"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.passage.id/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Apps"
+    },
+    {
+      "name": "Tokens"
+    },
+    {
+      "name": "UserDevices"
+    },
+    {
+      "name": "Users"
+    },
+    {
+      "name": "MagicLinks"
+    }
+  ],
+  "paths": {
+    "/apps/{app_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/app_id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Apps"
+        ],
+        "summary": "Get App",
+        "description": "Get app information.",
+        "operationId": "get-app",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {},
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/magic-links": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/app_id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "MagicLinks"
+        ],
+        "summary": "Create Embeddable Magic Link",
+        "description": "Create magic link for a user.",
+        "operationId": "create-magic-link",
+        "requestBody": {
+          "description": "Request to create a magic link",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMagicLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MagicLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/401Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/403Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/404NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/500InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/app_id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "List Users",
+        "description": "List users for an app.",
+        "operationId": "list-paginated-users",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "page to fetch (min=1)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "number of users to fetch per page (max=500)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "description": "Unix timestamp to anchor pagination results (fetches events that were created before the timestamp)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Comma separated list of <field>:<ASC/DESC> (example: order_by=id:DESC,created_at:ASC) **cannot order_by `identifier`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "identifier",
+            "in": "query",
+            "description": "search users email OR phone (pagination prepended operators identifier=<val>, identifier=<ne:val>, identifier=<gt:val>, identifier=<lt:val>, identifier=<like:val>, identifier=<not_like:val>)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "search users id (pagination prepended operators id=<val>, id=<ne:val>, id=<gt:val>, id=<lt:val>, id=<like:val>, id=<not_like:val>)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "login_count",
+            "in": "query",
+            "description": "search users login_count (pagination prepended operators login_count=<val>, login_count=<ne:val>, login_count=<gt:val>, login_count=<lt:val>)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "search users by status (pagination prepended operators status=<val>, status=<ne:val>, status=<gt:val>, status=<lt:val>, status=<like:val>, status=<not_like:val>) -- valid values: (active, inactive, pending)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "created_at",
+            "in": "query",
+            "description": "search users created_at (pagination prepended operators created_at=<val>, created_at=<ne:val>, created_at=<gt:val>, created_at=<lt:val> -- valid timestamp in the format: 2006-01-02T15:04:05.000000Z required",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updated_at",
+            "in": "query",
+            "description": "search users updated_at (pagination prepended operators updated_at=<val>, updated_at=<ne:val>, updated_at=<gt:val>, updated_at=<lt:val> -- valid timestamp in the format: 2006-01-02T15:04:05.000000Z required",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "last_login_at",
+            "in": "query",
+            "description": "search users last_login_at (pagination prepended operators last_login_at=<val>, lat_login_at=<ne:val>, last_login_at=<gt:val>, last_login_at=<lt:val> -- valid timestamp in the format: 2006-01-02T15:04:05.000000Z required",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListPaginatedUsersResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create User",
+        "description": "Create user for an application. Must provide an email of phone number identifier.",
+        "operationId": "create-user",
+        "requestBody": {
+          "description": "email, phone, user_metadata",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users/{user_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/app_id"
+        },
+        {
+          "$ref": "#/components/parameters/user_id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get User",
+        "description": "Get information about a user.",
+        "operationId": "get-user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete User",
+        "description": "Delete a user.",
+        "operationId": "delete-user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update User",
+        "description": "Update a user's information.",
+        "operationId": "update-user",
+        "requestBody": {
+          "description": "user settings",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users/{user_id}/activate": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Activate User",
+        "description": "Activate a user. They will now be able to login.",
+        "operationId": "activate-user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/app_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users/{user_id}/deactivate": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deactivate User",
+        "description": "Deactivate a user. Their account will still exist, but they will not be able to login.",
+        "operationId": "deactivate-user",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/app_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users/{user_id}/devices": {
+      "get": {
+        "tags": [
+          "UserDevices"
+        ],
+        "summary": "List User Devices",
+        "description": "List user devices.",
+        "operationId": "list-user-devices",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/app_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListDevicesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users/{user_id}/devices/{device_id}": {
+      "delete": {
+        "tags": [
+          "UserDevices"
+        ],
+        "summary": "Delete a device for a user",
+        "description": "Delete a device for a user.",
+        "operationId": "delete-user-devices",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/app_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_id"
+          },
+          {
+            "name": "device_id",
+            "in": "path",
+            "description": "Device ID",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apps/{app_id}/users/{user_id}/tokens": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/app_id"
+        },
+        {
+          "$ref": "#/components/parameters/user_id"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Tokens"
+        ],
+        "summary": "Revokes refresh tokens",
+        "description": "Revokes all refresh tokens for a user",
+        "operationId": "revoke-user-refresh-tokens",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/403Forbidden"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PasskeysAuthMethod": {
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "TtlDisplayUnit": {
+        "deprecated": true,
+        "description": "Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.\n* `s` - seconds\n* `m` - minutes\n* `h` - hours\n* `d` - days\n",
+        "type": "string",
+        "enum": [
+          "s",
+          "m",
+          "h",
+          "d"
+        ]
+      },
+      "OtpAuthMethod": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "ttl",
+          "ttl_display_unit"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "ttl": {
+            "description": "Maximum time (IN SECONDS) for the auth to expire.",
+            "type": "integer",
+            "default": 300,
+            "minimum": 60
+          },
+          "ttl_display_unit": {
+            "$ref": "#/components/schemas/TtlDisplayUnit"
+          }
+        }
+      },
+      "MagicLinkAuthMethod": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "ttl",
+          "ttl_display_unit"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "ttl": {
+            "description": "Maximum time (IN SECONDS) for the auth to expire.",
+            "type": "integer",
+            "default": 300,
+            "minimum": 60
+          },
+          "ttl_display_unit": {
+            "$ref": "#/components/schemas/TtlDisplayUnit"
+          }
+        }
+      },
+      "AuthMethods": {
+        "description": "Denotes what methods this app is allowed to use for authentication with configurations",
+        "required": [
+          "passkeys",
+          "otp",
+          "magic_link"
+        ],
+        "type": "object",
+        "properties": {
+          "passkeys": {
+            "$ref": "#/components/schemas/PasskeysAuthMethod"
+          },
+          "otp": {
+            "$ref": "#/components/schemas/OtpAuthMethod"
+          },
+          "magic_link": {
+            "$ref": "#/components/schemas/MagicLinkAuthMethod"
+          }
+        }
+      },
+      "LayoutConfig": {
+        "type": "object",
+        "required": [
+          "h",
+          "id",
+          "w",
+          "x",
+          "y"
+        ],
+        "properties": {
+          "h": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "w": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "Layouts": {
+        "type": "object",
+        "required": [
+          "profile",
+          "registration"
+        ],
+        "properties": {
+          "profile": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LayoutConfig"
+            }
+          },
+          "registration": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LayoutConfig"
+            }
+          }
+        }
+      },
+      "ThemeType": {
+        "type": "string",
+        "enum": [
+          "auto",
+          "light",
+          "dark"
+        ]
+      },
+      "UserMetadataFieldType": {
+        "type": "string",
+        "enum": [
+          "string",
+          "boolean",
+          "integer",
+          "date",
+          "phone",
+          "email"
+        ]
+      },
+      "UserMetadataField": {
+        "type": "object",
+        "required": [
+          "field_name",
+          "friendly_name",
+          "id",
+          "profile",
+          "registration",
+          "type"
+        ],
+        "properties": {
+          "field_name": {
+            "type": "string"
+          },
+          "friendly_name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "boolean"
+          },
+          "registration": {
+            "type": "boolean"
+          },
+          "type": {
+            "$ref": "#/components/schemas/UserMetadataFieldType"
+          }
+        }
+      },
+      "Technologies": {
+        "type": "string",
+        "enum": [
+          "react",
+          "go",
+          "vue",
+          "angular",
+          "python",
+          "javascript",
+          "ios",
+          "android"
+        ]
+      },
+      "FontFamily": {
+        "type": "string",
+        "default": "Helvetica",
+        "description": "Body font family",
+        "enum": [
+          "Helvetica",
+          "Arial",
+          "Arial Black",
+          "Verdana",
+          "Tahoma",
+          "Trebuchet MS",
+          "Impact",
+          "Gill Sans",
+          "Times New Roman",
+          "Georgia",
+          "Palatino",
+          "Baskerville",
+          "Andalé Mono",
+          "Courier",
+          "Lucida",
+          "Monaco",
+          "Bradley Hand",
+          "Brush Script MT",
+          "Luminari",
+          "Comic Sans MS"
+        ]
+      },
+      "ElementCustomization": {
+        "type": "object",
+        "properties": {
+          "passage_container_background_color": {
+            "type": "string",
+            "example": "#ffffff",
+            "description": "Container background color in hex.\nDefault is `#ffffff` in light mode & `#383838` in dark mode.\n"
+          },
+          "passage_container_max_width": {
+            "type": "integer",
+            "default": 300,
+            "description": "Maximum width of container (px)"
+          },
+          "passage_input_box_background_color": {
+            "type": "string",
+            "example": "#ffffff",
+            "description": "Input box background color in hex.\nDefault is `#ffffff` in light mode & `#4b4b4b` in dark mode.\n"
+          },
+          "passage_input_box_border_radius": {
+            "type": "integer",
+            "default": 5,
+            "description": "Input box border radius (px)"
+          },
+          "passage_header_font_family": {
+            "$ref": "#/components/schemas/FontFamily"
+          },
+          "passage_body_font_family": {
+            "$ref": "#/components/schemas/FontFamily"
+          },
+          "passage_header_text_color": {
+            "type": "string",
+            "example": "#222222",
+            "description": "Header text color in hex.\nDefault is `#222222` in light mode & `#f3f3f3` in dark mode.\n"
+          },
+          "passage_body_text_color": {
+            "type": "string",
+            "example": "#222222",
+            "description": "Body text color in hex.\nDefault is `#222222` in light mode & `#f3f3f3` in dark mode.\n"
+          },
+          "passage_primary_button_background_color": {
+            "type": "string",
+            "default": "#121212",
+            "description": "Primary button background colour (hex)"
+          },
+          "passage_primary_button_text_color": {
+            "type": "string",
+            "default": "#f3f3f3",
+            "description": "Primary button font colour (hex)"
+          },
+          "passage_primary_button_hover_color": {
+            "type": "string",
+            "default": "#4d4d4d",
+            "description": "Primary button background on hover (hex)"
+          },
+          "passage_primary_button_border_radius": {
+            "type": "integer",
+            "default": 5,
+            "description": "Primary button border radius (px)"
+          },
+          "passage_primary_button_border_color": {
+            "type": "string",
+            "default": "#121212",
+            "description": "Primary button border color"
+          },
+          "passage_primary_button_border_width": {
+            "type": "integer",
+            "default": 0,
+            "description": "Primary button border width (px)"
+          },
+          "passage_secondary_button_background_color": {
+            "type": "string",
+            "default": "#ffffff",
+            "description": "Secondary button background colour (hex)"
+          },
+          "passage_secondary_button_text_color": {
+            "type": "string",
+            "default": "#222222",
+            "description": "Secondary button font colour (hex)"
+          },
+          "passage_secondary_button_hover_color": {
+            "type": "string",
+            "default": "#d7d7d7",
+            "description": "Secondary button background on hover (hex)"
+          },
+          "passage_secondary_button_border_radius": {
+            "type": "integer",
+            "default": 5,
+            "description": "Secondary button border radius (px)"
+          },
+          "passage_secondary_button_border_color": {
+            "type": "string",
+            "default": "#d7d7d7",
+            "description": "Secondary button border color"
+          },
+          "passage_secondary_button_border_width": {
+            "type": "integer",
+            "default": 1,
+            "description": "Secondary button border width (px)"
+          }
+        }
+      },
+      "AppInfo": {
+        "type": "object",
+        "required": [
+          "additional_auth_origins",
+          "allowed_callback_urls",
+          "allowed_identifier",
+          "allowed_logout_urls",
+          "application_login_uri",
+          "auth_fallback_method",
+          "auth_fallback_method_ttl",
+          "auth_methods",
+          "auth_origin",
+          "auto_theme_enabled",
+          "created_at",
+          "default_language",
+          "id",
+          "layouts",
+          "login_url",
+          "name",
+          "hosted",
+          "hosted_subdomain",
+          "hosted_theme",
+          "passage_branding",
+          "profile_management",
+          "public_signup",
+          "redirect_url",
+          "refresh_absolute_lifetime",
+          "refresh_enabled",
+          "refresh_inactivity_lifetime",
+          "require_email_verification",
+          "require_identifier_verification",
+          "required_identifier",
+          "role",
+          "rsa_public_key",
+          "session_timeout_length",
+          "type",
+          "user_metadata_schema",
+          "technologies",
+          "element_customization",
+          "element_customization_dark"
+        ],
+        "properties": {
+          "additional_auth_origins": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "allowed_callback_urls": {
+            "description": "The valid URLs where users can be redirected after authentication.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "allowed_identifier": {
+            "type": "string"
+          },
+          "allowed_logout_urls": {
+            "description": "The valid URLs where users can be redirected after logging out.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "application_login_uri": {
+            "description": "A route within your application that redirects to the Authorization URL endpoint.",
+            "type": "string"
+          },
+          "auth_fallback_method": {
+            "deprecated": true,
+            "description": "Deprecated Property. Please refer to `auth_methods` to view settings for individual authentication methods.",
+            "type": "string"
+          },
+          "auth_fallback_method_ttl": {
+            "deprecated": true,
+            "description": "Deprecated Property. Please refer to `auth_methods` to view settings for individual authentication methods.",
+            "type": "integer"
+          },
+          "auth_methods": {
+            "$ref": "#/components/schemas/AuthMethods"
+          },
+          "auth_origin": {
+            "type": "string"
+          },
+          "auto_theme_enabled": {
+            "deprecated": true,
+            "description": "Deprecated Property. Please use `hosted_theme` to set hosted page theming instead.",
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "default_language": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "layouts": {
+            "$ref": "#/components/schemas/Layouts"
+          },
+          "login_url": {
+            "type": "string"
+          },
+          "light_logo_url": {
+            "type": "string"
+          },
+          "dark_logo_url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "hosted": {
+            "description": "whether or not the app's login page is hosted by Passage",
+            "type": "boolean"
+          },
+          "hosted_subdomain": {
+            "description": "the subdomain of the app's hosted login page",
+            "type": "string"
+          },
+          "hosted_theme": {
+            "description": "theme setting of the app's hosted login page",
+            "type": "string",
+            "$ref": "#/components/schemas/ThemeType"
+          },
+          "id_token_lifetime": {
+            "type": "integer"
+          },
+          "passage_branding": {
+            "type": "boolean"
+          },
+          "profile_management": {
+            "type": "boolean"
+          },
+          "public_signup": {
+            "type": "boolean"
+          },
+          "redirect_url": {
+            "type": "string"
+          },
+          "refresh_absolute_lifetime": {
+            "type": "integer"
+          },
+          "refresh_enabled": {
+            "type": "boolean"
+          },
+          "refresh_inactivity_lifetime": {
+            "type": "integer"
+          },
+          "require_email_verification": {
+            "type": "boolean"
+          },
+          "require_identifier_verification": {
+            "type": "boolean"
+          },
+          "required_identifier": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "rsa_public_key": {
+            "type": "string"
+          },
+          "secret": {
+            "description": "can only be retrieved by an app admin",
+            "type": "string"
+          },
+          "session_timeout_length": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "flex"
+            ]
+          },
+          "user_metadata_schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserMetadataField"
+            }
+          },
+          "technologies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Technologies"
+            }
+          },
+          "element_customization": {
+            "$ref": "#/components/schemas/ElementCustomization"
+          },
+          "element_customization_dark": {
+            "$ref": "#/components/schemas/ElementCustomization"
+          }
+        }
+      },
+      "AppResponse": {
+        "type": "object",
+        "required": [
+          "app"
+        ],
+        "properties": {
+          "app": {
+            "$ref": "#/components/schemas/AppInfo"
+          }
+        }
+      },
+      "401Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "error"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid_access_token",
+              "invalid_nonce"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "404Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "error"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "admin_not_found",
+              "api_key_not_found",
+              "app_not_found",
+              "device_not_found",
+              "domain_not_found",
+              "email_provider_not_found",
+              "email_template_not_found",
+              "event_not_found",
+              "function_not_found",
+              "function_secret_key_not_found",
+              "function_version_not_found",
+              "metadata_field_not_found",
+              "oauth2_app_not_found",
+              "organization_member_not_found",
+              "sms_provider_not_found",
+              "sms_template_not_found",
+              "social_connection_not_found",
+              "user_not_found",
+              "native_client_not_found"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "500Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "error"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "internal_server_error"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "400Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "error"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid_request",
+              "custom_provider_required"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "403Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "error"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "cannot_create_organization_billing_portal_session",
+              "cannot_create_transaction",
+              "cannot_delete_admin",
+              "cannot_delete_organization_member",
+              "cannot_self_update_organization_member",
+              "operation_not_allowed"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "Link": {
+        "type": "object",
+        "required": [
+          "href"
+        ],
+        "properties": {
+          "href": {
+            "type": "string"
+          }
+        }
+      },
+      "PaginatedLinks": {
+        "type": "object",
+        "required": [
+          "first",
+          "last",
+          "next",
+          "previous",
+          "self"
+        ],
+        "properties": {
+          "first": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "last": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "next": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "previous": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "self": {
+            "$ref": "#/components/schemas/Link"
+          }
+        }
+      },
+      "UserEventStatus": {
+        "type": "string",
+        "enum": [
+          "complete",
+          "incomplete"
+        ]
+      },
+      "SocialConnectionType": {
+        "type": "string",
+        "nullable": true,
+        "enum": [
+          "apple",
+          "github",
+          "google"
+        ]
+      },
+      "UserEventAction": {
+        "type": "string",
+        "enum": [
+          "register",
+          "login",
+          "other"
+        ]
+      },
+      "ListDevicesResponse": {
+        "type": "object",
+        "required": [
+          "devices"
+        ],
+        "properties": {
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebAuthnDevices"
+            }
+          }
+        }
+      },
+      "AuthenticateVerifyRequest": {
+        "$ref": "#/components/schemas/Nonce"
+      },
+      "Nonce": {
+        "type": "object",
+        "description": "the nonce to exchange for an authentication token",
+        "required": [
+          "nonce"
+        ],
+        "properties": {
+          "nonce": {
+            "type": "string"
+          }
+        }
+      },
+      "MagicLinkType": {
+        "type": "string",
+        "enum": [
+          "login",
+          "verify_identifier"
+        ],
+        "x-go-type-skip-optional-pointer": true
+      },
+      "MagicLinkChannel": {
+        "type": "string",
+        "enum": [
+          "email",
+          "phone"
+        ]
+      },
+      "CreateMagicLinkRequest": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "$ref": "#/components/schemas/MagicLinkChannel"
+          },
+          "email": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "description": "language of the email to send (optional)",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "magic_link_path": {
+            "type": "string",
+            "description": "must be a relative url"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          },
+          "send": {
+            "type": "boolean"
+          },
+          "ttl": {
+            "type": "integer"
+          },
+          "type": {
+            "$ref": "#/components/schemas/MagicLinkType"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        }
+      },
+      "MagicLink": {
+        "type": "object",
+        "required": [
+          "activated",
+          "app_id",
+          "id",
+          "identifier",
+          "redirect_url",
+          "secret",
+          "ttl",
+          "type",
+          "url",
+          "user_id"
+        ],
+        "properties": {
+          "activated": {
+            "type": "boolean"
+          },
+          "app_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "ttl": {
+            "type": "integer"
+          },
+          "type": {
+            "$ref": "#/components/schemas/MagicLinkType"
+          },
+          "url": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        }
+      },
+      "MagicLinkResponse": {
+        "type": "object",
+        "required": [
+          "magic_link"
+        ],
+        "properties": {
+          "magic_link": {
+            "$ref": "#/components/schemas/MagicLink"
+          }
+        }
+      },
+      "UserStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "inactive",
+          "pending"
+        ]
+      },
+      "ListPaginatedUsersItem": {
+        "type": "object",
+        "required": [
+          "created_at",
+          "email",
+          "email_verified",
+          "external_id",
+          "id",
+          "last_login_at",
+          "login_count",
+          "phone",
+          "phone_verified",
+          "status",
+          "updated_at",
+          "user_metadata"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "external_id": {
+            "description": "The external ID of the user. Only set if the user was created in a Flex app.",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "login_count": {
+            "type": "integer"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "phone_verified": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/UserStatus"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_metadata": {
+            "type": "object",
+            "nullable": true,
+            "properties": {}
+          }
+        }
+      },
+      "ListPaginatedUsersResponse": {
+        "type": "object",
+        "required": [
+          "_links",
+          "created_before",
+          "limit",
+          "page",
+          "total_users",
+          "users"
+        ],
+        "properties": {
+          "_links": {
+            "$ref": "#/components/schemas/PaginatedLinks"
+          },
+          "created_before": {
+            "type": "integer",
+            "format": "int64",
+            "description": "time anchor (Unix timestamp) --> all users returned created before this timestamp"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "total_users": {
+            "type": "integer",
+            "format": "int64",
+            "description": "total number of users for a particular query"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListPaginatedUsersItem"
+            }
+          }
+        },
+        "x-go-name": "PaginatedUsersResponse"
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "description": "Email of the new user. Either this or `phone` is required; both may be provided.",
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "phone": {
+            "description": "Phone number of the new user. Either this or `email` is required; both may be provided.",
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "user_metadata": {
+            "type": "object",
+            "properties": {},
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "UserRecentEvent": {
+        "type": "object",
+        "required": [
+          "created_at",
+          "completed_at",
+          "id",
+          "ip_addr",
+          "status",
+          "type",
+          "user_agent",
+          "user_agent_display",
+          "action",
+          "social_login_type"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string"
+          },
+          "ip_addr": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/UserEventStatus"
+          },
+          "type": {
+            "type": "string"
+          },
+          "user_agent": {
+            "description": "The raw user agent value from the originating device",
+            "type": "string"
+          },
+          "user_agent_display": {
+            "description": "A display-friendly version of the user agent",
+            "type": "string"
+          },
+          "action": {
+            "$ref": "#/components/schemas/UserEventAction"
+          },
+          "social_login_type": {
+            "$ref": "#/components/schemas/SocialConnectionType"
+          }
+        }
+      },
+      "AppleUserSocialConnection": {
+        "type": "object",
+        "required": [
+          "provider_id",
+          "created_at",
+          "last_login_at",
+          "provider_identifier"
+        ],
+        "properties": {
+          "provider_id": {
+            "description": "The external ID of the Social Connection.",
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider_identifier": {
+            "description": "The email of connected social user.",
+            "type": "string"
+          }
+        }
+      },
+      "GithubUserSocialConnection": {
+        "type": "object",
+        "required": [
+          "provider_id",
+          "created_at",
+          "last_login_at",
+          "provider_identifier"
+        ],
+        "properties": {
+          "provider_id": {
+            "description": "The external ID of the Social Connection.",
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider_identifier": {
+            "description": "The email of connected social user.",
+            "type": "string"
+          }
+        }
+      },
+      "GoogleUserSocialConnection": {
+        "type": "object",
+        "required": [
+          "provider_id",
+          "created_at",
+          "last_login_at",
+          "provider_identifier"
+        ],
+        "properties": {
+          "provider_id": {
+            "description": "The external ID of the Social Connection.",
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider_identifier": {
+            "description": "The email of connected social user.",
+            "type": "string"
+          }
+        }
+      },
+      "UserSocialConnections": {
+        "type": "object",
+        "properties": {
+          "apple": {
+            "$ref": "#/components/schemas/AppleUserSocialConnection"
+          },
+          "github": {
+            "$ref": "#/components/schemas/GithubUserSocialConnection"
+          },
+          "google": {
+            "$ref": "#/components/schemas/GoogleUserSocialConnection"
+          }
+        }
+      },
+      "WebAuthnType": {
+        "type": "string",
+        "description": "The type of this credential",
+        "enum": [
+          "passkey",
+          "security_key",
+          "platform"
+        ]
+      },
+      "WebAuthnIcons": {
+        "type": "object",
+        "description": "Contains the light and dark SVG icons that represent the brand of those devices\nValues can be null or base64 encoded SVG. Example of SVG output: \ndata:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDE5MiAxOTIiIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDE5MiAxOTIiIHdpZHRoPSIyNHB4Ij48cmVjdCBmaWxsPSJub25lIiBoZWlnaHQ9IjE5MiIgd2lkdGg9IjE5MiIgeT0iMCIvPjxnPjxwYXRoIGQ9Ik02OS4yOSwxMDZjLTMuNDYsNS45Ny05LjkxLDEwLTE3LjI5LDEwYy0xMS4wMywwLTIwLTguOTctMjAtMjBzOC45Ny0yMCwyMC0yMCBjNy4zOCwwLDEzLjgzLDQuMDMsMTcuMjksMTBoMjUuNTVDOTAuMyw2Ni41NCw3Mi44Miw1Miw1Miw1MkMyNy43NCw1Miw4LDcxLjc0LDgsOTZzMTkuNzQsNDQsNDQsNDRjMjAuODIsMCwzOC4zLTE0LjU0LDQyLjg0LTM0IEg2OS4yOXoiIGZpbGw9IiM0Mjg1RjQiLz48cmVjdCBmaWxsPSIjRkJCQzA0IiBoZWlnaHQ9IjI0IiB3aWR0aD0iNDQiIHg9Ijk0IiB5PSI4NCIvPjxwYXRoIGQ9Ik05NC4zMiw4NEg2OHYwLjA1YzIuNSwzLjM0LDQsNy40Nyw0LDExLjk1cy0xLjUsOC42MS00LDExLjk1VjEwOGgyNi4zMiBjMS4wOC0zLjgyLDEuNjgtNy44NCwxLjY4LTEyUzk1LjQxLDg3LjgyLDk0LjMyLDg0eiIgZmlsbD0iI0VBNDMzNSIvPjxwYXRoIGQ9Ik0xODQsMTA2djI2aC0xNnYtOGMwLTQuNDItMy41OC04LTgtOHMtOCwzLjU4LTgsOHY4aC0xNnYtMjZIMTg0eiIgZmlsbD0iIzM0QTg1MyIvPjxyZWN0IGZpbGw9IiMxODgwMzgiIGhlaWdodD0iMjQiIHdpZHRoPSI0OCIgeD0iMTM2IiB5PSI4NCIvPjwvZz48L3N2Zz4=",
+        "required": [
+          "light",
+          "dark"
+        ],
+        "properties": {
+          "light": {
+            "nullable": true,
+            "type": "string"
+          },
+          "dark": {
+            "nullable": true,
+            "type": "string"
+          }
+        }
+      },
+      "WebAuthnDevices": {
+        "type": "object",
+        "required": [
+          "created_at",
+          "cred_id",
+          "friendly_name",
+          "id",
+          "last_login_at",
+          "type",
+          "updated_at",
+          "usage_count",
+          "icons"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The first time this webAuthn device was used to authenticate the user"
+          },
+          "cred_id": {
+            "type": "string",
+            "description": "The CredID for this webAuthn device"
+          },
+          "friendly_name": {
+            "type": "string",
+            "description": "The friendly name for the webAuthn device used to authenticate"
+          },
+          "id": {
+            "type": "string",
+            "description": "The ID of the webAuthn device used for authentication"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The last time this webAuthn device was used to authenticate the user"
+          },
+          "type": {
+            "$ref": "#/components/schemas/WebAuthnType"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The last time this webAuthn device was updated"
+          },
+          "usage_count": {
+            "type": "integer",
+            "description": "How many times this webAuthn device has been used to authenticate the user"
+          },
+          "icons": {
+            "$ref": "#/components/schemas/WebAuthnIcons"
+          }
+        }
+      },
+      "UserInfo": {
+        "type": "object",
+        "required": [
+          "created_at",
+          "email",
+          "email_verified",
+          "external_id",
+          "id",
+          "last_login_at",
+          "login_count",
+          "phone",
+          "phone_verified",
+          "recent_events",
+          "social_connections",
+          "status",
+          "updated_at",
+          "user_metadata",
+          "webauthn",
+          "webauthn_devices",
+          "webauthn_types"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "external_id": {
+            "description": "The external ID of the user. Only set if the user was created in a Flex app.",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "last_login_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "login_count": {
+            "type": "integer"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "phone_verified": {
+            "type": "boolean"
+          },
+          "recent_events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserRecentEvent"
+            }
+          },
+          "social_connections": {
+            "$ref": "#/components/schemas/UserSocialConnections"
+          },
+          "status": {
+            "$ref": "#/components/schemas/UserStatus"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_metadata": {
+            "type": "object",
+            "nullable": true,
+            "properties": {},
+            "x-go-type-skip-optional-pointer": true
+          },
+          "webauthn": {
+            "type": "boolean"
+          },
+          "webauthn_devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebAuthnDevices"
+            }
+          },
+          "webauthn_types": {
+            "type": "array",
+            "description": "List of credential types that have been used for authentication",
+            "items": {
+              "$ref": "#/components/schemas/WebAuthnType"
+            },
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserInfo"
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "phone": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "user_metadata": {
+            "type": "object",
+            "properties": {},
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      }
+    },
+    "responses": {
+      "403Forbidden": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/403Error"
+            }
+          }
+        }
+      },
+      "401Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/401Error"
+            }
+          }
+        }
+      },
+      "500InternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/500Error"
+            }
+          }
+        }
+      },
+      "404NotFound": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/404Error"
+            }
+          }
+        }
+      },
+      "400BadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/400Error"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "app_id": {
+        "name": "app_id",
+        "in": "path",
+        "description": "App ID",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "user_id": {
+        "name": "user_id",
+        "in": "path",
+        "description": "User ID",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "An auth token can be acquired by authenticating to the passage application (app_id=passage) with the Authentication API.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
