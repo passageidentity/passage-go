@@ -11,6 +11,7 @@ type Error struct {
 	StatusCode int
 	StatusText string
 	ErrorText  string
+	ErrorCode  string
 }
 
 type HTTPError struct {

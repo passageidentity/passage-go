@@ -246,7 +246,22 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, "456", user.UserMetadata["example1"])
 	})
 
-	t.Run("Error: Bad Request: on phone number and email", func(t *testing.T) {
+	t.Run("Error: Bad Request: on phone number", func(t *testing.T) {
+		psg, err := passage.New(PassageAppID, &passage.Config{
+			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
+		})
+		require.Nil(t, err)
+
+		updateBody := passage.UpdateBody{
+			Phone: "  ",
+		}
+		_, err = psg.User.Update(PassageUserID, updateBody)
+		require.NotNil(t, err)
+		expectedMessage := "identifier: must be a valid E164 number."
+		passageBadRequestAsserts(t, err, expectedMessage)
+	})
+
+	t.Run("Error: Bad Request: on email", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
 			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
 		})
@@ -254,11 +269,10 @@ func TestUpdate(t *testing.T) {
 
 		updateBody := passage.UpdateBody{
 			Email: "  ",
-			Phone: "  ",
 		}
 		_, err = psg.User.Update(PassageUserID, updateBody)
 		require.NotNil(t, err)
-		expectedMessage := "identifier: must be a valid E164 number.; identifier: must be a valid email address."
+		expectedMessage := "identifier: must be a valid email address."
 		passageBadRequestAsserts(t, err, expectedMessage)
 	})
 

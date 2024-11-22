@@ -1,21 +1,13 @@
 package passage
 
-import (
-	"context"
-	"net/http"
-	"strings"
-)
-
 type PassageUser = User
 type appUser struct {
-	client *ClientWithResponses
-	appID  string
+	app App
 }
 
-func newAppUser(client *ClientWithResponses, appID string) *appUser {
+func newAppUser(app App) *appUser {
 	appUser := appUser{
-		client: client,
-		appID:  appID,
+		app: app,
 	}
 
 	return &appUser
@@ -24,362 +16,149 @@ func newAppUser(client *ClientWithResponses, appID string) *appUser {
 // Get gets a user using their userID
 // returns user on success, error on failure
 func (a *appUser) Get(userID string) (*PassageUser, error) {
-	res, err := a.client.GetUserWithResponse(context.Background(), a.appID, userID)
+	user, err := a.app.GetUser(userID)
 	if err != nil {
-		return nil, networkPassageError()
+		return user, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return user, nil
 }
 
 // GetByIdentifier gets a user using their identifier
 // returns user on success, error on failure
 func (a *appUser) GetByIdentifier(identifier string) (*PassageUser, error) {
-	var errorCode string
-	var message string
-	limit := 1
-	lowerIdentifier := strings.ToLower(identifier)
-	res, err := a.client.ListPaginatedUsersWithResponse(
-		context.Background(),
-		a.appID,
-		&ListPaginatedUsersParams{
-			Limit:      &limit,
-			Identifier: &lowerIdentifier,
-		},
-	)
-
+	user, err := a.app.GetUserByIdentifier(identifier)
 	if err != nil {
-		return nil, networkPassageError()
-	}
-
-	if res.JSON200 != nil {
-		users := res.JSON200.Users
-		if len(users) == 0 {
-			return nil, PassageError{
-				Message:    "User not found",
-				StatusCode: http.StatusNotFound,
-				ErrorCode:  "user_not_found",
-			}
+		return user, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
 		}
-
-		return a.Get(users[0].ID)
 	}
 
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return user, nil
 }
 
 // Activate activates a user using their userID
 // returns user on success, error on failure
 func (a *appUser) Activate(userID string) (*PassageUser, error) {
-	res, err := a.client.ActivateUserWithResponse(context.Background(), a.appID, userID)
+	user, err := a.app.ActivateUser(userID)
 	if err != nil {
-		return nil, networkPassageError()
+		return user, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return user, nil
 }
 
 // Deactivate deactivates a user using their userID
 // returns user on success, error on failure
 func (a *appUser) Deactivate(userID string) (*PassageUser, error) {
-	res, err := a.client.DeactivateUserWithResponse(context.Background(), a.appID, userID)
+	user, err := a.app.DeactivateUser(userID)
 	if err != nil {
-		return nil, networkPassageError()
+		return user, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return user, nil
 }
 
 // Update receives an UpdateBody struct, updating the corresponding user's attribute(s)
 // returns user on success, error on failure
 func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, error) {
-	res, err := a.client.UpdateUserWithResponse(context.Background(), a.appID, userID, updateBody)
+	user, err := a.app.UpdateUser(userID, updateBody)
 	if err != nil {
-		return nil, networkPassageError()
+		return user, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON400 != nil:
-		message = res.JSON400.Error
-		errorCode = string(res.JSON400.Code)
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return user, nil
 }
 
 // Delete deletes a user by their user string
 // returns true on success, false and error on failure (bool, err)
 func (a *appUser) Delete(userID string) (bool, error) {
-	res, err := a.client.DeleteUserWithResponse(context.Background(), a.appID, userID)
+	ok, err := a.app.DeleteUser(userID)
 	if err != nil {
-		return false, networkPassageError()
+		return ok, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
-		return true, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return false, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return ok, nil
 }
 
 // Create receives a CreateUserBody struct, creating a user with provided values
 // returns user on success, error on failure
 func (a *appUser) Create(createUserBody CreateUserBody) (*PassageUser, error) {
-	res, err := a.client.CreateUserWithResponse(context.Background(), a.appID, createUserBody)
+	user, err := a.app.CreateUser(createUserBody)
 	if err != nil {
-		return nil, networkPassageError()
+		return user, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.JSON201 != nil {
-		return &res.JSON201.User, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON400 != nil:
-		message = res.JSON400.Error
-		errorCode = string(res.JSON400.Code)
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return user, nil
 }
 
 // ListDevices lists a user's devices
 // returns a list of devices on success, error on failure
 func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
-	res, err := a.client.ListUserDevicesWithResponse(context.Background(), a.appID, userID)
+	devices, err := a.app.ListUserDevices(userID)
 	if err != nil {
-		return nil, networkPassageError()
+		return devices, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.JSON200 != nil {
-		return res.JSON200.Devices, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return devices, nil
 }
 
 // RevokeDevice gets a user using their userID
 // returns a true success, error on failure
 func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
-	res, err := a.client.DeleteUserDevicesWithResponse(context.Background(), a.appID, userID, deviceID)
+	ok, err := a.app.RevokeUserDevice(userID, deviceID)
 	if err != nil {
-		return false, networkPassageError()
+		return ok, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
-		return true, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return false, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return ok, nil
 }
 
 // RevokeRefreshTokens revokes a users refresh tokens
 // returns true on success, error on failure
 func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
-	res, err := a.client.RevokeUserRefreshTokensWithResponse(context.Background(), a.appID, userID)
+	ok, err := a.app.SignOut(userID)
 	if err != nil {
-		return false, networkPassageError()
+		return ok, PassageError{
+			Message:    err.(Error).Message,
+			StatusCode: err.(Error).StatusCode,
+			ErrorCode:  err.(Error).ErrorCode,
+		}
 	}
 
-	if res.StatusCode() >= 200 && res.StatusCode() < 300 {
-		return true, nil
-	}
-
-	var errorCode string
-	var message string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return false, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
-}
-
-func networkPassageError() PassageError {
-	return PassageError{
-		Message:    "Internal Service Error",
-		StatusCode: 500,
-		ErrorCode:  "internal_service_error",
-	}
+	return ok, nil
 }
