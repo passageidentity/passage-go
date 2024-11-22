@@ -116,23 +116,22 @@ func (a *appUser) Update(userID string, updateBody UpdateBody) (*PassageUser, er
 }
 
 // Delete deletes a user by their user string
-// returns true on success, false and error on failure (bool, err)
-func (a *appUser) Delete(userID string) (bool, error) {
-	ok, err := a.app.DeleteUser(userID)
-	if err != nil {
+// returns error on failure
+func (a *appUser) Delete(userID string) error {
+	if _, err := a.app.DeleteUser(userID); err != nil {
 		var e Error
 		if errors.As(err, &e) {
-			return ok, PassageError{
+			return PassageError{
 				Message:    e.Message,
 				StatusCode: e.StatusCode,
 				ErrorCode:  e.ErrorCode,
 			}
 		}
 
-		return ok, err
+		return err
 	}
 
-	return ok, nil
+	return nil
 }
 
 // Create receives a CreateUserBody struct, creating a user with provided values
@@ -176,41 +175,39 @@ func (a *appUser) ListDevices(userID string) ([]WebAuthnDevices, error) {
 }
 
 // RevokeDevice gets a user using their userID
-// returns a true success, error on failure
-func (a *appUser) RevokeDevice(userID, deviceID string) (bool, error) {
-	ok, err := a.app.RevokeUserDevice(userID, deviceID)
-	if err != nil {
+// returns error on failure
+func (a *appUser) RevokeDevice(userID, deviceID string) error {
+	if _, err := a.app.RevokeUserDevice(userID, deviceID); err != nil {
 		var e Error
 		if errors.As(err, &e) {
-			return ok, PassageError{
+			return PassageError{
 				Message:    e.Message,
 				StatusCode: e.StatusCode,
 				ErrorCode:  e.ErrorCode,
 			}
 		}
 
-		return ok, err
+		return err
 	}
 
-	return ok, nil
+	return nil
 }
 
 // RevokeRefreshTokens revokes a users refresh tokens
-// returns true on success, error on failure
-func (a *appUser) RevokeRefreshTokens(userID string) (bool, error) {
-	ok, err := a.app.SignOut(userID)
-	if err != nil {
+// returns error on failure
+func (a *appUser) RevokeRefreshTokens(userID string) error {
+	if _, err := a.app.SignOut(userID); err != nil {
 		var e Error
 		if errors.As(err, &e) {
-			return ok, PassageError{
+			return PassageError{
 				Message:    e.Message,
 				StatusCode: e.StatusCode,
 				ErrorCode:  e.ErrorCode,
 			}
 		}
 
-		return ok, err
+		return err
 	}
 
-	return ok, nil
+	return nil
 }
