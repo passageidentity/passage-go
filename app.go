@@ -77,13 +77,17 @@ func (a *App) GetApp() (*AppInfo, error) {
 	}
 
 	var errorText string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
 		errorText = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, Error{
@@ -91,6 +95,7 @@ func (a *App) GetApp() (*AppInfo, error) {
 		StatusCode: res.StatusCode(),
 		StatusText: res.Status(),
 		ErrorText:  errorText,
+		ErrorCode:  errorCode,
 	}
 }
 
