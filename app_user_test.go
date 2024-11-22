@@ -394,9 +394,8 @@ func TestDelete(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		result, err := psg.User.Delete(CreatedUser.ID)
+		err = psg.User.Delete(CreatedUser.ID)
 		require.Nil(t, err)
-		assert.Equal(t, result, true)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -405,7 +404,7 @@ func TestDelete(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		_, err = psg.User.Delete(CreatedUser.ID)
+		err = psg.User.Delete(CreatedUser.ID)
 		require.NotNil(t, err)
 		passageUnauthorizedAsserts(t, err)
 	})
@@ -416,7 +415,7 @@ func TestDelete(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		_, err = psg.User.Delete("PassageUserID")
+		err = psg.User.Delete("PassageUserID")
 		require.NotNil(t, err)
 
 		passageUserNotFoundAsserts(t, err)
@@ -468,9 +467,8 @@ func TestRevokeRefreshTokens(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		result, err := psg.User.RevokeRefreshTokens(PassageUserID)
+		err = psg.User.RevokeRefreshTokens(PassageUserID)
 		require.Nil(t, err)
-		assert.Equal(t, result, true)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
@@ -479,7 +477,7 @@ func TestRevokeRefreshTokens(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		_, err = psg.User.RevokeRefreshTokens(PassageUserID)
+		err = psg.User.RevokeRefreshTokens(PassageUserID)
 		require.NotNil(t, err)
 		passageUnauthorizedAsserts(t, err)
 	})
@@ -490,7 +488,7 @@ func TestRevokeRefreshTokens(t *testing.T) {
 		})
 		require.Nil(t, err)
 
-		_, err = psg.User.RevokeRefreshTokens("PassageUserID")
+		err = psg.User.RevokeRefreshTokens("PassageUserID")
 		require.NotNil(t, err)
 
 		passageUserNotFoundAsserts(t, err)
