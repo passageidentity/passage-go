@@ -34,6 +34,9 @@ func (e Error) Error() string {
 	if e.ErrorText != "" {
 		fmt.Fprintf(&ps, "error: %s, ", e.ErrorText)
 	}
+	if e.ErrorCode != "" {
+		fmt.Fprintf(&ps, "error_code: %s, ", e.ErrorCode)
+	}
 
 	return strings.TrimSuffix(ps.String(), ", ")
 }
