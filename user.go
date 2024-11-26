@@ -33,23 +33,23 @@ func (u *user) Get(userID string) (*PassageUser, error) {
 		return &res.JSON200.User, nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -76,8 +76,8 @@ func (u *user) GetByIdentifier(identifier string) (*PassageUser, error) {
 
 		if len(users) == 0 {
 			return nil, PassageError{
-				ErrorCode:  "user_not_found",
 				Message:    "Could not find user with that identifier.",
+				ErrorCode:  "user_not_found",
 				StatusCode: http.StatusNotFound,
 			}
 		}
@@ -85,23 +85,23 @@ func (u *user) GetByIdentifier(identifier string) (*PassageUser, error) {
 		return u.Get(users[0].ID)
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -117,23 +117,23 @@ func (u *user) Activate(userID string) (*PassageUser, error) {
 		return &res.JSON200.User, nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -149,23 +149,23 @@ func (u *user) Deactivate(userID string) (*PassageUser, error) {
 		return &res.JSON200.User, nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -181,26 +181,26 @@ func (u *user) Update(userID string, options UpdateUserArgs) (*PassageUser, erro
 		return &res.JSON200.User, nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON400 != nil:
-		errorCode = string(res.JSON400.Code)
 		message = res.JSON400.Error
+		errorCode = string(res.JSON400.Code)
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -216,29 +216,27 @@ func (u *user) Create(args CreateUserArgs) (*PassageUser, error) {
 		return &res.JSON201.User, nil
 	}
 
-	var errorText string
+	var message string
 	var errorCode string
 	switch {
 	case res.JSON400 != nil:
-		errorText = res.JSON400.Error
+		message = res.JSON400.Error
 		errorCode = string(res.JSON400.Code)
 	case res.JSON401 != nil:
-		errorText = res.JSON401.Error
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorText = res.JSON404.Error
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorText = res.JSON500.Error
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
-	return nil, Error{
-		Message:    errorText,
-		StatusCode: res.StatusCode(),
-		StatusText: res.Status(),
-		ErrorText:  errorText,
+	return nil, PassageError{
+		Message:    message,
 		ErrorCode:  errorCode,
+		StatusCode: res.StatusCode(),
 	}
 }
 
@@ -253,23 +251,23 @@ func (u *user) Delete(userID string) error {
 		return nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -285,23 +283,23 @@ func (u *user) ListDevices(userID string) ([]WebAuthnDevices, error) {
 		return res.JSON200.Devices, nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -317,23 +315,23 @@ func (u *user) RevokeDevice(userID, deviceID string) error {
 		return nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
@@ -349,53 +347,23 @@ func (u *user) RevokeRefreshTokens(userID string) error {
 		return nil
 	}
 
-	var errorCode string
 	var message string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
-		errorCode = string(res.JSON401.Code)
 		message = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
-		errorCode = string(res.JSON404.Code)
 		message = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
-		errorCode = string(res.JSON500.Code)
 		message = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return PassageError{
-		ErrorCode:  errorCode,
 		Message:    message,
+		ErrorCode:  errorCode,
 		StatusCode: res.StatusCode(),
 	}
 }
-
-// type userResponse struct {
-// 	JSON200 *UserResponse
-// 	JSON400 *N400Error
-// 	JSON401 *N401Error
-// 	JSON404 *N404Error
-// 	JSON500 *N500Error
-// }
-
-// func getPassageError[T userResponse](response T) PassageError {
-// 	var errorCode string
-// 	var message string
-// 	switch {
-// 	case response.JSON401 != nil:
-// 		errorCode = string(response.JSON401.Code)
-// 		message = response.JSON401.Error
-// 	case response.JSON404 != nil:
-// 		errorCode = string(response.JSON404.Code)
-// 		message = response.JSON404.Error
-// 	case response.JSON500 != nil:
-// 		errorCode = string(response.JSON500.Code)
-// 		message = response.JSON500.Error
-// 	}
-
-// 	return PassageError{
-// 		ErrorCode:  errorCode,
-// 		Message:    message,
-// 		StatusCode: response.StatusCode(),
-// 	}
-// }

@@ -40,27 +40,32 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 func (a *auth) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
 	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.appID, createMagicLinkBody)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to create Passage Magic Link"}
+		return nil, err
 	}
 
 	if res.JSON201 != nil {
 		return &res.JSON201.MagicLink, nil
 	}
 
+	var message string
 	var errorCode string
 	switch {
 	case res.JSON400 != nil:
+		message = res.JSON400.Error
 		errorCode = string(res.JSON400.Code)
 	case res.JSON401 != nil:
+		message = res.JSON401.Error
 		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
+		message = res.JSON404.Error
 		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
+		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, PassageError{
-		Message:    "failed to create Passage Magic Link",
+		Message:    message,
 		StatusCode: res.StatusCode(),
 		ErrorCode:  errorCode,
 	}
