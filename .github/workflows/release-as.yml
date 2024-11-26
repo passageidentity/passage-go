@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Get latest tag
         id: latest-tag
         run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
@@ -29,9 +31,9 @@ jobs:
           git commit --allow-empty -m "chore: release ${{ github.event.inputs.version }}" -m "Release-As: ${{ github.event.inputs.version }}"
           git push origin release-as-v${{ github.event.inputs.version }}
           gh pr create --title "chore: Release as v${{ github.event.inputs.version }}" --body "Release as v${{ github.event.inputs.version }}" --base main
-          gh pr merge --squash --delete-branch
+          gh pr merge --squash --delete-branch --admin
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.BE_SDK_PAT }}
   call-release-workflow:
     needs: release-as
     uses: ./.github/workflows/release.yml
