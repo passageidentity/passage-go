@@ -125,7 +125,7 @@ func TestGetUserInfoByIdentifier(t *testing.T) {
 
 		_, err = psg.GetUserByIdentifier("error@passage.id")
 		require.NotNil(t, err)
-		userNotFoundAsserts(t, err)
+		couldNotFindUserByIdentifierAsserts(t, err)
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {

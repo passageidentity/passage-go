@@ -2,6 +2,7 @@ package passage
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -11,8 +12,8 @@ import (
 
 type auth struct {
 	appID        string
-	jwksCacheSet jwk.Set
 	client       *ClientWithResponses
+	jwksCacheSet jwk.Set
 }
 
 func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
@@ -29,8 +30,9 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 	}
 
 	auth := auth{
-		jwksCacheSet: jwk.NewCachedSet(cache, url),
+		appID:        appID,
 		client:       client,
+		jwksCacheSet: jwk.NewCachedSet(cache, url),
 	}
 
 	return &auth, nil
@@ -62,6 +64,14 @@ func (a *auth) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicL
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{

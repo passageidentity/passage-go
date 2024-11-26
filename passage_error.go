@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+type httpErrorBody struct {
+	Code  string `json:"code"`
+	Error string `json:"error"`
+}
+
 type PassageError struct {
 	Message    string
 	ErrorCode  string

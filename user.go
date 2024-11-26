@@ -2,6 +2,7 @@ package passage
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
 )
@@ -45,6 +46,14 @@ func (u *user) Get(userID string) (*PassageUser, error) {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -97,6 +106,14 @@ func (u *user) GetByIdentifier(identifier string) (*PassageUser, error) {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -129,6 +146,14 @@ func (u *user) Activate(userID string) (*PassageUser, error) {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -161,6 +186,14 @@ func (u *user) Deactivate(userID string) (*PassageUser, error) {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -196,6 +229,14 @@ func (u *user) Update(userID string, options UpdateUserOptions) (*PassageUser, e
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -231,6 +272,14 @@ func (u *user) Create(args CreateUserArgs) (*PassageUser, error) {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -263,6 +312,14 @@ func (u *user) Delete(userID string) error {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return PassageError{
@@ -295,6 +352,14 @@ func (u *user) ListDevices(userID string) ([]WebAuthnDevices, error) {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return nil, err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return nil, PassageError{
@@ -327,6 +392,14 @@ func (u *user) RevokeDevice(userID string, deviceID string) error {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return PassageError{
@@ -359,6 +432,14 @@ func (u *user) RevokeRefreshTokens(userID string) error {
 	case res.JSON500 != nil:
 		message = res.JSON500.Error
 		errorCode = string(res.JSON500.Code)
+	default:
+		var errorBody httpErrorBody
+		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
+			return err
+		}
+
+		message = errorBody.Error
+		errorCode = errorBody.Code
 	}
 
 	return PassageError{
