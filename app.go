@@ -27,11 +27,10 @@ type App struct {
 	// Deprecated: will be removed in v2.
 	ID string
 	// Deprecated: will be removed in v2.
-	Config       *Config
-	Auth         *auth
-	User         *user
-	client       *ClientWithResponses
-	jwksCacheSet jwk.Set
+	Config *Config
+	Auth   *auth
+	User   *user
+	client *ClientWithResponses
 }
 
 // New creates a new Passage instance.
@@ -68,12 +67,11 @@ func New(appID string, config *Config) (*Passage, error) {
 	user := newUser(appID, client)
 
 	return &App{
-		ID:           appID,
-		Config:       config,
-		Auth:         auth,
-		User:         user,
-		client:       client,
-		jwksCacheSet: jwk.NewCachedSet(cache, url),
+		ID:     appID,
+		Config: config,
+		Auth:   auth,
+		User:   user,
+		client: client,
 	}, nil
 }
 
