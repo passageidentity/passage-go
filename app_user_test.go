@@ -458,8 +458,6 @@ func TestListUser(t *testing.T) {
 	})
 }
 
-// NOTE RevokeUserDevice is not tested because it is impossible to spoof webauthn to create a device to then revoke
-
 func TestRevokeRefreshTokens(t *testing.T) {
 	t.Run("Success: sign out user", func(t *testing.T) {
 		psg, err := passage.New(PassageAppID, &passage.Config{
