@@ -8,7 +8,7 @@ import (
 
 type PassageUser = User
 type CreateUserArgs = CreateUserBody
-type UpdateUserArgs = UpdateBody
+type UpdateUserOptions = UpdateBody
 
 type user struct {
 	appID  string
@@ -171,7 +171,7 @@ func (u *user) Deactivate(userID string) (*PassageUser, error) {
 }
 
 // Update updates a user.
-func (u *user) Update(userID string, options UpdateUserArgs) (*PassageUser, error) {
+func (u *user) Update(userID string, options UpdateUserOptions) (*PassageUser, error) {
 	res, err := u.client.UpdateUserWithResponse(context.Background(), u.appID, userID, options)
 	if err != nil {
 		return nil, err
@@ -305,7 +305,7 @@ func (u *user) ListDevices(userID string) ([]WebAuthnDevices, error) {
 }
 
 // RevokeDevice revokes user's webauthn device using their user ID and the device ID.
-func (u *user) RevokeDevice(userID, deviceID string) error {
+func (u *user) RevokeDevice(userID string, deviceID string) error {
 	res, err := u.client.DeleteUserDevicesWithResponse(context.Background(), u.appID, userID, deviceID)
 	if err != nil {
 		return err
