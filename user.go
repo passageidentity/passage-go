@@ -2,7 +2,6 @@ package passage
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strings"
 )
@@ -34,33 +33,7 @@ func (u *user) Get(userID string) (*PassageUser, error) {
 		return &res.JSON200.User, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // GetByIdentifier retrieves a user's object using their user identifier.
@@ -94,33 +67,7 @@ func (u *user) GetByIdentifier(identifier string) (*PassageUser, error) {
 		return u.Get(users[0].ID)
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // Activate activates a user using their user ID.
@@ -134,33 +81,7 @@ func (u *user) Activate(userID string) (*PassageUser, error) {
 		return &res.JSON200.User, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // Deactivate deactivates a user using their user ID.
@@ -174,33 +95,7 @@ func (u *user) Deactivate(userID string) (*PassageUser, error) {
 		return &res.JSON200.User, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // Update updates a user.
@@ -214,36 +109,7 @@ func (u *user) Update(userID string, options UpdateUserOptions) (*PassageUser, e
 		return &res.JSON200.User, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON400 != nil:
-		message = res.JSON400.Error
-		errorCode = string(res.JSON400.Code)
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // Create creates a user.
@@ -257,36 +123,7 @@ func (u *user) Create(args CreateUserArgs) (*PassageUser, error) {
 		return &res.JSON201.User, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON400 != nil:
-		message = res.JSON400.Error
-		errorCode = string(res.JSON400.Code)
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // Delete deletes a user using their user ID.
@@ -300,33 +137,7 @@ func (u *user) Delete(userID string) error {
 		return nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return errorFromResponse(res.Body, res.StatusCode())
 }
 
 // ListDevices retrieves a user's webauthn devices using their user ID.
@@ -340,33 +151,7 @@ func (u *user) ListDevices(userID string) ([]WebAuthnDevices, error) {
 		return res.JSON200.Devices, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // RevokeDevice revokes user's webauthn device using their user ID and the device ID.
@@ -380,33 +165,7 @@ func (u *user) RevokeDevice(userID string, deviceID string) error {
 		return nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return errorFromResponse(res.Body, res.StatusCode())
 }
 
 // RevokeRefreshTokens revokes all of a user's Refresh Tokens using their User ID.
@@ -420,31 +179,5 @@ func (u *user) RevokeRefreshTokens(userID string) error {
 		return nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return PassageError{
-		Message:    message,
-		ErrorCode:  errorCode,
-		StatusCode: res.StatusCode(),
-	}
+	return errorFromResponse(res.Body, res.StatusCode())
 }

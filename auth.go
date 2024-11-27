@@ -2,7 +2,6 @@ package passage
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -49,36 +48,7 @@ func (a *auth) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicL
 		return &res.JSON201.MagicLink, nil
 	}
 
-	var message string
-	var errorCode string
-	switch {
-	case res.JSON400 != nil:
-		message = res.JSON400.Error
-		errorCode = string(res.JSON400.Code)
-	case res.JSON401 != nil:
-		message = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		message = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		message = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	default:
-		var errorBody httpErrorBody
-		if err := json.Unmarshal(res.Body, &errorBody); err != nil {
-			return nil, err
-		}
-
-		message = errorBody.Error
-		errorCode = errorBody.Code
-	}
-
-	return nil, PassageError{
-		Message:    message,
-		StatusCode: res.StatusCode(),
-		ErrorCode:  errorCode,
-	}
+	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
 // ValidateJWT validates the JWT and returns the user ID.

@@ -1,14 +1,10 @@
 package passage
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
-
-type httpErrorBody struct {
-	Code  string `json:"code"`
-	Error string `json:"error"`
-}
 
 type PassageError struct {
 	Message    string
@@ -33,4 +29,20 @@ func (e PassageError) Error() string {
 	}
 
 	return strings.TrimSuffix(sb.String(), ", ")
+}
+
+func errorFromResponse(body []byte, statusCode int) error {
+	var errorBody struct {
+		Code  string `json:"code"`
+		Error string `json:"error"`
+	}
+	if err := json.Unmarshal(body, &errorBody); err != nil {
+		return err
+	}
+
+	return PassageError{
+		Message:    errorBody.Error,
+		ErrorCode:  errorBody.Code,
+		StatusCode: statusCode,
+	}
 }
