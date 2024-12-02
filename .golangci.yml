@@ -1,0 +1,19 @@
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - errname
+    - errorlint
+    - gci
+    - gocritic
+    - gofmt
+    - gosimple
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unparam
+    - unused
+issues:
+  fix: true
+  max-issues-per-linter: 0
+  max-same-issues: 0

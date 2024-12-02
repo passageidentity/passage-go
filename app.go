@@ -2,22 +2,29 @@ package passage
 
 import (
 	"context"
+	"fmt"
 
-	jwkLibrary "github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/v2/jwk"
 )
+
+const jwksUrl = "https://auth.passage.id/v1/apps/%v/.well-known/jwks.json"
 
 type Config struct {
 	APIKey     string
 	HeaderAuth bool
 }
 
+// Deprecated: will be renamed to `Passage` in v2
 type App struct {
-	ID     string
-	JWKS   jwkLibrary.Set
-	Config *Config
-	client *ClientWithResponses
+	ID string
+	// Deprecated
+	Config       *Config
+	User         *appUser
+	client       *ClientWithResponses
+	jwksCacheSet jwk.Set
 }
 
+// Deprecated: Will be replaced with a different signature in v2
 func New(appID string, config *Config) (*App, error) {
 	if config == nil {
 		config = &Config{}
@@ -38,18 +45,27 @@ func New(appID string, config *Config) (*App, error) {
 		client: client,
 	}
 
-	app.JWKS, err = app.fetchJWKS()
-	if err != nil {
+	url := fmt.Sprintf(jwksUrl, appID)
+	cache := jwk.NewCache(context.Background())
+	if err := cache.Register(url); err != nil {
 		return nil, err
 	}
+
+	if _, err = cache.Refresh(context.Background(), url); err != nil {
+		return nil, Error{Message: "failed to fetch jwks"}
+	}
+
+	app.jwksCacheSet = jwk.NewCachedSet(cache, url)
+
+	app.User = newAppUser(app)
 
 	return &app, nil
 }
 
-var jwkCache map[string]jwkLibrary.Set = make(map[string]jwkLibrary.Set)
-
 // GetApp gets information about an app
 // returns App on success, error on failure
+//
+// Deprecated: GetApp - this method will not be replaced
 func (a *App) GetApp() (*AppInfo, error) {
 	res, err := a.client.GetAppWithResponse(context.Background(), a.ID)
 	if err != nil {
@@ -61,13 +77,17 @@ func (a *App) GetApp() (*AppInfo, error) {
 	}
 
 	var errorText string
+	var errorCode string
 	switch {
 	case res.JSON401 != nil:
 		errorText = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, Error{
@@ -75,6 +95,7 @@ func (a *App) GetApp() (*AppInfo, error) {
 		StatusCode: res.StatusCode(),
 		StatusText: res.Status(),
 		ErrorText:  errorText,
+		ErrorCode:  errorCode,
 	}
 }
 
@@ -91,15 +112,20 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 	}
 
 	var errorText string
+	var errorCode string
 	switch {
 	case res.JSON400 != nil:
 		errorText = res.JSON400.Error
+		errorCode = string(res.JSON400.Code)
 	case res.JSON401 != nil:
 		errorText = res.JSON401.Error
+		errorCode = string(res.JSON401.Code)
 	case res.JSON404 != nil:
 		errorText = res.JSON404.Error
+		errorCode = string(res.JSON404.Code)
 	case res.JSON500 != nil:
 		errorText = res.JSON500.Error
+		errorCode = string(res.JSON500.Code)
 	}
 
 	return nil, Error{
@@ -107,5 +133,6 @@ func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLi
 		StatusCode: res.StatusCode(),
 		StatusText: res.Status(),
 		ErrorText:  errorText,
+		ErrorCode:  errorCode,
 	}
 }

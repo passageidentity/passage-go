@@ -7,9 +7,6 @@ import (
 	"net/http"
 )
 
-//go:embed version.txt
-var version string
-
 var withPassageVersion ClientOption = WithRequestEditorFn(
 	func(ctx context.Context, req *http.Request) error {
 		req.Header.Set("Passage-Version", fmt.Sprintf("passage-go %s", version))
