@@ -60,7 +60,6 @@ func New(appID string, config *Config) (*Passage, error) {
 		return nil, Error{Message: "failed to fetch jwks"}
 	}
 
-
 	app := &App{
 		ID:     appID,
 		Config: config,

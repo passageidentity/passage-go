@@ -70,7 +70,7 @@ func (a *auth) ValidateJWT(authToken string) (string, error) {
 		return "", errors.New("failed to find sub claim in JWT")
 	}
 
-	audience, err := a. app.getExpectedAudienceValue()
+	audience, err := a.app.getExpectedAudienceValue()
 	if err != nil {
 		return "", fmt.Errorf("failed to get audience")
 	}
