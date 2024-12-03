@@ -1,15 +1,15 @@
 package passage
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/golang-jwt/jwt"
 )
 
-// AuthenticateRequest determines whether or not to authenticate via header or cookie authentication
-// returns the userID (string) on success, error on failure
+// AuthenticateRequest validates the JWT from either the Authorization header or cookie and returns the user ID.
+//
+// Deprecated: use `Passage.Auth.ValidateJWT` instead.
 func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
 	if a.Config.HeaderAuth {
 		return a.AuthenticateRequestWithHeader(r)
@@ -17,8 +17,9 @@ func (a *App) AuthenticateRequest(r *http.Request) (string, error) {
 	return a.AuthenticateRequestWithCookie(r)
 }
 
-// AuthenticateRequestWithCookie fetches the bearer token from the authorization header and uses it to authenticate
-// returns the userID (string) on success, error on failure
+// AuthenticateRequestWithHeader validates the JWT from the Authorization header and returns the user ID.
+//
+// Deprecated: use `Passage.Auth.ValidateJWT` instead.
 func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {
 	authHeaderFields := strings.Fields(r.Header.Get("Authorization"))
 	if len(authHeaderFields) != 2 || authHeaderFields[0] != "Bearer" {
@@ -33,26 +34,9 @@ func (a *App) AuthenticateRequestWithHeader(r *http.Request) (string, error) {
 	return userID, nil
 }
 
-// getPublicKey returns the associated public key for a JWT
-func (a *App) getPublicKey(token *jwt.Token) (interface{}, error) {
-	keyID, ok := token.Header["kid"].(string)
-	if !ok {
-		return nil, Error{Message: "expecting JWT header to have string kid"}
-	}
-
-	key, ok := a.jwksCacheSet.LookupKeyID(keyID)
-	if !ok {
-		return nil, Error{Message: fmt.Sprintf("unable to find key %q", keyID)}
-	}
-
-	var pubKey interface{}
-	err := key.Raw(&pubKey)
-
-	return pubKey, err
-}
-
-// AuthenticateRequestWithCookie fetches a cookie from the request and uses it to authenticate
-// returns the userID (string) on success, error on failure
+// AuthenticateRequestWithCookie validates the JWT from the request cookie and returns the user ID.
+//
+// Deprecated: use `Passage.Auth.ValidateJWT` instead.
 func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
 	authTokenCookie, err := r.Cookie("psg_auth_token")
 	if err != nil {
@@ -67,12 +51,11 @@ func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
 	return userID, nil
 }
 
-// ValidateAuthToken determines whether a JWT is valid or not
-// returns userID (string) on success, error on failure
+// ValidateAuthToken validates the JWT and returns the user ID.
 //
-// Deprecated: Use ValidateJWT() instead.
+// Deprecated: use `Passage.Auth.ValidateJWT` instead.
 func (a *App) ValidateAuthToken(authToken string) (string, bool) {
-	parsedToken, err := jwt.Parse(authToken, a.getPublicKey)
+	parsedToken, err := jwt.Parse(authToken, a.Auth.getPublicKey)
 	if err != nil {
 		return "", false
 	}
@@ -97,12 +80,6 @@ func (a *App) ValidateAuthToken(authToken string) (string, bool) {
 	}
 
 	return userID, true
-}
-
-// ValidateJWT determines whether a JWT is valid or not
-// returns userID (string) on success, error on failure
-func (a *App) ValidateJWT(authToken string) (string, bool) {
-	return a.ValidateAuthToken(authToken)
 }
 
 func (a *App) getExpectedAudienceValue() (string, error) {

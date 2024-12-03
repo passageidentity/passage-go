@@ -2,6 +2,7 @@ package passage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -9,23 +10,33 @@ import (
 
 const jwksUrl = "https://auth.passage.id/v1/apps/%v/.well-known/jwks.json"
 
+type Passage = App
+
+// Config holds the configuration for the Passage SDK.
+//
+// Deprecated: will be removed in v2.
 type Config struct {
 	APIKey     string
 	HeaderAuth bool
 }
 
-// Deprecated: will be renamed to `Passage` in v2
+// App is the main struct for the Passage SDK.
+//
+// Deprecated: will be renamed to `Passage` in v2.
 type App struct {
+	// Deprecated: will be removed in v2.
 	ID string
-	// Deprecated
-	Config       *Config
-	User         *appUser
-	client       *ClientWithResponses
-	jwksCacheSet jwk.Set
+	// Deprecated: will be removed in v2.
+	Config *Config
+	Auth   *auth
+	User   *user
+	client *ClientWithResponses
 }
 
-// Deprecated: Will be replaced with a different signature in v2
-func New(appID string, config *Config) (*App, error) {
+// New creates a new Passage instance.
+//
+// Deprecated: Will be replaced with a different signature in v2 -- `New(appID string, apiKey string) (*Passage, error)`.
+func New(appID string, config *Config) (*Passage, error) {
 	if config == nil {
 		config = &Config{}
 	}
@@ -39,12 +50,6 @@ func New(appID string, config *Config) (*App, error) {
 		return nil, err
 	}
 
-	app := App{
-		ID:     appID,
-		Config: config,
-		client: client,
-	}
-
 	url := fmt.Sprintf(jwksUrl, appID)
 	cache := jwk.NewCache(context.Background())
 	if err := cache.Register(url); err != nil {
@@ -55,17 +60,29 @@ func New(appID string, config *Config) (*App, error) {
 		return nil, Error{Message: "failed to fetch jwks"}
 	}
 
-	app.jwksCacheSet = jwk.NewCachedSet(cache, url)
 
-	app.User = newAppUser(app)
+	app := &App{
+		ID:     appID,
+		Config: config,
+		client: client,
+	}
 
-	return &app, nil
+	auth, err := newAuth(appID, app, client)
+	if err != nil {
+		return nil, err
+	}
+
+	user := newUser(appID, client)
+
+	app.User = user
+	app.Auth = auth
+
+	return app, nil
 }
 
-// GetApp gets information about an app
-// returns App on success, error on failure
+// GetApp fetches the Passage app info.
 //
-// Deprecated: GetApp - this method will not be replaced
+// Deprecated: will be removed in v2.
 func (a *App) GetApp() (*AppInfo, error) {
 	res, err := a.client.GetAppWithResponse(context.Background(), a.ID)
 	if err != nil {
@@ -99,40 +116,22 @@ func (a *App) GetApp() (*AppInfo, error) {
 	}
 }
 
-// CreateMagicLink receives a CreateMagicLinkBody struct, creating a magic link with provided values
-// returns MagicLink on success, error on failure
+// CreateMagicLink creates a Magic Link for your app.
+//
+// Deprecated: use `Passage.Auth.CreateMagicLink` instead.
 func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
-	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.ID, createMagicLinkBody)
+	magicLink, err := a.Auth.CreateMagicLink(createMagicLinkBody)
 	if err != nil {
-		return nil, Error{Message: "network error: failed to create Passage Magic Link"}
+		var passageError PassageError
+		if errors.As(err, &passageError) {
+			return magicLink, Error{
+				ErrorText:  passageError.Message,
+				ErrorCode:  passageError.ErrorCode,
+				Message:    passageError.Message,
+				StatusCode: passageError.StatusCode,
+			}
+		}
 	}
 
-	if res.JSON201 != nil {
-		return &res.JSON201.MagicLink, nil
-	}
-
-	var errorText string
-	var errorCode string
-	switch {
-	case res.JSON400 != nil:
-		errorText = res.JSON400.Error
-		errorCode = string(res.JSON400.Code)
-	case res.JSON401 != nil:
-		errorText = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		errorText = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		errorText = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, Error{
-		Message:    "failed to create Passage Magic Link",
-		StatusCode: res.StatusCode(),
-		StatusText: res.Status(),
-		ErrorText:  errorText,
-		ErrorCode:  errorCode,
-	}
+	return magicLink, err
 }
