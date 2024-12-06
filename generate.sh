@@ -67,7 +67,7 @@ echo "$transforms" | jq -r 'to_entries[] | "\(.key) \(.value)"' | while read -r 
 done
 
 # Run codegen
-go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.16.2 \
+go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.1 \
   -generate types,client \
   -package passage \
   -o "$output_file" \
