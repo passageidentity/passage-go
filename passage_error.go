@@ -1,29 +1,48 @@
 package passage
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
 
 type PassageError struct {
 	Message    string
-	StatusCode int
 	ErrorCode  string
+	StatusCode int
 }
 
 func (e PassageError) Error() string {
-	var ps strings.Builder
-	ps.WriteString("Passage Error - ")
+	var sb strings.Builder
+	sb.WriteString("PassageError - ")
 
 	if e.Message != "" {
-		fmt.Fprintf(&ps, "message: %s, ", e.Message)
-	}
-	if e.StatusCode != 0 {
-		fmt.Fprintf(&ps, "status_code: %v, ", e.StatusCode)
-	}
-	if e.ErrorCode != "" {
-		fmt.Fprintf(&ps, "error_code: %s, ", e.ErrorCode)
+		sb.WriteString(fmt.Sprintf("message: %s, ", e.Message))
 	}
 
-	return strings.TrimSuffix(ps.String(), ", ")
+	if e.ErrorCode != "" {
+		sb.WriteString(fmt.Sprintf("errorCode: %v, ", e.ErrorCode))
+	}
+
+	if e.StatusCode != 0 {
+		sb.WriteString(fmt.Sprintf("statusCode: %v, ", e.StatusCode))
+	}
+
+	return strings.TrimSuffix(sb.String(), ", ")
+}
+
+func errorFromResponse(body []byte, statusCode int) error {
+	var errorBody struct {
+		Code  string `json:"code"`
+		Error string `json:"error"`
+	}
+	if err := json.Unmarshal(body, &errorBody); err != nil {
+		return err
+	}
+
+	return PassageError{
+		Message:    errorBody.Error,
+		ErrorCode:  errorBody.Code,
+		StatusCode: statusCode,
+	}
 }
