@@ -39,8 +39,8 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 }
 
 // CreateMagicLink creates a Magic Link for your app.
-func (a *auth) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
-	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.appID, createMagicLinkBody)
+func (a *auth) CreateMagicLink(args CreateMagicLinkBody) (*MagicLink, error) {
+	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.appID, args)
 	if err != nil {
 		return nil, err
 	}
