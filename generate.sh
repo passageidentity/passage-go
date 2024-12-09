@@ -11,8 +11,18 @@ fields="\
 .components.schemas.UpdateUserRequest.properties.email \
 .components.schemas.UpdateUserRequest.properties.phone \
 .components.schemas.UpdateUserRequest.properties.user_metadata \
+.components.schemas.CreateMagicLinkRequest.properties.channel \
+.components.schemas.CreateMagicLinkRequest.properties.email \
 .components.schemas.CreateMagicLinkRequest.properties.language \
+.components.schemas.CreateMagicLinkRequest.properties.magic_link_path \
+.components.schemas.CreateMagicLinkRequest.properties.phone \
+.components.schemas.CreateMagicLinkRequest.properties.redirect_url \
+.components.schemas.CreateMagicLinkRequest.properties.send \
+.components.schemas.CreateMagicLinkRequest.properties.ttl \
+.components.schemas.CreateMagicLinkRequest.properties.type \
+.components.schemas.CreateMagicLinkRequest.properties.user_id \
 .components.schemas.MagicLinkType \
+.components.schemas.MagicLinkChannel \
 .components.schemas.UserInfo.properties.user_metadata \
 .components.schemas.UserInfo.properties.webauthn_types"
 for field in $fields; do
@@ -57,7 +67,7 @@ echo "$transforms" | jq -r 'to_entries[] | "\(.key) \(.value)"' | while read -r 
 done
 
 # Run codegen
-go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.16.2 \
+go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.1 \
   -generate types,client \
   -package passage \
   -o "$output_file" \
