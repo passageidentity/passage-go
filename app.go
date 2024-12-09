@@ -60,19 +60,23 @@ func New(appID string, config *Config) (*Passage, error) {
 		return nil, Error{Message: "failed to fetch jwks"}
 	}
 
-	auth, err := newAuth(appID, client)
+	app := &App{
+		ID:     appID,
+		Config: config,
+		client: client,
+	}
+
+	auth, err := newAuth(appID, app, client)
 	if err != nil {
 		return nil, err
 	}
+
 	user := newUser(appID, client)
 
-	return &App{
-		ID:     appID,
-		Config: config,
-		Auth:   auth,
-		User:   user,
-		client: client,
-	}, nil
+	app.User = user
+	app.Auth = auth
+
+	return app, nil
 }
 
 // GetApp fetches the Passage app info.
