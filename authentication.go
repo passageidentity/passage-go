@@ -55,6 +55,10 @@ func (a *App) AuthenticateRequestWithCookie(r *http.Request) (string, error) {
 //
 // Deprecated: use `Passage.Auth.ValidateJWT` instead.
 func (a *App) ValidateAuthToken(authToken string) (string, bool) {
+	if authToken == "" {
+		return "", false
+	}
+
 	parsedToken, err := jwt.Parse(authToken, a.Auth.getPublicKey)
 	if err != nil {
 		return "", false
