@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.0](https://github.com/passageidentity/passage-go/compare/v1.11.2...v1.12.0) (2024-12-09)
+
+
+### Features
+
+* add new signatures for user and auth functions ([c63c75e](https://github.com/passageidentity/passage-go/commit/c63c75e44705500f2caf45e4a553c0064f3950b8))
+* add passage error class ([#105](https://github.com/passageidentity/passage-go/issues/105)) ([f0e7239](https://github.com/passageidentity/passage-go/commit/f0e72390e1e72f84ae3369dbf77dc6361d05a80e))
+* adds new fields to the AppInfo and UserInfo structs ([94748b5](https://github.com/passageidentity/passage-go/commit/94748b51882814f94ce15ff2e7a19de8940c2f29))
+* remove unnecessary bool return from new functions ([#110](https://github.com/passageidentity/passage-go/issues/110)) ([be26032](https://github.com/passageidentity/passage-go/commit/be26032e9798cb5b6b2cb8c033137f44851ffaa8))
+
+
+### Bug Fixes
+
+* updates jwx library to use its thread-safe jwks cache ([#88](https://github.com/passageidentity/passage-go/issues/88)) ([b677920](https://github.com/passageidentity/passage-go/commit/b67792097093386c667d940327d859b3dc7e5e32))
+
 ## [1.11.2] - 2024-10-24
 
 ### Added
