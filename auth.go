@@ -69,7 +69,7 @@ func (a *auth) ValidateJWT(authToken string) (string, error) {
 	}
 
 	if !claims.VerifyAudience(a.appID, true) {
-		return "", errors.New("failed audience varifiation in JWT")
+		return "", errors.New("failed audience verification for JWT")
 	}
 
 	return userID, nil
