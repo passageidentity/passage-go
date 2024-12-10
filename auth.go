@@ -11,12 +11,11 @@ import (
 
 type auth struct {
 	appID        string
-	app          *App
 	client       *ClientWithResponses
 	jwksCacheSet jwk.Set
 }
 
-func newAuth(appID string, app *App, client *ClientWithResponses) (*auth, error) {
+func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 	ctx := context.Background()
 
 	url := fmt.Sprintf(jwksUrl, appID)
@@ -31,7 +30,6 @@ func newAuth(appID string, app *App, client *ClientWithResponses) (*auth, error)
 
 	auth := auth{
 		appID:        appID,
-		app:          app,
 		client:       client,
 		jwksCacheSet: jwk.NewCachedSet(cache, url),
 	}
@@ -70,12 +68,7 @@ func (a *auth) ValidateJWT(authToken string) (string, error) {
 		return "", errors.New("failed to find sub claim in JWT")
 	}
 
-	audience, err := a.app.getExpectedAudienceValue()
-	if err != nil {
-		return "", fmt.Errorf("failed to get audience")
-	}
-
-	if !claims.VerifyAudience(audience, true) {
+	if !claims.VerifyAudience(a.appID, true) {
 		return "", errors.New("failed audience varifiation in JWT")
 	}
 
