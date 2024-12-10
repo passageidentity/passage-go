@@ -367,8 +367,7 @@ func TestCreate(t *testing.T) {
 		_, err = psg.User.Create(createUserBody)
 
 		require.NotNil(t, err)
-		expectedMessage := "email: cannot be blank; phone: cannot be blank."
-		passageBadRequestAsserts(t, err, expectedMessage)
+		assert.Equal(t, "At least one of args.Email or args.Phone is required.", err.Error())
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {

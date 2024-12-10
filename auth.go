@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/golang-jwt/jwt"
+	gojwt "github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
 
@@ -38,8 +39,8 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 }
 
 // CreateMagicLink creates a Magic Link for your app.
-func (a *auth) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
-	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.appID, createMagicLinkBody)
+func (a *auth) CreateMagicLink(args CreateMagicLinkBody) (*MagicLink, error) {
+	res, err := a.client.CreateMagicLinkWithResponse(context.Background(), a.appID, args)
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,17 @@ func (a *auth) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicL
 }
 
 // ValidateJWT validates the JWT and returns the user ID.
-func (a *auth) ValidateJWT(authToken string) (string, error) {
-	parsedToken, err := jwt.Parse(authToken, a.getPublicKey)
+func (a *auth) ValidateJWT(jwt string) (string, error) {
+	if jwt == "" {
+		return "", errors.New("jwt is required.")
+	}
+
+	parsedToken, err := gojwt.Parse(jwt, a.getPublicKey)
 	if err != nil {
 		return "", err
 	}
 
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	claims, ok := parsedToken.Claims.(gojwt.MapClaims)
 	if !ok {
 		return "", errors.New("failed to extract claims from JWT")
 	}
