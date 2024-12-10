@@ -64,14 +64,15 @@ func New(appID string, config *Config) (*Passage, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	user := newUser(appID, client)
 
 	return &App{
 		ID:     appID,
 		Config: config,
-		Auth:   auth,
-		User:   user,
 		client: client,
+		User:   user,
+		Auth:   auth,
 	}, nil
 }
 
