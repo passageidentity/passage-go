@@ -26,7 +26,7 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 	}
 
 	if _, err := cache.Refresh(ctx, url); err != nil {
-		return nil, fmt.Errorf("Failed to fetch JWKS: %w", err)
+		return nil, fmt.Errorf("failed to fetch JWKS: %w", err)
 	}
 
 	auth := auth{
@@ -65,12 +65,16 @@ func (a *auth) ValidateJWT(jwt string) (string, error) {
 
 	claims, ok := parsedToken.Claims.(gojwt.MapClaims)
 	if !ok {
-		return "", errors.New("Failed to extract claims from JWT")
+		return "", errors.New("failed to extract claims from JWT")
 	}
 
 	userID, ok := claims["sub"].(string)
 	if !ok {
-		return "", errors.New("Failed to find sub claim in JWT")
+		return "", errors.New("failed to find sub claim in JWT")
+	}
+
+	if !claims.VerifyAudience(a.appID, true) {
+		return "", errors.New("failed audience verification for JWT")
 	}
 
 	return userID, nil
@@ -79,12 +83,12 @@ func (a *auth) ValidateJWT(jwt string) (string, error) {
 func (a *auth) getPublicKey(token *jwt.Token) (interface{}, error) {
 	keyID, ok := token.Header["kid"].(string)
 	if !ok {
-		return nil, errors.New("Failed to find kid in JWT header")
+		return nil, errors.New("failed to find kid in JWT header")
 	}
 
 	key, ok := a.jwksCacheSet.LookupKeyID(keyID)
 	if !ok {
-		return nil, fmt.Errorf("Failed to find key %q in JWKS", keyID)
+		return nil, fmt.Errorf("failed to find key %q in JWKS", keyID)
 	}
 
 	var pubKey interface{}
