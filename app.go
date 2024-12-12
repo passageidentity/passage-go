@@ -114,9 +114,10 @@ func (a *App) GetApp() (*AppInfo, error) {
 
 // CreateMagicLink creates a Magic Link for your app.
 //
-// Deprecated: use `Passage.Auth.CreateMagicLink` instead.
+// Deprecated: use `Passage.Auth.CreateMagicLinkWithEmail`, `Passage.Auth.CreateMagicLinkWithPhone`,
+// or `Passage.Auth.CreateMagicLinkWithUser` instead.
 func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
-	magicLink, err := a.Auth.CreateMagicLink(createMagicLinkBody)
+	magicLink, err := a.Auth.createMagicLink(createMagicLinkBody, nil)
 	if err != nil {
 		var passageError PassageError
 		if errors.As(err, &passageError) {
