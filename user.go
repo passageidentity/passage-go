@@ -7,10 +7,6 @@ import (
 	"strings"
 )
 
-type PassageUser = User
-type CreateUserArgs = CreateUserBody
-type UpdateUserOptions = UpdateBody
-
 type user struct {
 	appID  string
 	client *ClientWithResponses
@@ -35,7 +31,7 @@ func (u *user) Get(userID string) (*PassageUser, error) {
 	}
 
 	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
+		return &res.JSON200.PassageUser, nil
 	}
 
 	return nil, errorFromResponse(res.Body, res.StatusCode())
@@ -91,7 +87,7 @@ func (u *user) Activate(userID string) (*PassageUser, error) {
 	}
 
 	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
+		return &res.JSON200.PassageUser, nil
 	}
 
 	return nil, errorFromResponse(res.Body, res.StatusCode())
@@ -109,7 +105,7 @@ func (u *user) Deactivate(userID string) (*PassageUser, error) {
 	}
 
 	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
+		return &res.JSON200.PassageUser, nil
 	}
 
 	return nil, errorFromResponse(res.Body, res.StatusCode())
@@ -127,7 +123,7 @@ func (u *user) Update(userID string, options UpdateUserOptions) (*PassageUser, e
 	}
 
 	if res.JSON200 != nil {
-		return &res.JSON200.User, nil
+		return &res.JSON200.PassageUser, nil
 	}
 
 	return nil, errorFromResponse(res.Body, res.StatusCode())
@@ -145,7 +141,7 @@ func (u *user) Create(args CreateUserArgs) (*PassageUser, error) {
 	}
 
 	if res.JSON201 != nil {
-		return &res.JSON201.User, nil
+		return &res.JSON201.PassageUser, nil
 	}
 
 	return nil, errorFromResponse(res.Body, res.StatusCode())
