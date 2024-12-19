@@ -1,0 +1,122 @@
+overlay: 1.0.0
+info:
+  title: "passage-go-specific codegen updates via the OpenAPI Overlay specification (https://github.com/OAI/Overlay-Specification)"
+  version: 1.0.0
+actions:
+
+# rename types
+
+- target: $.components.schemas.CreateUserRequest
+  description: Rename the generated Go type name
+  update:
+    x-go-name: CreateUserArgs
+
+- target: $.components.schemas.UpdateUserRequest
+  description: Rename the generated Go type name
+  update:
+    x-go-name: UpdateUserOptions
+
+- target: $.components.schemas.ListPaginatedUsersResponse
+  description: Rename the generated Go type name
+  update:
+    x-go-name: PaginatedUsersResponse
+
+- target: $.components.schemas.UserInfo
+  description: Rename the generated Go type name
+  update:
+    x-go-name: PassageUser
+
+- target: $.components.schemas.MagicLinkChannel
+  description: Rename the generated Go type name
+  update:
+    x-go-name: ChannelType
+
+- target: $.components.schemas.CreateMagicLinkRequest
+  description: Rename the generated Go type name and make it private
+  update:
+    x-go-name: magicLinkArgs
+
+- target: $.components.schemas.ListPaginatedUsersResponse
+  description: Rename the generated Go type name and make it private
+  update:
+    x-go-name: paginatedUsersResponse
+
+# rename enums
+
+- target: $.components.schemas.UserStatus
+  description: Rename the generated Go enum name
+  update:
+    x-enumNames:
+      - StatusActive
+      - StatusInactive
+      - StatusPending
+
+- target: $.components.schemas.MagicLinkType
+  description: Rename the generated Go enum name
+  update:
+    x-enumNames:
+      - LoginType
+      - VerifyIdentifierType
+
+- target: $.components.schemas.MagicLinkChannel
+  description: Rename the generated Go enum name
+  update:
+    x-enumNames:
+      - EmailChannel
+      - PhoneChannel
+
+- target: $.components.schemas.UserMetadataFieldType
+  description: Rename the generated Go enum name
+  update:
+    x-enumNames:
+      - StringMD
+      - BooleanMD
+      - IntegerMD
+      - DateMD
+      - PhoneMD
+      - EmailMD
+
+- target: $.components.schemas.UserEventAction
+  description: Rename the generated Go enum name
+  update:
+    x-enumNames:
+      - UserEventActionRegister
+      - UserEventActionLogin
+      - UserEventActionOther
+
+# skip optional pointers
+
+- target: $.components.schemas.CreateUserRequest.properties.*
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.UpdateUserRequest.properties.*
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.CreateMagicLinkRequest.properties.*
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.MagicLinkType
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.MagicLinkChannel
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.UserInfo.properties.user_metadata
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.UserInfo.properties.webauthn_types
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true

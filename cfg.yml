@@ -1,0 +1,9 @@
+package: passage
+generate:
+  client: true
+  models: true
+output: passage.gen.go
+output-options:
+  name-normalizer: ToCamelCaseWithInitialisms
+  overlay:
+    path: overlay.yml
