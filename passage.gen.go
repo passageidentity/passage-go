@@ -45,8 +45,8 @@ const (
 
 // Defines values for N404ErrorCode.
 const (
+	APIKeyNotFound             N404ErrorCode = "api_key_not_found"
 	AdminNotFound              N404ErrorCode = "admin_not_found"
-	ApiKeyNotFound             N404ErrorCode = "api_key_not_found"
 	AppNotFound                N404ErrorCode = "app_not_found"
 	DeviceNotFound             N404ErrorCode = "device_not_found"
 	DomainNotFound             N404ErrorCode = "domain_not_found"
@@ -101,7 +101,7 @@ const (
 	Verdana       FontFamily = "Verdana"
 )
 
-// Defines values for MagicLinkChannel.
+// Defines values for ChannelType.
 const (
 	EmailChannel ChannelType = "email"
 	PhoneChannel ChannelType = "phone"
@@ -233,12 +233,12 @@ type N500ErrorCode string
 type AppInfo struct {
 	AdditionalAuthOrigins []string `json:"additional_auth_origins"`
 
-	// AllowedCallbackURLs The valid URLs where users can be redirected after authentication.
-	AllowedCallbackURLs []string `json:"allowed_callback_urls"`
+	// AllowedCallbackUrls The valid URLs where users can be redirected after authentication.
+	AllowedCallbackUrls []string `json:"allowed_callback_urls"`
 	AllowedIdentifier   string   `json:"allowed_identifier"`
 
-	// AllowedLogoutURLs The valid URLs where users can be redirected after logging out.
-	AllowedLogoutURLs []string `json:"allowed_logout_urls"`
+	// AllowedLogoutUrls The valid URLs where users can be redirected after logging out.
+	AllowedLogoutUrls []string `json:"allowed_logout_urls"`
 
 	// ApplicationLoginURI A route within your application that redirects to the Authorization URL endpoint.
 	ApplicationLoginURI string `json:"application_login_uri"`
@@ -287,7 +287,7 @@ type AppInfo struct {
 	RequireIdentifierVerification bool      `json:"require_identifier_verification"`
 	RequiredIdentifier            string    `json:"required_identifier"`
 	Role                          string    `json:"role"`
-	RSAPublicKey                  string    `json:"rsa_public_key"`
+	RsaPublicKey                  string    `json:"rsa_public_key"`
 
 	// Secret can only be retrieved by an app admin
 	Secret               *string             `json:"secret,omitempty"`
@@ -324,10 +324,10 @@ type AuthMethods struct {
 	Passkeys  PasskeysAuthMethod  `json:"passkeys"`
 }
 
-// CreateMagicLinkBody defines model for CreateMagicLinkBody.
-type CreateMagicLinkBody struct {
-	Channel ChannelType `json:"channel,omitempty"`
-	Email   string      `json:"email,omitempty"`
+// magicLinkArgs defines model for CreateMagicLinkRequest.
+type magicLinkArgs struct {
+	ChannelType ChannelType `json:"channel,omitempty"`
+	Email       string      `json:"email,omitempty"`
 
 	// Language language of the email to send (optional)
 	Language string `json:"language,omitempty"`
@@ -342,8 +342,8 @@ type CreateMagicLinkBody struct {
 	UserID        string        `json:"user_id,omitempty"`
 }
 
-// CreateUserBody defines model for CreateUserBody.
-type CreateUserBody struct {
+// CreateUserArgs defines model for CreateUserRequest.
+type CreateUserArgs struct {
 	// Email Email of the new user. Either this or `phone` is required; both may be provided.
 	Email string `json:"email,omitempty"`
 
@@ -489,8 +489,8 @@ type ListPaginatedUsersItem struct {
 	UserMetadata  *map[string]interface{} `json:"user_metadata"`
 }
 
-// PaginatedUsersResponse defines model for ListPaginatedUsersResponse.
-type PaginatedUsersResponse struct {
+// paginatedUsersResponse defines model for ListPaginatedUsersResponse.
+type paginatedUsersResponse struct {
 	Links PaginatedLinks `json:"_links"`
 
 	// CreatedBefore time anchor (Unix timestamp) --> all users returned created before this timestamp
@@ -533,7 +533,7 @@ type MagicLinkAuthMethod struct {
 	TTLDisplayUnit TTLDisplayUnit `json:"ttl_display_unit"`
 }
 
-// ChannelType defines model for ChannelType.
+// ChannelType defines model for MagicLinkChannel.
 type ChannelType string
 
 // MagicLinkResponse defines model for MagicLinkResponse.
@@ -590,8 +590,8 @@ type ThemeType string
 // * `d` - days
 type TTLDisplayUnit string
 
-// UpdateBody defines model for UpdateBody.
-type UpdateBody struct {
+// UpdateUserOptions defines model for UpdateUserRequest.
+type UpdateUserOptions struct {
 	Email        string                 `json:"email,omitempty"`
 	Phone        string                 `json:"phone,omitempty"`
 	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
@@ -603,8 +603,8 @@ type UserEventAction string
 // UserEventStatus defines model for UserEventStatus.
 type UserEventStatus string
 
-// User defines model for User.
-type User struct {
+// PassageUser defines model for UserInfo.
+type PassageUser struct {
 	CreatedAt     time.Time `json:"created_at"`
 	Email         string    `json:"email"`
 	EmailVerified bool      `json:"email_verified"`
@@ -661,7 +661,7 @@ type UserRecentEvent struct {
 
 // UserResponse defines model for UserResponse.
 type UserResponse struct {
-	User User `json:"user"`
+	PassageUser PassageUser `json:"user"`
 }
 
 // UserSocialConnections defines model for UserSocialConnections.
@@ -775,13 +775,13 @@ type ListPaginatedUsersParams struct {
 }
 
 // CreateMagicLinkJSONRequestBody defines body for CreateMagicLink for application/json ContentType.
-type CreateMagicLinkJSONRequestBody = CreateMagicLinkBody
+type CreateMagicLinkJSONRequestBody = magicLinkArgs
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
-type CreateUserJSONRequestBody = CreateUserBody
+type CreateUserJSONRequestBody = CreateUserArgs
 
 // UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody = UpdateBody
+type UpdateUserJSONRequestBody = UpdateUserOptions
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -1912,7 +1912,7 @@ func (r CreateMagicLinkResponse) StatusCode() int {
 type ListPaginatedUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *PaginatedUsersResponse
+	JSON200      *paginatedUsersResponse
 	JSON400      *N400Error
 	JSON401      *N401Error
 	JSON404      *N404Error
@@ -2415,7 +2415,7 @@ func ParseListPaginatedUsersResponse(rsp *http.Response) (*ListPaginatedUsersRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PaginatedUsersResponse
+		var dest paginatedUsersResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
