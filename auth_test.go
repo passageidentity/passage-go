@@ -12,8 +12,7 @@ import (
 
 // should be run with the -race flag, i.e. `go test -race -run TestAppJWKSCacheWriteConcurrency`
 func TestAppJWKSCacheWriteConcurrency(t *testing.T) {
-	err := godotenv.Load(".env")
-	require.Nil(t, err)
+	_ = godotenv.Load(".env")
 
 	appID := os.Getenv("PASSAGE_APP_ID")
 	apiKey := os.Getenv("PASSAGE_API_KEY")
