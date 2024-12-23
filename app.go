@@ -3,6 +3,7 @@ package passage
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
@@ -38,7 +39,7 @@ func New(appID string, config *Config) (*Passage, error) {
 
 	client, err := NewClientWithResponses(
 		"https://api.passage.id/v1/",
-		withPassageVersion,
+		withPassageVersion(),
 		withAPIKey(config.APIKey),
 	)
 	if err != nil {
@@ -67,4 +68,20 @@ func New(appID string, config *Config) (*Passage, error) {
 		User:   user,
 		Auth:   auth,
 	}, nil
+}
+
+func withPassageVersion() ClientOption {
+	return WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
+		req.Header.Set("Passage-Version", fmt.Sprintf("passage-go %s", version))
+		return nil
+	})
+}
+
+func withAPIKey(apiKey string) ClientOption {
+	return WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
+		if apiKey != "" {
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+		}
+		return nil
+	})
 }
