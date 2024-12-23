@@ -4,11 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/lestrrat-go/jwx/v2/jwk"
 )
-
-const jwksUrl = "https://auth.passage.id/v1/apps/%v/.well-known/jwks.json"
 
 type Passage = App
 
@@ -24,9 +20,8 @@ type Config struct {
 //
 // Deprecated: will be renamed to `Passage` in v2.
 type App struct {
-	Auth   *auth
-	User   *user
-	client *ClientWithResponses
+	Auth *auth
+	User *user
 }
 
 // New creates a new Passage instance.
@@ -46,16 +41,6 @@ func New(appID string, config *Config) (*Passage, error) {
 		return nil, err
 	}
 
-	url := fmt.Sprintf(jwksUrl, appID)
-	cache := jwk.NewCache(context.Background())
-	if err := cache.Register(url); err != nil {
-		return nil, err
-	}
-
-	if _, err = cache.Refresh(context.Background(), url); err != nil {
-		return nil, Error{Message: "failed to fetch jwks"}
-	}
-
 	auth, err := newAuth(appID, client)
 	if err != nil {
 		return nil, err
@@ -64,9 +49,8 @@ func New(appID string, config *Config) (*Passage, error) {
 	user := newUser(appID, client)
 
 	return &App{
-		client: client,
-		User:   user,
-		Auth:   auth,
+		User: user,
+		Auth: auth,
 	}, nil
 }
 
