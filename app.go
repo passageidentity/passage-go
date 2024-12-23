@@ -2,7 +2,6 @@ package passage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -24,10 +23,6 @@ type Config struct {
 //
 // Deprecated: will be renamed to `Passage` in v2.
 type App struct {
-	// Deprecated: will be removed in v2.
-	ID string
-	// Deprecated: will be removed in v2.
-	Config *Config
 	Auth   *auth
 	User   *user
 	client *ClientWithResponses
@@ -68,67 +63,8 @@ func New(appID string, config *Config) (*Passage, error) {
 	user := newUser(appID, client)
 
 	return &App{
-		ID:     appID,
-		Config: config,
 		client: client,
 		User:   user,
 		Auth:   auth,
 	}, nil
-}
-
-// GetApp fetches the Passage app info.
-//
-// Deprecated: will be removed in v2.
-func (a *App) GetApp() (*AppInfo, error) {
-	res, err := a.client.GetAppWithResponse(context.Background(), a.ID)
-	if err != nil {
-		return nil, Error{Message: "network error: failed to get Passage App Info"}
-	}
-
-	if res.JSON200 != nil {
-		return &res.JSON200.App, nil
-	}
-
-	var errorText string
-	var errorCode string
-	switch {
-	case res.JSON401 != nil:
-		errorText = res.JSON401.Error
-		errorCode = string(res.JSON401.Code)
-	case res.JSON404 != nil:
-		errorText = res.JSON404.Error
-		errorCode = string(res.JSON404.Code)
-	case res.JSON500 != nil:
-		errorText = res.JSON500.Error
-		errorCode = string(res.JSON500.Code)
-	}
-
-	return nil, Error{
-		Message:    "failed to get Passage App Info",
-		StatusCode: res.StatusCode(),
-		StatusText: res.Status(),
-		ErrorText:  errorText,
-		ErrorCode:  errorCode,
-	}
-}
-
-// CreateMagicLink creates a Magic Link for your app.
-//
-// Deprecated: use `Passage.Auth.CreateMagicLinkWithEmail`, `Passage.Auth.CreateMagicLinkWithPhone`,
-// or `Passage.Auth.CreateMagicLinkWithUser` instead.
-func (a *App) CreateMagicLink(createMagicLinkBody CreateMagicLinkBody) (*MagicLink, error) {
-	magicLink, err := a.Auth.createMagicLink(createMagicLinkBody, nil)
-	if err != nil {
-		var passageError PassageError
-		if errors.As(err, &passageError) {
-			return magicLink, Error{
-				ErrorText:  passageError.Message,
-				ErrorCode:  passageError.ErrorCode,
-				Message:    passageError.Message,
-				StatusCode: passageError.StatusCode,
-			}
-		}
-	}
-
-	return magicLink, err
 }
