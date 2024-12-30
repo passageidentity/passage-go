@@ -43,42 +43,6 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func userNotFoundAsserts(t *testing.T, err error) {
-	splitError := strings.Split(err.Error(), ", ")
-	assert.Len(t, splitError, 4)
-	assert.Equal(t, "Passage Error - message: User not found", splitError[0])
-	assert.Equal(t, "status_code: 404", splitError[1])
-	assert.Equal(t, "error: User not found", splitError[2])
-	assert.Equal(t, "error_code: user_not_found", splitError[3])
-}
-
-func couldNotFindUserByIdentifierAsserts(t *testing.T, err error) {
-	splitError := strings.Split(err.Error(), ", ")
-	assert.Len(t, splitError, 4)
-	assert.Equal(t, "Passage Error - message: Could not find user with that identifier.", splitError[0])
-	assert.Equal(t, "status_code: 404", splitError[1])
-	assert.Equal(t, "error: Could not find user with that identifier.", splitError[2])
-	assert.Equal(t, "error_code: user_not_found", splitError[3])
-}
-
-func unauthorizedAsserts(t *testing.T, err error) {
-	splitError := strings.Split(err.Error(), ", ")
-	assert.Len(t, splitError, 4)
-	assert.Equal(t, "Passage Error - message: Invalid access token", splitError[0])
-	assert.Equal(t, "status_code: 401", splitError[1])
-	assert.Equal(t, "error: Invalid access token", splitError[2])
-	assert.Equal(t, "error_code: invalid_access_token", splitError[3])
-}
-
-func badRequestAsserts(t *testing.T, err error, errorText string) {
-	splitError := strings.Split(err.Error(), ", ")
-	assert.Len(t, splitError, 4)
-	assert.Equal(t, "Passage Error - message: "+errorText, splitError[0])
-	assert.Equal(t, "status_code: 400", splitError[1])
-	assert.Equal(t, "error: "+errorText, splitError[2])
-	assert.Equal(t, "error_code: invalid_request", splitError[3])
-}
-
 func passageUserNotFoundAsserts(t *testing.T, err error) {
 	splitError := strings.Split(err.Error(), ", ")
 	assert.Len(t, splitError, 3)

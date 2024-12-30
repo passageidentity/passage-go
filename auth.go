@@ -26,7 +26,7 @@ type auth struct {
 func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 	ctx := context.Background()
 
-	url := fmt.Sprintf(jwksUrl, appID)
+	url := fmt.Sprintf("https://auth.passage.id/v1/apps/%v/.well-known/jwks.json", appID)
 	cache := jwk.NewCache(ctx)
 	if err := cache.Register(url); err != nil {
 		return nil, err
@@ -36,13 +36,11 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 		return nil, fmt.Errorf("failed to fetch JWKS: %w", err)
 	}
 
-	auth := auth{
+	return &auth{
 		appID:        appID,
 		client:       client,
 		jwksCacheSet: jwk.NewCachedSet(cache, url),
-	}
-
-	return &auth, nil
+	}, nil
 }
 
 // CreateMagicLink creates a Magic Link for your app using an email address.
