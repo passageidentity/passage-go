@@ -6,36 +6,18 @@ import (
 	"net/http"
 )
 
-type Passage = App
-
-// Config holds the configuration for the Passage SDK.
-//
-// Deprecated: will be removed in v2.
-type Config struct {
-	APIKey     string
-	HeaderAuth bool
-}
-
-// App is the main struct for the Passage SDK.
-//
-// Deprecated: will be renamed to `Passage` in v2.
-type App struct {
+// Passage is the main struct for the Passage SDK.
+type Passage struct {
 	Auth *auth
 	User *user
 }
 
 // New creates a new Passage instance.
-//
-// Deprecated: Will be replaced with a different signature in v2 -- `New(appID string, apiKey string) (*Passage, error)`.
-func New(appID string, config *Config) (*Passage, error) {
-	if config == nil {
-		config = &Config{}
-	}
-
+func New(appID string, apiKey string) (*Passage, error) {
 	client, err := NewClientWithResponses(
 		"https://api.passage.id/v1/",
 		withPassageVersion(),
-		withAPIKey(config.APIKey),
+		withAPIKey(apiKey),
 	)
 	if err != nil {
 		return nil, err
@@ -48,7 +30,7 @@ func New(appID string, config *Config) (*Passage, error) {
 
 	user := newUser(appID, client)
 
-	return &App{
+	return &Passage{
 		User: user,
 		Auth: auth,
 	}, nil
