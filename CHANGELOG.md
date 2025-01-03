@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/passageidentity/passage-go/compare/v1.12.0...v2.0.0) (2025-01-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename Passage struct and ctor signature and remove old Error class ([#123](https://github.com/passageidentity/passage-go/issues/123))
+* remove deprecated code and rename structs and files ([#119](https://github.com/passageidentity/passage-go/issues/119))
+
+### Features
+
+* remove deprecated code and rename structs and files ([#119](https://github.com/passageidentity/passage-go/issues/119)) ([6445861](https://github.com/passageidentity/passage-go/commit/64458618c3c003e1b89e62a8c7a3337ccfaaaab0))
+* rename Passage struct and ctor signature and remove old Error class ([#123](https://github.com/passageidentity/passage-go/issues/123)) ([e4fe6f0](https://github.com/passageidentity/passage-go/commit/e4fe6f0cba28f0010e8e22a13e93f82b3fda7d86))
+
 ## [1.12.0](https://github.com/passageidentity/passage-go/compare/v1.11.2...v1.12.0) (2024-12-12)
 
 
