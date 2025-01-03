@@ -50,11 +50,11 @@ func (a *auth) CreateMagicLinkWithEmail(
 	send bool,
 	opts *MagicLinkOptions,
 ) (*MagicLink, error) {
-	args := CreateMagicLinkBody{
-		Email:   email,
-		Channel: EmailChannel,
-		Type:    magicLinkType,
-		Send:    send,
+	args := magicLinkArgs{
+		Email:       email,
+		ChannelType: EmailChannel,
+		Type:        magicLinkType,
+		Send:        send,
 	}
 
 	return a.createMagicLink(args, opts)
@@ -67,11 +67,11 @@ func (a *auth) CreateMagicLinkWithPhone(
 	send bool,
 	opts *MagicLinkOptions,
 ) (*MagicLink, error) {
-	args := CreateMagicLinkBody{
-		Phone:   phone,
-		Channel: PhoneChannel,
-		Type:    magicLinkType,
-		Send:    send,
+	args := magicLinkArgs{
+		Phone:       phone,
+		ChannelType: PhoneChannel,
+		Type:        magicLinkType,
+		Send:        send,
 	}
 
 	return a.createMagicLink(args, opts)
@@ -85,11 +85,11 @@ func (a *auth) CreateMagicLinkWithUser(
 	send bool,
 	opts *MagicLinkOptions,
 ) (*MagicLink, error) {
-	args := CreateMagicLinkBody{
-		UserID:  userID,
-		Channel: channel,
-		Type:    magicLinkType,
-		Send:    send,
+	args := magicLinkArgs{
+		UserID:      userID,
+		ChannelType: channel,
+		Type:        magicLinkType,
+		Send:        send,
 	}
 
 	return a.createMagicLink(args, opts)
@@ -123,7 +123,7 @@ func (a *auth) ValidateJWT(jwt string) (string, error) {
 	return userID, nil
 }
 
-func (a *auth) createMagicLink(args CreateMagicLinkBody, opts *MagicLinkOptions) (*MagicLink, error) {
+func (a *auth) createMagicLink(args magicLinkArgs, opts *MagicLinkOptions) (*MagicLink, error) {
 	if opts != nil {
 		args.Language = opts.Language
 		args.MagicLinkPath = opts.MagicLinkPath

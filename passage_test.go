@@ -20,7 +20,7 @@ var (
 	PassageUserID    string
 	PassageAuthToken string
 	RandomEmail      = generateRandomEmail(14)
-	CreatedUser      passage.User
+	CreatedUser      passage.PassageUser
 )
 
 func generateRandomEmail(prefixLength int) string {

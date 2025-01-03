@@ -44,7 +44,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Email: RandomEmail,
 		}
 
@@ -67,7 +67,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Email: RandomEmail,
 		}
 
@@ -86,7 +86,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 		require.Nil(t, err)
 
 		phone := "+15005550007"
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Phone: phone,
 		}
 
@@ -189,7 +189,7 @@ func TestUpdate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		updateBody := passage.UpdateBody{
+		updateBody := passage.UpdateUserOptions{
 			Email: "updatedemail-gosdk@passage.id",
 			Phone: "+15005550012",
 			UserMetadata: map[string]interface{}{
@@ -202,7 +202,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, "+15005550012", user.Phone)
 		assert.Equal(t, "123", user.UserMetadata["example1"])
 
-		secondUpdateBody := passage.UpdateBody{
+		secondUpdateBody := passage.UpdateUserOptions{
 			Email: "updatedemail-gosdk@passage.id",
 			Phone: "+15005550012",
 			UserMetadata: map[string]interface{}{
@@ -220,7 +220,7 @@ func TestUpdate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		updateBody := passage.UpdateBody{
+		updateBody := passage.UpdateUserOptions{
 			Phone: "  ",
 		}
 		_, err = psg.User.Update(PassageUserID, updateBody)
@@ -233,7 +233,7 @@ func TestUpdate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		updateBody := passage.UpdateBody{
+		updateBody := passage.UpdateUserOptions{
 			Email: "  ",
 		}
 		_, err = psg.User.Update(PassageUserID, updateBody)
@@ -246,7 +246,7 @@ func TestUpdate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		updateBody := passage.UpdateBody{
+		updateBody := passage.UpdateUserOptions{
 			Email: "updatedemail-gosdk@passage.id",
 			Phone: "+15005550012",
 			UserMetadata: map[string]interface{}{
@@ -263,7 +263,7 @@ func TestUpdate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
-		updateBody := passage.UpdateBody{
+		updateBody := passage.UpdateUserOptions{
 			Email: "updatedemail-gosdk@passage.id",
 			Phone: "+15005550012",
 			UserMetadata: map[string]interface{}{
@@ -282,7 +282,7 @@ func TestCreate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Email: RandomEmail,
 		}
 
@@ -297,7 +297,7 @@ func TestCreate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Email: fmt.Sprintf("1%v", RandomEmail),
 			UserMetadata: map[string]interface{}{
 				"example1": "test",
@@ -316,7 +316,7 @@ func TestCreate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Email: "",
 			Phone: "",
 		}
@@ -330,7 +330,7 @@ func TestCreate(t *testing.T) {
 		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
-		createUserBody := passage.CreateUserBody{
+		createUserBody := passage.CreateUserArgs{
 			Email: RandomEmail,
 		}
 
