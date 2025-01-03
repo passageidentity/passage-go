@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/joho/godotenv"
 	"github.com/passageidentity/passage-go"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -73,4 +75,23 @@ func passageBadRequestAsserts(t *testing.T, err error, message string) {
 	assert.Equal(t, "PassageError - message: "+message, splitError[0])
 	assert.Equal(t, "errorCode: invalid_request", splitError[1])
 	assert.Equal(t, "statusCode: 400", splitError[2])
+}
+
+// should be run with the -race flag, i.e. `go test -race -run TestAppJWKSCacheWriteConcurrency`
+func TestAppJWKSCacheWriteConcurrency(t *testing.T) {
+	goRoutineCount := 2
+
+	var wg sync.WaitGroup
+	wg.Add(goRoutineCount)
+
+	for i := 0; i < goRoutineCount; i++ {
+		go func() {
+			defer wg.Done()
+
+			_, err := passage.New(PassageAppID, PassageApiKey)
+			require.Nil(t, err)
+		}()
+	}
+
+	wg.Wait()
 }

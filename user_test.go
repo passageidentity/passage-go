@@ -12,9 +12,7 @@ import (
 
 func TestGetInfoX(t *testing.T) {
 	t.Run("Successful get user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		user, err := psg.User.Get(PassageUserID)
@@ -23,9 +21,7 @@ func TestGetInfoX(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		_, err = psg.User.Get(PassageUserID)
@@ -34,9 +30,7 @@ func TestGetInfoX(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		_, err = psg.User.Get("PassageUserID")
@@ -47,9 +41,7 @@ func TestGetInfoX(t *testing.T) {
 
 func TestGetInfoByIdentifier(t *testing.T) {
 	t.Run("Success: get user by identifer - exact email", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		createUserBody := passage.CreateUserBody{
@@ -72,9 +64,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 	})
 
 	t.Run("Success: get user by identifer - email uppercase", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		createUserBody := passage.CreateUserBody{
@@ -92,9 +82,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 	})
 
 	t.Run("Success: get user by identifer - phone number", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		phone := "+15005550007"
@@ -118,9 +106,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 	})
 
 	t.Run("Error: identifier not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		_, err = psg.User.GetByIdentifier("error@passage.id")
@@ -129,9 +115,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		_, err = psg.User.GetByIdentifier("any@passage.id")
@@ -142,9 +126,7 @@ func TestGetInfoByIdentifier(t *testing.T) {
 
 func TestActivate(t *testing.T) {
 	t.Run("Success: activate user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		user, err := psg.User.Activate(PassageUserID)
@@ -154,9 +136,7 @@ func TestActivate(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		_, err = psg.User.Activate(PassageUserID)
@@ -165,9 +145,7 @@ func TestActivate(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		_, err = psg.User.Activate("PassageUserID")
@@ -177,9 +155,7 @@ func TestActivate(t *testing.T) {
 }
 func TestDeactivate(t *testing.T) {
 	t.Run("Success: deactivate user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		user, err := psg.User.Deactivate(PassageUserID)
@@ -189,9 +165,7 @@ func TestDeactivate(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		_, err = psg.User.Deactivate(PassageUserID)
@@ -200,9 +174,7 @@ func TestDeactivate(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		_, err = psg.User.Deactivate("PassageUserID")
@@ -214,9 +186,7 @@ func TestDeactivate(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	t.Run("Success: update user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		updateBody := passage.UpdateBody{
@@ -247,9 +217,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Error: Bad Request: on phone number", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		updateBody := passage.UpdateBody{
@@ -262,9 +230,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Error: Bad Request: on email", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		updateBody := passage.UpdateBody{
@@ -277,9 +243,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		updateBody := passage.UpdateBody{
@@ -296,9 +260,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		updateBody := passage.UpdateBody{
@@ -317,9 +279,7 @@ func TestUpdate(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	t.Run("Success: create user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		createUserBody := passage.CreateUserBody{
@@ -334,9 +294,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	t.Run("Success: create user with metadata", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		createUserBody := passage.CreateUserBody{
@@ -355,9 +313,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	t.Run("Error: Bad Request: on blank phone number and email", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		createUserBody := passage.CreateUserBody{
@@ -371,9 +327,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		createUserBody := passage.CreateUserBody{
@@ -388,9 +342,7 @@ func TestCreate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	t.Run("Success: delete user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		err = psg.User.Delete(CreatedUser.ID)
@@ -398,9 +350,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		err = psg.User.Delete(CreatedUser.ID)
@@ -409,9 +359,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		err = psg.User.Delete("PassageUserID")
@@ -423,9 +371,7 @@ func TestDelete(t *testing.T) {
 
 func TestListUser(t *testing.T) {
 	t.Run("Success: list user devices", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		devices, err := psg.User.ListDevices(PassageUserID)
@@ -434,9 +380,7 @@ func TestListUser(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		_, err = psg.User.ListDevices(PassageUserID)
@@ -445,9 +389,7 @@ func TestListUser(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		_, err = psg.User.ListDevices("PassageUserID")
@@ -459,9 +401,7 @@ func TestListUser(t *testing.T) {
 
 func TestRevokeRefreshTokens(t *testing.T) {
 	t.Run("Success: sign out user", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey, // An API_KEY environment variable is required for testing.
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		err = psg.User.RevokeRefreshTokens(PassageUserID)
@@ -469,9 +409,7 @@ func TestRevokeRefreshTokens(t *testing.T) {
 	})
 
 	t.Run("Error: unauthorized", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: "PassageApiKey",
-		})
+		psg, err := passage.New(PassageAppID, "invalid api key")
 		require.Nil(t, err)
 
 		err = psg.User.RevokeRefreshTokens(PassageUserID)
@@ -480,9 +418,7 @@ func TestRevokeRefreshTokens(t *testing.T) {
 	})
 
 	t.Run("Error: not found", func(t *testing.T) {
-		psg, err := passage.New(PassageAppID, &passage.Config{
-			APIKey: PassageApiKey,
-		})
+		psg, err := passage.New(PassageAppID, PassageApiKey)
 		require.Nil(t, err)
 
 		err = psg.User.RevokeRefreshTokens("PassageUserID")
