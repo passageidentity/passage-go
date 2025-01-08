@@ -65,17 +65,6 @@ actions:
       - EmailChannel
       - PhoneChannel
 
-- target: $.components.schemas.UserMetadataFieldType
-  description: Rename the generated Go enum name
-  update:
-    x-enumNames:
-      - StringMD
-      - BooleanMD
-      - IntegerMD
-      - DateMD
-      - PhoneMD
-      - EmailMD
-
 - target: $.components.schemas.UserEventAction
   description: Rename the generated Go enum name
   update:
@@ -107,6 +96,11 @@ actions:
     x-go-type-skip-optional-pointer: true
 
 - target: $.components.schemas.MagicLinkChannel
+  description: Don't use pointers for optional properties in the generated Go type
+  update:
+    x-go-type-skip-optional-pointer: true
+
+- target: $.components.schemas.MagicLinkLanguage
   description: Don't use pointers for optional properties in the generated Go type
   update:
     x-go-type-skip-optional-pointer: true
