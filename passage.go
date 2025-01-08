@@ -2,6 +2,7 @@ package passage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -14,6 +15,14 @@ type Passage struct {
 
 // New creates a new Passage instance.
 func New(appID string, apiKey string) (*Passage, error) {
+	if appID == "" {
+		return nil, errors.New("A Passage App ID is required. Please include (YOUR_APP_ID, YOUR_API_KEY).")
+	}
+
+	if apiKey == "" {
+		return nil, errors.New("A Passage API key is required. Please include (YOUR_APP_ID, YOUR_API_KEY).")
+	}
+
 	client, err := NewClientWithResponses(
 		"https://api.passage.id/v1/",
 		withPassageVersion(),
