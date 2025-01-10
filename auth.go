@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/golang-jwt/jwt"
 	gojwt "github.com/golang-jwt/jwt"
@@ -11,7 +12,7 @@ import (
 )
 
 type MagicLinkOptions struct {
-	Language      string
+	Language      MagicLinkLanguage
 	MagicLinkPath string
 	RedirectURL   string
 	TTL           int
@@ -125,6 +126,10 @@ func (a *auth) ValidateJWT(jwt string) (string, error) {
 
 func (a *auth) createMagicLink(args magicLinkArgs, opts *MagicLinkOptions) (*MagicLink, error) {
 	if opts != nil {
+		if err := validateLanguage(opts.Language); err != nil {
+			return nil, err
+		}
+
 		args.Language = opts.Language
 		args.MagicLinkPath = opts.MagicLinkPath
 		args.RedirectURL = opts.RedirectURL
@@ -158,4 +163,17 @@ func (a *auth) getPublicKey(token *jwt.Token) (interface{}, error) {
 	err := key.Raw(&pubKey)
 
 	return pubKey, err
+}
+
+func validateLanguage(language MagicLinkLanguage) error {
+	if language == "" {
+		return nil
+	}
+
+	validLanguages := []MagicLinkLanguage{De, En, Es, It, Pl, Pt, Zh}
+	if slices.Contains(validLanguages, language) {
+		return nil
+	}
+
+	return fmt.Errorf("Language must be one of %v", validLanguages)
 }

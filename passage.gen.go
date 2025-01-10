@@ -71,40 +71,21 @@ const (
 	InternalServerError N500ErrorCode = "internal_server_error"
 )
 
-// Defines values for AppInfoType.
-const (
-	AppInfoTypeComplete AppInfoType = "complete"
-	AppInfoTypeFlex     AppInfoType = "flex"
-)
-
-// Defines values for FontFamily.
-const (
-	AndaléMono    FontFamily = "Andalé Mono"
-	Arial         FontFamily = "Arial"
-	ArialBlack    FontFamily = "Arial Black"
-	Baskerville   FontFamily = "Baskerville"
-	BradleyHand   FontFamily = "Bradley Hand"
-	BrushScriptMT FontFamily = "Brush Script MT"
-	ComicSansMS   FontFamily = "Comic Sans MS"
-	Courier       FontFamily = "Courier"
-	Georgia       FontFamily = "Georgia"
-	GillSans      FontFamily = "Gill Sans"
-	Helvetica     FontFamily = "Helvetica"
-	Impact        FontFamily = "Impact"
-	Lucida        FontFamily = "Lucida"
-	Luminari      FontFamily = "Luminari"
-	Monaco        FontFamily = "Monaco"
-	Palatino      FontFamily = "Palatino"
-	Tahoma        FontFamily = "Tahoma"
-	TimesNewRoman FontFamily = "Times New Roman"
-	TrebuchetMS   FontFamily = "Trebuchet MS"
-	Verdana       FontFamily = "Verdana"
-)
-
 // Defines values for ChannelType.
 const (
 	EmailChannel ChannelType = "email"
 	PhoneChannel ChannelType = "phone"
+)
+
+// Defines values for MagicLinkLanguage.
+const (
+	De MagicLinkLanguage = "de"
+	En MagicLinkLanguage = "en"
+	Es MagicLinkLanguage = "es"
+	It MagicLinkLanguage = "it"
+	Pl MagicLinkLanguage = "pl"
+	Pt MagicLinkLanguage = "pt"
+	Zh MagicLinkLanguage = "zh"
 )
 
 // Defines values for MagicLinkType.
@@ -120,33 +101,6 @@ const (
 	Google SocialConnectionType = "google"
 )
 
-// Defines values for Technologies.
-const (
-	Android    Technologies = "android"
-	Angular    Technologies = "angular"
-	Go         Technologies = "go"
-	Ios        Technologies = "ios"
-	Javascript Technologies = "javascript"
-	Python     Technologies = "python"
-	React      Technologies = "react"
-	Vue        Technologies = "vue"
-)
-
-// Defines values for ThemeType.
-const (
-	Auto  ThemeType = "auto"
-	Dark  ThemeType = "dark"
-	Light ThemeType = "light"
-)
-
-// Defines values for TTLDisplayUnit.
-const (
-	D TTLDisplayUnit = "d"
-	H TTLDisplayUnit = "h"
-	M TTLDisplayUnit = "m"
-	S TTLDisplayUnit = "s"
-)
-
 // Defines values for UserEventAction.
 const (
 	UserEventActionLogin    UserEventAction = "login"
@@ -156,18 +110,8 @@ const (
 
 // Defines values for UserEventStatus.
 const (
-	UserEventStatusComplete   UserEventStatus = "complete"
-	UserEventStatusIncomplete UserEventStatus = "incomplete"
-)
-
-// Defines values for UserMetadataFieldType.
-const (
-	BooleanMD UserMetadataFieldType = "boolean"
-	DateMD    UserMetadataFieldType = "date"
-	EmailMD   UserMetadataFieldType = "email"
-	IntegerMD UserMetadataFieldType = "integer"
-	PhoneMD   UserMetadataFieldType = "phone"
-	StringMD  UserMetadataFieldType = "string"
+	Complete   UserEventStatus = "complete"
+	Incomplete UserEventStatus = "incomplete"
 )
 
 // Defines values for UserStatus.
@@ -229,82 +173,6 @@ type N500Error struct {
 // N500ErrorCode defines model for 500Error.Code.
 type N500ErrorCode string
 
-// AppInfo defines model for AppInfo.
-type AppInfo struct {
-	AdditionalAuthOrigins []string `json:"additional_auth_origins"`
-
-	// AllowedCallbackUrls The valid URLs where users can be redirected after authentication.
-	AllowedCallbackUrls []string `json:"allowed_callback_urls"`
-	AllowedIdentifier   string   `json:"allowed_identifier"`
-
-	// AllowedLogoutUrls The valid URLs where users can be redirected after logging out.
-	AllowedLogoutUrls []string `json:"allowed_logout_urls"`
-
-	// ApplicationLoginURI A route within your application that redirects to the Authorization URL endpoint.
-	ApplicationLoginURI string `json:"application_login_uri"`
-
-	// AuthFallbackMethod Deprecated Property. Please refer to `auth_methods` to view settings for individual authentication methods.
-	// Deprecated:
-	AuthFallbackMethod string `json:"auth_fallback_method"`
-
-	// AuthFallbackMethodTTL Deprecated Property. Please refer to `auth_methods` to view settings for individual authentication methods.
-	// Deprecated:
-	AuthFallbackMethodTTL int `json:"auth_fallback_method_ttl"`
-
-	// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
-	AuthMethods AuthMethods `json:"auth_methods"`
-	AuthOrigin  string      `json:"auth_origin"`
-
-	// AutoThemeEnabled Deprecated Property. Please use `hosted_theme` to set hosted page theming instead.
-	// Deprecated:
-	AutoThemeEnabled         bool                 `json:"auto_theme_enabled"`
-	CreatedAt                time.Time            `json:"created_at"`
-	DarkLogoURL              *string              `json:"dark_logo_url,omitempty"`
-	DefaultLanguage          string               `json:"default_language"`
-	ElementCustomization     ElementCustomization `json:"element_customization"`
-	ElementCustomizationDark ElementCustomization `json:"element_customization_dark"`
-
-	// Hosted whether or not the app's login page is hosted by Passage
-	Hosted bool `json:"hosted"`
-
-	// HostedSubdomain the subdomain of the app's hosted login page
-	HostedSubdomain               string    `json:"hosted_subdomain"`
-	HostedTheme                   ThemeType `json:"hosted_theme"`
-	ID                            string    `json:"id"`
-	IDTokenLifetime               *int      `json:"id_token_lifetime,omitempty"`
-	Layouts                       Layouts   `json:"layouts"`
-	LightLogoURL                  *string   `json:"light_logo_url,omitempty"`
-	LoginURL                      string    `json:"login_url"`
-	Name                          string    `json:"name"`
-	PassageBranding               bool      `json:"passage_branding"`
-	ProfileManagement             bool      `json:"profile_management"`
-	PublicSignup                  bool      `json:"public_signup"`
-	RedirectURL                   string    `json:"redirect_url"`
-	RefreshAbsoluteLifetime       int       `json:"refresh_absolute_lifetime"`
-	RefreshEnabled                bool      `json:"refresh_enabled"`
-	RefreshInactivityLifetime     int       `json:"refresh_inactivity_lifetime"`
-	RequireEmailVerification      bool      `json:"require_email_verification"`
-	RequireIdentifierVerification bool      `json:"require_identifier_verification"`
-	RequiredIdentifier            string    `json:"required_identifier"`
-	Role                          string    `json:"role"`
-	RsaPublicKey                  string    `json:"rsa_public_key"`
-
-	// Secret can only be retrieved by an app admin
-	Secret               *string             `json:"secret,omitempty"`
-	SessionTimeoutLength int                 `json:"session_timeout_length"`
-	Technologies         []Technologies      `json:"technologies"`
-	Type                 AppInfoType         `json:"type"`
-	UserMetadataSchema   []UserMetadataField `json:"user_metadata_schema"`
-}
-
-// AppInfoType defines model for AppInfo.Type.
-type AppInfoType string
-
-// AppResponse defines model for AppResponse.
-type AppResponse struct {
-	App AppInfo `json:"app"`
-}
-
 // AppleUserSocialConnection defines model for AppleUserSocialConnection.
 type AppleUserSocialConnection struct {
 	CreatedAt   time.Time `json:"created_at"`
@@ -317,29 +185,27 @@ type AppleUserSocialConnection struct {
 	ProviderIdentifier string `json:"provider_identifier"`
 }
 
-// AuthMethods Denotes what methods this app is allowed to use for authentication with configurations
-type AuthMethods struct {
-	MagicLink MagicLinkAuthMethod `json:"magic_link"`
-	Otp       OtpAuthMethod       `json:"otp"`
-	Passkeys  PasskeysAuthMethod  `json:"passkeys"`
-}
-
 // magicLinkArgs defines model for CreateMagicLinkRequest.
 type magicLinkArgs struct {
+	// ChannelType The channel for magic link delivery: "email" or "phone". Required if "send" is true.
 	ChannelType ChannelType `json:"channel,omitempty"`
 	Email       string      `json:"email,omitempty"`
 
-	// Language language of the email to send (optional)
-	Language string `json:"language,omitempty"`
+	// Language language of the email or sms to send
+	Language MagicLinkLanguage `json:"language,omitempty"`
 
 	// MagicLinkPath must be a relative url
-	MagicLinkPath string        `json:"magic_link_path,omitempty"`
-	Phone         string        `json:"phone,omitempty"`
-	RedirectURL   string        `json:"redirect_url,omitempty"`
-	Send          bool          `json:"send,omitempty"`
-	TTL           int           `json:"ttl,omitempty"`
-	Type          MagicLinkType `json:"type,omitempty"`
-	UserID        string        `json:"user_id,omitempty"`
+	MagicLinkPath string `json:"magic_link_path,omitempty"`
+	Phone         string `json:"phone,omitempty"`
+	RedirectURL   string `json:"redirect_url,omitempty"`
+	Send          bool   `json:"send,omitempty"`
+
+	// TTL time to live in minutes
+	TTL int `json:"ttl,omitempty"`
+
+	// Type The type of magic link to create: "login" or "verify_identifier". Defaults to "login".
+	Type   MagicLinkType `json:"type,omitempty"`
+	UserID string        `json:"user_id,omitempty"`
 }
 
 // CreateUserArgs defines model for CreateUserRequest.
@@ -351,76 +217,6 @@ type CreateUserArgs struct {
 	Phone        string                 `json:"phone,omitempty"`
 	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
-
-// ElementCustomization defines model for ElementCustomization.
-type ElementCustomization struct {
-	// PassageBodyFontFamily Body font family
-	PassageBodyFontFamily *FontFamily `json:"passage_body_font_family,omitempty"`
-
-	// PassageBodyTextColor Body text color in hex.
-	// Default is `#222222` in light mode & `#f3f3f3` in dark mode.
-	PassageBodyTextColor *string `json:"passage_body_text_color,omitempty"`
-
-	// PassageContainerBackgroundColor Container background color in hex.
-	// Default is `#ffffff` in light mode & `#383838` in dark mode.
-	PassageContainerBackgroundColor *string `json:"passage_container_background_color,omitempty"`
-
-	// PassageContainerMaxWidth Maximum width of container (px)
-	PassageContainerMaxWidth *int `json:"passage_container_max_width,omitempty"`
-
-	// PassageHeaderFontFamily Body font family
-	PassageHeaderFontFamily *FontFamily `json:"passage_header_font_family,omitempty"`
-
-	// PassageHeaderTextColor Header text color in hex.
-	// Default is `#222222` in light mode & `#f3f3f3` in dark mode.
-	PassageHeaderTextColor *string `json:"passage_header_text_color,omitempty"`
-
-	// PassageInputBoxBackgroundColor Input box background color in hex.
-	// Default is `#ffffff` in light mode & `#4b4b4b` in dark mode.
-	PassageInputBoxBackgroundColor *string `json:"passage_input_box_background_color,omitempty"`
-
-	// PassageInputBoxBorderRadius Input box border radius (px)
-	PassageInputBoxBorderRadius *int `json:"passage_input_box_border_radius,omitempty"`
-
-	// PassagePrimaryButtonBackgroundColor Primary button background colour (hex)
-	PassagePrimaryButtonBackgroundColor *string `json:"passage_primary_button_background_color,omitempty"`
-
-	// PassagePrimaryButtonBorderColor Primary button border color
-	PassagePrimaryButtonBorderColor *string `json:"passage_primary_button_border_color,omitempty"`
-
-	// PassagePrimaryButtonBorderRadius Primary button border radius (px)
-	PassagePrimaryButtonBorderRadius *int `json:"passage_primary_button_border_radius,omitempty"`
-
-	// PassagePrimaryButtonBorderWidth Primary button border width (px)
-	PassagePrimaryButtonBorderWidth *int `json:"passage_primary_button_border_width,omitempty"`
-
-	// PassagePrimaryButtonHoverColor Primary button background on hover (hex)
-	PassagePrimaryButtonHoverColor *string `json:"passage_primary_button_hover_color,omitempty"`
-
-	// PassagePrimaryButtonTextColor Primary button font colour (hex)
-	PassagePrimaryButtonTextColor *string `json:"passage_primary_button_text_color,omitempty"`
-
-	// PassageSecondaryButtonBackgroundColor Secondary button background colour (hex)
-	PassageSecondaryButtonBackgroundColor *string `json:"passage_secondary_button_background_color,omitempty"`
-
-	// PassageSecondaryButtonBorderColor Secondary button border color
-	PassageSecondaryButtonBorderColor *string `json:"passage_secondary_button_border_color,omitempty"`
-
-	// PassageSecondaryButtonBorderRadius Secondary button border radius (px)
-	PassageSecondaryButtonBorderRadius *int `json:"passage_secondary_button_border_radius,omitempty"`
-
-	// PassageSecondaryButtonBorderWidth Secondary button border width (px)
-	PassageSecondaryButtonBorderWidth *int `json:"passage_secondary_button_border_width,omitempty"`
-
-	// PassageSecondaryButtonHoverColor Secondary button background on hover (hex)
-	PassageSecondaryButtonHoverColor *string `json:"passage_secondary_button_hover_color,omitempty"`
-
-	// PassageSecondaryButtonTextColor Secondary button font colour (hex)
-	PassageSecondaryButtonTextColor *string `json:"passage_secondary_button_text_color,omitempty"`
-}
-
-// FontFamily Body font family
-type FontFamily string
 
 // GithubUserSocialConnection defines model for GithubUserSocialConnection.
 type GithubUserSocialConnection struct {
@@ -444,21 +240,6 @@ type GoogleUserSocialConnection struct {
 
 	// ProviderIdentifier The email of connected social user.
 	ProviderIdentifier string `json:"provider_identifier"`
-}
-
-// LayoutConfig defines model for LayoutConfig.
-type LayoutConfig struct {
-	H  int    `json:"h"`
-	ID string `json:"id"`
-	W  int    `json:"w"`
-	X  int    `json:"x"`
-	Y  int    `json:"y"`
-}
-
-// Layouts defines model for Layouts.
-type Layouts struct {
-	Profile      []LayoutConfig `json:"profile"`
-	Registration []LayoutConfig `json:"registration"`
 }
 
 // Link defines model for Link.
@@ -505,60 +286,35 @@ type paginatedUsersResponse struct {
 
 // MagicLink defines model for MagicLink.
 type MagicLink struct {
-	Activated   bool          `json:"activated"`
-	AppID       string        `json:"app_id"`
-	ID          string        `json:"id"`
-	Identifier  string        `json:"identifier"`
-	RedirectURL string        `json:"redirect_url"`
-	Secret      string        `json:"secret"`
-	TTL         int           `json:"ttl"`
-	Type        MagicLinkType `json:"type"`
-	URL         string        `json:"url"`
-	UserID      string        `json:"user_id"`
-}
+	Activated   bool   `json:"activated"`
+	AppID       string `json:"app_id"`
+	ID          string `json:"id"`
+	Identifier  string `json:"identifier"`
+	RedirectURL string `json:"redirect_url"`
+	Secret      string `json:"secret"`
 
-// MagicLinkAuthMethod defines model for MagicLinkAuthMethod.
-type MagicLinkAuthMethod struct {
-	Enabled bool `json:"enabled"`
-
-	// TTL Maximum time (IN SECONDS) for the auth to expire.
+	// TTL time to live in minutes
 	TTL int `json:"ttl"`
 
-	// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
-	// * `s` - seconds
-	// * `m` - minutes
-	// * `h` - hours
-	// * `d` - days
-	// Deprecated:
-	TTLDisplayUnit TTLDisplayUnit `json:"ttl_display_unit"`
+	// Type The type of magic link to create: "login" or "verify_identifier". Defaults to "login".
+	Type   MagicLinkType `json:"type"`
+	URL    string        `json:"url"`
+	UserID string        `json:"user_id"`
 }
 
-// ChannelType defines model for MagicLinkChannel.
+// ChannelType The channel for magic link delivery: "email" or "phone". Required if "send" is true.
 type ChannelType string
+
+// MagicLinkLanguage language of the email or sms to send
+type MagicLinkLanguage string
 
 // MagicLinkResponse defines model for MagicLinkResponse.
 type MagicLinkResponse struct {
 	MagicLink MagicLink `json:"magic_link"`
 }
 
-// MagicLinkType defines model for MagicLinkType.
+// MagicLinkType The type of magic link to create: "login" or "verify_identifier". Defaults to "login".
 type MagicLinkType string
-
-// OtpAuthMethod defines model for OtpAuthMethod.
-type OtpAuthMethod struct {
-	Enabled bool `json:"enabled"`
-
-	// TTL Maximum time (IN SECONDS) for the auth to expire.
-	TTL int `json:"ttl"`
-
-	// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
-	// * `s` - seconds
-	// * `m` - minutes
-	// * `h` - hours
-	// * `d` - days
-	// Deprecated:
-	TTLDisplayUnit TTLDisplayUnit `json:"ttl_display_unit"`
-}
 
 // PaginatedLinks defines model for PaginatedLinks.
 type PaginatedLinks struct {
@@ -569,26 +325,8 @@ type PaginatedLinks struct {
 	Self     Link `json:"self"`
 }
 
-// PasskeysAuthMethod defines model for PasskeysAuthMethod.
-type PasskeysAuthMethod struct {
-	Enabled bool `json:"enabled"`
-}
-
 // SocialConnectionType defines model for SocialConnectionType.
 type SocialConnectionType string
-
-// Technologies defines model for Technologies.
-type Technologies string
-
-// ThemeType defines model for ThemeType.
-type ThemeType string
-
-// TTLDisplayUnit Deprecated Property. The preferred unit for displaying the TTL. This value is for display only.
-// * `s` - seconds
-// * `m` - minutes
-// * `h` - hours
-// * `d` - days
-type TTLDisplayUnit string
 
 // UpdateUserOptions defines model for UpdateUserRequest.
 type UpdateUserOptions struct {
@@ -627,19 +365,6 @@ type PassageUser struct {
 	// WebauthnTypes List of credential types that have been used for authentication
 	WebauthnTypes []WebAuthnType `json:"webauthn_types"`
 }
-
-// UserMetadataField defines model for UserMetadataField.
-type UserMetadataField struct {
-	FieldName    string                `json:"field_name"`
-	FriendlyName string                `json:"friendly_name"`
-	ID           string                `json:"id"`
-	Profile      bool                  `json:"profile"`
-	Registration bool                  `json:"registration"`
-	Type         UserMetadataFieldType `json:"type"`
-}
-
-// UserMetadataFieldType defines model for UserMetadataFieldType.
-type UserMetadataFieldType string
 
 // UserRecentEvent defines model for UserRecentEvent.
 type UserRecentEvent struct {
@@ -856,9 +581,6 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// GetApp request
-	GetApp(ctx context.Context, appID AppID, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// CreateMagicLinkWithBody request with any body
 	CreateMagicLinkWithBody(ctx context.Context, appID AppID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -897,18 +619,6 @@ type ClientInterface interface {
 
 	// RevokeUserRefreshTokens request
 	RevokeUserRefreshTokens(ctx context.Context, appID AppID, userID UserID, reqEditors ...RequestEditorFn) (*http.Response, error)
-}
-
-func (c *Client) GetApp(ctx context.Context, appID AppID, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAppRequest(c.Server, appID)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
 }
 
 func (c *Client) CreateMagicLinkWithBody(ctx context.Context, appID AppID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1077,40 +787,6 @@ func (c *Client) RevokeUserRefreshTokens(ctx context.Context, appID AppID, userI
 		return nil, err
 	}
 	return c.Client.Do(req)
-}
-
-// NewGetAppRequest generates requests for GetApp
-func NewGetAppRequest(server string, appID AppID) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "app_id", runtime.ParamLocationPath, appID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apps/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
 }
 
 // NewCreateMagicLinkRequest calls the generic CreateMagicLink builder with application/json body
@@ -1814,9 +1490,6 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetAppWithResponse request
-	GetAppWithResponse(ctx context.Context, appID AppID, reqEditors ...RequestEditorFn) (*GetAppResponse, error)
-
 	// CreateMagicLinkWithBodyWithResponse request with any body
 	CreateMagicLinkWithBodyWithResponse(ctx context.Context, appID AppID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMagicLinkResponse, error)
 
@@ -1855,31 +1528,6 @@ type ClientWithResponsesInterface interface {
 
 	// RevokeUserRefreshTokensWithResponse request
 	RevokeUserRefreshTokensWithResponse(ctx context.Context, appID AppID, userID UserID, reqEditors ...RequestEditorFn) (*RevokeUserRefreshTokensResponse, error)
-}
-
-type GetAppResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AppResponse
-	JSON401      *N401Error
-	JSON404      *N404Error
-	JSON500      *N500Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAppResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAppResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
 }
 
 type CreateMagicLinkResponse struct {
@@ -2160,15 +1808,6 @@ func (r RevokeUserRefreshTokensResponse) StatusCode() int {
 	return 0
 }
 
-// GetAppWithResponse request returning *GetAppResponse
-func (c *ClientWithResponses) GetAppWithResponse(ctx context.Context, appID AppID, reqEditors ...RequestEditorFn) (*GetAppResponse, error) {
-	rsp, err := c.GetApp(ctx, appID, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAppResponse(rsp)
-}
-
 // CreateMagicLinkWithBodyWithResponse request with arbitrary body returning *CreateMagicLinkResponse
 func (c *ClientWithResponses) CreateMagicLinkWithBodyWithResponse(ctx context.Context, appID AppID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMagicLinkResponse, error) {
 	rsp, err := c.CreateMagicLinkWithBody(ctx, appID, contentType, body, reqEditors...)
@@ -2290,53 +1929,6 @@ func (c *ClientWithResponses) RevokeUserRefreshTokensWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseRevokeUserRefreshTokensResponse(rsp)
-}
-
-// ParseGetAppResponse parses an HTTP response from a GetAppWithResponse call
-func ParseGetAppResponse(rsp *http.Response) (*GetAppResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAppResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AppResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest N401Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest N404Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest N500Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
 }
 
 // ParseCreateMagicLinkResponse parses an HTTP response from a CreateMagicLinkWithResponse call
