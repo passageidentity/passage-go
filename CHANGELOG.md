@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/passageidentity/passage-go/compare/v1.12.0...v2.0.0) (2025-01-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* changes various type and struct names
+* rename Passage struct and ctor signature and remove old Error class ([#123](https://github.com/passageidentity/passage-go/issues/123))
+* remove deprecated code and rename structs and files ([#119](https://github.com/passageidentity/passage-go/issues/119))
+
+### Features
+
+* add parameter guards for Passage constructor ([#125](https://github.com/passageidentity/passage-go/issues/125)) ([85d18d0](https://github.com/passageidentity/passage-go/commit/85d18d0bbaee045358f65aae1dc1b706b4b98a97))
+* change type and add parameter guard for language in magic link options ([#124](https://github.com/passageidentity/passage-go/issues/124)) ([afb86ea](https://github.com/passageidentity/passage-go/commit/afb86eaad3ee2a03efd5420f179143b540739020))
+* changes various type and struct names ([d82a3e7](https://github.com/passageidentity/passage-go/commit/d82a3e7a5edc37225941f7ba277e03b0f756cd76))
+* remove deprecated code and rename structs and files ([#119](https://github.com/passageidentity/passage-go/issues/119)) ([6445861](https://github.com/passageidentity/passage-go/commit/64458618c3c003e1b89e62a8c7a3337ccfaaaab0))
+* rename Passage struct and ctor signature and remove old Error class ([#123](https://github.com/passageidentity/passage-go/issues/123)) ([e4fe6f0](https://github.com/passageidentity/passage-go/commit/e4fe6f0cba28f0010e8e22a13e93f82b3fda7d86))
+
 ## [1.12.0](https://github.com/passageidentity/passage-go/compare/v1.11.2...v1.12.0) (2024-12-12)
 
 
