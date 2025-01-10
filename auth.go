@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/golang-jwt/jwt"
 	gojwt "github.com/golang-jwt/jwt"
@@ -170,11 +171,8 @@ func validateLanguage(language MagicLinkLanguage) error {
 	}
 
 	validLanguages := []MagicLinkLanguage{De, En, Es, It, Pl, Pt, Zh}
-
-	for _, l := range validLanguages {
-		if l == language {
-			return nil
-		}
+	if slices.Contains(validLanguages, language) {
+		return nil
 	}
 
 	return fmt.Errorf("Language must be one of %v", validLanguages)
