@@ -1,4 +1,4 @@
-module github.com/passageidentity/passage-go
+module github.com/passageidentity/passage-go/v2
 
 go 1.21
 
