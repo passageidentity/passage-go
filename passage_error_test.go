@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/passageidentity/passage-go"
+	"github.com/passageidentity/passage-go/v2"
 	"github.com/stretchr/testify/assert"
 )
 
