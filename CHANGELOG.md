@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/passageidentity/passage-go/compare/v2.0.0...v2.1.0) (2025-01-14)
+
+
+### Features
+
+* the Auth and User structs are now public ([#128](https://github.com/passageidentity/passage-go/issues/128)) ([d5ef645](https://github.com/passageidentity/passage-go/commit/d5ef6450df0ef7960028f61d225661f626e93f63))
+
 ## [2.0.0](https://github.com/passageidentity/passage-go/compare/v1.12.0...v2.0.0) (2025-01-10)
 
 
