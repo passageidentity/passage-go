@@ -7,20 +7,20 @@ import (
 	"strings"
 )
 
-type user struct {
+type User struct {
 	appID  string
 	client *ClientWithResponses
 }
 
-func newUser(appID string, client *ClientWithResponses) *user {
-	return &user{
+func newUser(appID string, client *ClientWithResponses) *User {
+	return &User{
 		appID:  appID,
 		client: client,
 	}
 }
 
 // Get retrieves a user's object using their user ID.
-func (u *user) Get(userID string) (*PassageUser, error) {
+func (u *User) Get(userID string) (*PassageUser, error) {
 	if userID == "" {
 		return nil, errors.New("userID is required.")
 	}
@@ -38,7 +38,7 @@ func (u *user) Get(userID string) (*PassageUser, error) {
 }
 
 // GetByIdentifier retrieves a user's object using their user identifier.
-func (u *user) GetByIdentifier(identifier string) (*PassageUser, error) {
+func (u *User) GetByIdentifier(identifier string) (*PassageUser, error) {
 	if identifier == "" {
 		return nil, errors.New("identifier is required.")
 	}
@@ -76,7 +76,7 @@ func (u *user) GetByIdentifier(identifier string) (*PassageUser, error) {
 }
 
 // Activate activates a user using their user ID.
-func (u *user) Activate(userID string) (*PassageUser, error) {
+func (u *User) Activate(userID string) (*PassageUser, error) {
 	if userID == "" {
 		return nil, errors.New("userID is required.")
 	}
@@ -94,7 +94,7 @@ func (u *user) Activate(userID string) (*PassageUser, error) {
 }
 
 // Deactivate deactivates a user using their user ID.
-func (u *user) Deactivate(userID string) (*PassageUser, error) {
+func (u *User) Deactivate(userID string) (*PassageUser, error) {
 	if userID == "" {
 		return nil, errors.New("userID is required.")
 	}
@@ -112,7 +112,7 @@ func (u *user) Deactivate(userID string) (*PassageUser, error) {
 }
 
 // Update updates a user.
-func (u *user) Update(userID string, options UpdateUserOptions) (*PassageUser, error) {
+func (u *User) Update(userID string, options UpdateUserOptions) (*PassageUser, error) {
 	if userID == "" {
 		return nil, errors.New("userID is required.")
 	}
@@ -130,7 +130,7 @@ func (u *user) Update(userID string, options UpdateUserOptions) (*PassageUser, e
 }
 
 // Create creates a user.
-func (u *user) Create(args CreateUserArgs) (*PassageUser, error) {
+func (u *User) Create(args CreateUserArgs) (*PassageUser, error) {
 	if args.Email == "" && args.Phone == "" {
 		return nil, errors.New("At least one of args.Email or args.Phone is required.")
 	}
@@ -148,7 +148,7 @@ func (u *user) Create(args CreateUserArgs) (*PassageUser, error) {
 }
 
 // Delete deletes a user using their user ID.
-func (u *user) Delete(userID string) error {
+func (u *User) Delete(userID string) error {
 	if userID == "" {
 		return errors.New("userID is required.")
 	}
@@ -166,7 +166,7 @@ func (u *user) Delete(userID string) error {
 }
 
 // ListDevices retrieves a user's webauthn devices using their user ID.
-func (u *user) ListDevices(userID string) ([]WebAuthnDevices, error) {
+func (u *User) ListDevices(userID string) ([]WebAuthnDevices, error) {
 	if userID == "" {
 		return nil, errors.New("userID is required.")
 	}
@@ -184,7 +184,7 @@ func (u *user) ListDevices(userID string) ([]WebAuthnDevices, error) {
 }
 
 // RevokeDevice revokes user's webauthn device using their user ID and the device ID.
-func (u *user) RevokeDevice(userID string, deviceID string) error {
+func (u *User) RevokeDevice(userID string, deviceID string) error {
 	if userID == "" {
 		return errors.New("userID is required.")
 	}
@@ -206,7 +206,7 @@ func (u *user) RevokeDevice(userID string, deviceID string) error {
 }
 
 // RevokeRefreshTokens revokes all of a user's Refresh Tokens using their User ID.
-func (u *user) RevokeRefreshTokens(userID string) error {
+func (u *User) RevokeRefreshTokens(userID string) error {
 	if userID == "" {
 		return errors.New("userID is required.")
 	}

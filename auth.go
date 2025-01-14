@@ -18,13 +18,13 @@ type MagicLinkOptions struct {
 	TTL           int
 }
 
-type auth struct {
+type Auth struct {
 	appID        string
 	client       *ClientWithResponses
 	jwksCacheSet jwk.Set
 }
 
-func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
+func newAuth(appID string, client *ClientWithResponses) (*Auth, error) {
 	ctx := context.Background()
 
 	url := fmt.Sprintf("https://auth.passage.id/v1/apps/%v/.well-known/jwks.json", appID)
@@ -37,7 +37,7 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 		return nil, fmt.Errorf("failed to fetch JWKS: %w", err)
 	}
 
-	return &auth{
+	return &Auth{
 		appID:        appID,
 		client:       client,
 		jwksCacheSet: jwk.NewCachedSet(cache, url),
@@ -45,7 +45,7 @@ func newAuth(appID string, client *ClientWithResponses) (*auth, error) {
 }
 
 // CreateMagicLink creates a Magic Link for your app using an email address.
-func (a *auth) CreateMagicLinkWithEmail(
+func (a *Auth) CreateMagicLinkWithEmail(
 	email string,
 	magicLinkType MagicLinkType,
 	send bool,
@@ -62,7 +62,7 @@ func (a *auth) CreateMagicLinkWithEmail(
 }
 
 // CreateMagicLink creates a Magic Link for your app using an E164-formatted phone number.
-func (a *auth) CreateMagicLinkWithPhone(
+func (a *Auth) CreateMagicLinkWithPhone(
 	phone string,
 	magicLinkType MagicLinkType,
 	send bool,
@@ -79,7 +79,7 @@ func (a *auth) CreateMagicLinkWithPhone(
 }
 
 // CreateMagicLink creates a Magic Link for your app using a Passage user ID.
-func (a *auth) CreateMagicLinkWithUser(
+func (a *Auth) CreateMagicLinkWithUser(
 	userID string,
 	channel ChannelType,
 	magicLinkType MagicLinkType,
@@ -97,7 +97,7 @@ func (a *auth) CreateMagicLinkWithUser(
 }
 
 // ValidateJWT validates the JWT and returns the user ID.
-func (a *auth) ValidateJWT(jwt string) (string, error) {
+func (a *Auth) ValidateJWT(jwt string) (string, error) {
 	if jwt == "" {
 		return "", errors.New("jwt is required.")
 	}
@@ -124,7 +124,7 @@ func (a *auth) ValidateJWT(jwt string) (string, error) {
 	return userID, nil
 }
 
-func (a *auth) createMagicLink(args magicLinkArgs, opts *MagicLinkOptions) (*MagicLink, error) {
+func (a *Auth) createMagicLink(args magicLinkArgs, opts *MagicLinkOptions) (*MagicLink, error) {
 	if opts != nil {
 		if err := validateLanguage(opts.Language); err != nil {
 			return nil, err
@@ -148,7 +148,7 @@ func (a *auth) createMagicLink(args magicLinkArgs, opts *MagicLinkOptions) (*Mag
 	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
-func (a *auth) getPublicKey(token *jwt.Token) (interface{}, error) {
+func (a *Auth) getPublicKey(token *jwt.Token) (interface{}, error) {
 	keyID, ok := token.Header["kid"].(string)
 	if !ok {
 		return nil, errors.New("failed to find kid in JWT header")

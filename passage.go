@@ -9,8 +9,8 @@ import (
 
 // Passage is the main struct for the Passage SDK.
 type Passage struct {
-	Auth *auth
-	User *user
+	Auth *Auth
+	User *User
 }
 
 // New creates a new Passage instance.
