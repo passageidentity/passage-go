@@ -37,21 +37,23 @@ Use passage-go to implement Passkey Complete into your Go backend to authenticat
 ### Install
 
 ```shell
-go get github.com/passageidentity/passage-go
+go get github.com/passageidentity/passage-go/v2
 ```
 
 ### Import
 
 ```go
 import (
-	"github.com/passageidentity/passage-go"
+  "os"
+
+  "github.com/passageidentity/passage-go/v2"
 )
 ```
 
 ### Initialize
 
 ```go
-psg, err := passage.New(os.Getenv("PASSAGE_APP_ID"), &passage.Config{APIKey: os.Getenv("PASSAGE_API_KEY")})
+psg, err := passage.New(os.Getenv("PASSAGE_APP_ID"), os.Getenv("PASSAGE_API_KEY"))
 ```
 
 ### Go Passwordless
