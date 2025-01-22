@@ -50,3 +50,44 @@ jobs:
         run: go test ./...
       - name: Test with race detector
         run: go test -race -run TestAppJWKSCacheWriteConcurrency
+  test-e2e:
+    name: Test E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-cool/check-user-permission@v2
+        with:
+          require: write
+        id: check_permission
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - name: Get SDK version
+        id: get_sdk_version
+        if: ${{ steps.check_permission.outputs.require-result == 'true' }}
+        run: |
+          line=$(head -n 1 go.mod)
+          go_mod_version=${line##*/v}
+          manifest_version=$(jq -r '."."' .release-please-manifest.json | cut -d. -f1)
+
+          version=''
+          if [[ $go_mod_version -gt $manifest_version ]]; then
+            version="${go_mod_version}.0.0"
+          fi
+
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Trigger E2E Workflow in backend-sdk-tests and Wait
+        if: ${{ steps.check_permission.outputs.require-result == 'true' }}
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: passageidentity
+          repo: backend-sdk-tests
+          workflow_file_name: integration-tests-complete.yml
+          github_token: ${{ secrets.BE_SDK_PAT }}
+          # github.head_ref is only available on PR events, while github.ref_name provides the branch name on other events
+          client_payload: >-
+            {
+              "target_sdk":"go",
+              "use_test_release":true,
+              "sdk_branch_ref":"${{ github.head_ref || github.ref_name }}",
+              "test_release_version":"${{ steps.get_sdk_version.outputs.version }}"
+            }
