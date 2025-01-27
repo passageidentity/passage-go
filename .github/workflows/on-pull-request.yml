@@ -66,12 +66,14 @@ jobs:
         if: ${{ steps.check_permission.outputs.require-result == 'true' }}
         run: |
           line=$(head -n 1 go.mod)
-          go_mod_version=${line##*/v}
-          manifest_version=$(jq -r '."."' .release-please-manifest.json | cut -d. -f1)
+          go_mod_major_version=${line##*/v}
+          manifest_major_version=$(jq -r '."."' .release-please-manifest.json | cut -d. -f1)
 
+          # Only set version if the go.mod major version was bumped in the PR
+          # meaning that an override for the local registry should be set to make it work in e2es
           version=''
-          if [[ $go_mod_version -gt $manifest_version ]]; then
-            version="${go_mod_version}.0.0"
+          if [[ $go_mod_major_version -gt $manifest_major_version ]]; then
+            version="${go_mod_major_version}.0.0"
           fi
 
           echo "version=$version" >> $GITHUB_OUTPUT
