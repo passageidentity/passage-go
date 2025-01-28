@@ -19,6 +19,7 @@ func TestAppJWKSCacheWriteConcurrency(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
+			// a network call is made upon initialization to retrieve the JWKs from a real source
 			_, err := passage.New("passage", "some-api-key")
 			require.Nil(t, err)
 		}()
