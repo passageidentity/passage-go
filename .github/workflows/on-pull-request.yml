@@ -5,12 +5,6 @@ on:
   workflow_dispatch:
   pull_request:
 
-env:
-  PASSAGE_APP_ID: ${{ secrets.PASSAGE_APP_ID }}
-  PASSAGE_API_KEY: ${{ secrets.PASSAGE_API_KEY }}
-  PASSAGE_USER_ID: ${{ secrets.PASSAGE_USER_ID }}
-  PASSAGE_AUTH_TOKEN: ${{ secrets.PASSAGE_AUTH_TOKEN }}
-
 jobs:
   lint:
     name: Lint
