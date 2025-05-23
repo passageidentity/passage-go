@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/golang-jwt/jwt"
-	gojwt "github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
+	gojwt "github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
 
