@@ -1,6 +1,6 @@
 {
 	"name": "Go",
-	"image": "mcr.microsoft.com/devcontainers/go:1-1.22-bookworm",
+	"image": "mcr.microsoft.com/devcontainers/go:1.23",
 	"features": {
 		"ghcr.io/itsmechlark/features/act:1": {}
 	},
