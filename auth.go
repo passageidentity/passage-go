@@ -175,7 +175,7 @@ func (a *Auth) getPublicKey(token *gojwt.Token) (interface{}, error) {
 		return nil, fmt.Errorf("failed to find key %q in JWKS", keyID)
 	}
 
-	pubKey, err := key.PublicKey()
+	pubKey, err := jwk.PublicRawKeyOf(key)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract raw public key: %w", err)
 	}
