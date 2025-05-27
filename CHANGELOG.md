@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1](https://github.com/passageidentity/passage-go/compare/v2.1.0...v2.1.1) (2025-05-27)
+
+
+### Bug Fixes
+
+* update JWT parsing to latest library versions ([#133](https://github.com/passageidentity/passage-go/issues/133)) ([55ccc95](https://github.com/passageidentity/passage-go/commit/55ccc95101357e861f95afb1dca4e6f94e1fa878))
+
 ## [2.1.0](https://github.com/passageidentity/passage-go/compare/v2.0.0...v2.1.0) (2025-01-14)
 
 
