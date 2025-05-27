@@ -1,3 +1,3 @@
 package passage
 
-const version = "v2.1.0" // x-release-please-version
+const version = "v2.1.1" // x-release-please-version
