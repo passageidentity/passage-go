@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"slices"
 
-	"github.com/golang-jwt/jwt"
-	gojwt "github.com/golang-jwt/jwt"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	gojwt "github.com/golang-jwt/jwt/v5"
+	"github.com/lestrrat-go/httprc/v3"
+	"github.com/lestrrat-go/jwx/v3/jwk"
 )
 
 type MagicLinkOptions struct {
@@ -27,24 +28,32 @@ type Auth struct {
 func newAuth(appID string, client *ClientWithResponses) (*Auth, error) {
 	ctx := context.Background()
 
+	rcClient := httprc.NewClient(httprc.WithHTTPClient(http.DefaultClient))
+
 	url := fmt.Sprintf("https://auth.passage.id/v1/apps/%v/.well-known/jwks.json", appID)
-	cache := jwk.NewCache(ctx)
-	if err := cache.Register(url); err != nil {
-		return nil, err
+
+	cache, err := jwk.NewCache(ctx, rcClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create JWK cache: %w", err)
 	}
 
-	if _, err := cache.Refresh(ctx, url); err != nil {
-		return nil, fmt.Errorf("failed to fetch JWKS: %w", err)
+	if err := cache.Register(ctx, url); err != nil {
+		return nil, fmt.Errorf("failed to register JWKS URL %q in cache: %w", url, err)
+	}
+
+	jwksCacheSet, err := cache.Refresh(ctx, url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch initial JWKS from %q: %w", url, err)
 	}
 
 	return &Auth{
 		appID:        appID,
 		client:       client,
-		jwksCacheSet: jwk.NewCachedSet(cache, url),
+		jwksCacheSet: jwksCacheSet,
 	}, nil
 }
 
-// CreateMagicLink creates a Magic Link for your app using an email address.
+// CreateMagicLinkWithEmail creates a Magic Link for your app using an email address.
 func (a *Auth) CreateMagicLinkWithEmail(
 	email string,
 	magicLinkType MagicLinkType,
@@ -61,7 +70,7 @@ func (a *Auth) CreateMagicLinkWithEmail(
 	return a.createMagicLink(args, opts)
 }
 
-// CreateMagicLink creates a Magic Link for your app using an E164-formatted phone number.
+// CreateMagicLinkWithPhone creates a Magic Link for your app using an E164-formatted phone number.
 func (a *Auth) CreateMagicLinkWithPhone(
 	phone string,
 	magicLinkType MagicLinkType,
@@ -78,7 +87,7 @@ func (a *Auth) CreateMagicLinkWithPhone(
 	return a.createMagicLink(args, opts)
 }
 
-// CreateMagicLink creates a Magic Link for your app using a Passage user ID.
+// CreateMagicLinkWithUser creates a Magic Link for your app using a Passage user ID.
 func (a *Auth) CreateMagicLinkWithUser(
 	userID string,
 	channel ChannelType,
@@ -97,14 +106,14 @@ func (a *Auth) CreateMagicLinkWithUser(
 }
 
 // ValidateJWT validates the JWT and returns the user ID.
-func (a *Auth) ValidateJWT(jwt string) (string, error) {
-	if jwt == "" {
-		return "", errors.New("jwt is required.")
+func (a *Auth) ValidateJWT(jwtTokenStr string) (string, error) {
+	if jwtTokenStr == "" {
+		return "", errors.New("jwt is required")
 	}
 
-	parsedToken, err := gojwt.Parse(jwt, a.getPublicKey)
+	parsedToken, err := gojwt.Parse(jwtTokenStr, a.getPublicKey)
 	if err != nil {
-		return "", err
+		return "", err // This error could be from parsing, signature validation, or standard claim validation (exp, nbf, iat)
 	}
 
 	claims, ok := parsedToken.Claims.(gojwt.MapClaims)
@@ -117,7 +126,12 @@ func (a *Auth) ValidateJWT(jwt string) (string, error) {
 		return "", errors.New("failed to find sub claim in JWT")
 	}
 
-	if !claims.VerifyAudience(a.appID, true) {
+	auds, err := claims.GetAudience()
+	if err != nil {
+		return "", err
+	}
+
+	if !slices.Contains(auds, a.appID) {
 		return "", errors.New("failed audience verification for JWT")
 	}
 
@@ -148,7 +162,9 @@ func (a *Auth) createMagicLink(args magicLinkArgs, opts *MagicLinkOptions) (*Mag
 	return nil, errorFromResponse(res.Body, res.StatusCode())
 }
 
-func (a *Auth) getPublicKey(token *jwt.Token) (interface{}, error) {
+// getPublicKey is the key function for jwt.Parse
+// It now correctly uses *gojwt.Token to match the imported package alias
+func (a *Auth) getPublicKey(token *gojwt.Token) (interface{}, error) {
 	keyID, ok := token.Header["kid"].(string)
 	if !ok {
 		return nil, errors.New("failed to find kid in JWT header")
@@ -159,10 +175,11 @@ func (a *Auth) getPublicKey(token *jwt.Token) (interface{}, error) {
 		return nil, fmt.Errorf("failed to find key %q in JWKS", keyID)
 	}
 
-	var pubKey interface{}
-	err := key.Raw(&pubKey)
-
-	return pubKey, err
+	pubKey, err := jwk.PublicRawKeyOf(key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract raw public key: %w", err)
+	}
+	return pubKey, nil
 }
 
 func validateLanguage(language MagicLinkLanguage) error {
@@ -170,10 +187,11 @@ func validateLanguage(language MagicLinkLanguage) error {
 		return nil
 	}
 
+	// Assuming MagicLinkLanguage constants like De, En, Es, etc. are defined elsewhere
 	validLanguages := []MagicLinkLanguage{De, En, Es, It, Pl, Pt, Zh}
 	if slices.Contains(validLanguages, language) {
 		return nil
 	}
 
-	return fmt.Errorf("Language must be one of %v", validLanguages)
+	return fmt.Errorf("language must be one of %v", validLanguages)
 }
