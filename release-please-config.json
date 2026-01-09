@@ -9,6 +9,9 @@
       "prerelease": false,
       "extra-files": [
         "version.go"
+      ],
+      "changelog-sections": [
+        { "type": "docs", "section": "Documentation", "hidden": false }
       ]
     }
   },
