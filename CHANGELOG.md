@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2](https://github.com/passageidentity/passage-go/compare/v2.1.1...v2.1.2) (2026-01-09)
+
+
+### Documentation
+
+* add sunset notice to README ([#136](https://github.com/passageidentity/passage-go/issues/136)) ([b5ad06c](https://github.com/passageidentity/passage-go/commit/b5ad06c8aa78dbea51e84b726aeeaaf5011ee74b))
+
 ## [2.1.1](https://github.com/passageidentity/passage-go/compare/v2.1.0...v2.1.1) (2025-05-27)
 
 
